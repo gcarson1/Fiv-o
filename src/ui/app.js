@@ -11,13 +11,17 @@
     ui: {
       screen: 'home',
       focusModule: null, pinned: null, active: null,
+      topic: null,          // topic review open in the main column
+      addTopic: false,      // "customer raised another topic" picker
       coaching: prefs.get('coaching', true),
+      coachOpen: false,     // listening tips expanded
       blur: false, help: false,
       search: null, searchIdx: 0,
-      drawer: null, drawerTab: null,
+      drawer: null, drawerTab: null, pitchTab: 'pitch',
+      showAll: false, setupMore: false,
       mtab: 'q',
-      undo: null, openQuote: {},
-      prevConf: {}, rankDelta: {}, unlocked: {}, prevCluster: [],
+      undo: null, openQuote: {}, openNote: {},
+      prevConf: {}, rankDelta: {}, unlocked: {}, prevActive: null, resetMain: false,
     },
   };
 
@@ -39,7 +43,7 @@
 
   app.open = function (s, screen) {
     app.s = s;
-    Object.assign(app.ui, { focusModule: null, pinned: null, active: null, drawer: null, search: null, undo: null, rankDelta: {}, unlocked: {}, prevConf: {}, prevCluster: [] });
+    Object.assign(app.ui, { nudged: false, held: null, focusModule: null, pinned: null, active: null, topic: null, addTopic: false, drawer: null, search: null, undo: null, rankDelta: {}, unlocked: {}, prevConf: {}, prevActive: null, openQuote: {}, openNote: {} });
     app.recompute();
     app.go(screen);
   };
@@ -53,6 +57,8 @@
     app.recompute();
     app.render();
     window.scrollTo(0, 0);
+    const af = document.querySelector('[autofocus]');
+    if (af && (!document.activeElement || document.activeElement === document.body)) af.focus();
   };
 
   // Mutate the session, recompute, announce what changed, re-render.
@@ -93,7 +99,7 @@
     after.scores.list.filter((r) => r.ready && !before.scores.byId[r.id].ready).forEach((r) => {
       msgs.push(`Pitch ready: ${r.play.short}${r.variant ? ' → ' + r.variant.name : ''}`);
     });
-    if (msgs.length) toast(msgs.join(' · '), 'good');
+    if (msgs.length) toast(msgs.join(' · '));
   }
 
   // ── answer actions ──
@@ -101,6 +107,7 @@
     app.ui.undo = { qid, prev: app.s.answers[qid] ? JSON.parse(JSON.stringify(app.s.answers[qid])) : null, prevLast: app.s.lastAnswered };
   }
   function release(qid) {
+    if (app.ui.held === qid) app.ui.held = null;
     if (app.ui.pinned === qid) app.ui.pinned = null;
     if (app.ui.active === qid) app.ui.active = null;
   }
@@ -112,7 +119,7 @@
       snapshot(qid);
       app.act((s) => {
         F.state.selectOption(s, qid, optId);
-        if (hold) { app.ui.pinned = qid; app.ui.active = qid; } else release(qid);
+        if (hold) { app.ui.pinned = qid; app.ui.active = qid; app.ui.held = qid; } else release(qid);
       }, { answer: true });
     } else {
       app.ui.active = qid;
@@ -144,8 +151,10 @@
     }, { answer: true });
   };
   app.pin = function (qid) {
+    app.ui.held = null;
     app.ui.pinned = qid;
     app.ui.active = qid;
+    app.ui.topic = null;
     app.ui.mtab = 'q';
     app.ui.search = null;
     app.recompute();
@@ -153,6 +162,7 @@
   };
   app.focusModule = function (mid) {
     app.ui.focusModule = app.ui.focusModule === mid ? null : mid;
+    app.ui.topic = null;
     app.ui.pinned = null;
     app.ui.active = null;
     app.ui.mtab = 'q';
@@ -172,6 +182,9 @@
       a.call = s.calls.length;
       app.ui.focusModule = mid;
       app.ui.pinned = null;
+      app.ui.active = null;
+      app.ui.topic = null;
+      app.ui.addTopic = false;
       app.ui.search = null;
     }, { answer: true });
   };
@@ -196,6 +209,7 @@
     if (app.ui.screen === 'interview') {
       if (app.ui.drawer && F.screens.drawer) root.appendChild(F.screens.drawer());
       if (app.ui.search !== null && F.screens.search) root.appendChild(F.screens.search());
+      if (app.ui.addTopic && F.screens.addTopic) root.appendChild(F.screens.addTopic());
     }
     if (app.ui.help && F.screens.help) root.appendChild(F.screens.help());
     if (app.ui.blur && F.screens.blur) root.appendChild(F.screens.blur());
@@ -203,6 +217,13 @@
     root.querySelectorAll('[data-scroll]').forEach((el) => {
       if (scrolls[el.dataset.scroll]) el.scrollTop = scrolls[el.dataset.scroll];
     });
+    // A new question starts at the top of the column.
+    if (app.ui.resetMain) {
+      app.ui.resetMain = false;
+      const main = root.querySelector('[data-scroll="main"]');
+      if (main) main.scrollTop = 0;
+      if (window.innerWidth <= 900) window.scrollTo(0, 0);
+    }
     if (window.scrollY !== winY) window.scrollTo(0, winY);
     if (key) {
       const el = root.querySelector(`[data-key="${CSS.escape(key)}"]`);

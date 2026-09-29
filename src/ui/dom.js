@@ -78,9 +78,18 @@
     return new Date(ts).toLocaleDateString();
   };
 
+  // Per-browser preferences; kept in memory too, so they hold for the session even
+  // when the browser blocks storage.
+  const memPrefs = {};
   const prefs = {
-    get(k, d) { try { const p = JSON.parse(localStorage.getItem('fivo.prefs') || '{}'); return k in p ? p[k] : d; } catch (e) { return d; } },
-    set(k, v) { try { const p = JSON.parse(localStorage.getItem('fivo.prefs') || '{}'); p[k] = v; localStorage.setItem('fivo.prefs', JSON.stringify(p)); } catch (e) { /* ignore */ } },
+    get(k, d) {
+      if (k in memPrefs) return memPrefs[k];
+      try { const p = JSON.parse(localStorage.getItem('fivo.prefs') || '{}'); return k in p ? p[k] : d; } catch (e) { return d; }
+    },
+    set(k, v) {
+      memPrefs[k] = v;
+      try { const p = JSON.parse(localStorage.getItem('fivo.prefs') || '{}'); p[k] = v; localStorage.setItem('fivo.prefs', JSON.stringify(p)); } catch (e) { /* memory only */ }
+    },
   };
 
   F.dom = { h, append, toast, copy, download, slug, pct, fmtTime, ago, prefs };

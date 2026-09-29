@@ -8,29 +8,33 @@ It's one self-contained HTML file. It works offline, needs no install, and never
 
 1. Grab `dist/fivo-discovery.html` and send it to yourself in Slack (or anywhere).
 2. Download it and open it in Chrome, Edge, Safari, or Firefox. Slack's preview doesn't run it; it has to be opened in a browser.
-3. Click **Start new discovery**, fill in the 30-second setup, and start the call.
+3. Click **Start a new discovery**, enter the account and who's on the call, and start.
 
-Sessions autosave in the browser. Use **Save session (.json)** to keep a copy or move it to another machine, and **Import** to bring it back. For the next meeting, use **Start call 2** on the home screen, which opens a recap of last call's pains, plays, and open questions.
+Sessions autosave in the browser. Use **Save session (.json)** to keep a copy or move it to another machine, and **Import a saved session** to bring it back. For the next meeting, use **Start call 2** on the home screen, which opens a recap of last call's pains, plays, and open questions.
 
 ### During the call
 
+The screen has three parts:
+
+- **Topic steps (top):** where you are in the call. Click any topic to review its answers or change one. A change that makes later answers irrelevant flags them and stops counting them. **+ Topic** adds something the customer raised. The must-asks counter on the right jumps to the next one you haven't asked.
+- **The question (center):** one at a time, with a one-line "why ask this" and the next two questions listed below it. Pick an answer by clicking or pressing its number. Pains ask you to quantify them, and some answers show a short coaching tip or a risk. **+ Note**, **+ Quote** and **Listening tips** stay tucked away until you want them.
+- **Likely pitch (right):** the best-fit Nutanix pitch and the version of it that fits, what's left to confirm, a few alternatives, and a MEDDPICC strip. **Open pitch card** shows the pitch, proof, objections and next steps in tabs.
+
+Twenty minutes in, if who-signs, timing or next step are still open, Fiv-o suggests asking them before the call ends.
+
 | Key | Action |
 | --- | --- |
-| `1`–`9`, `0` | Answer the active question |
-| `⏎` | Done (multi-select) / continue |
-| `↑` `↓` | Move between the on-screen questions |
-| `S` / `B` | Skip / undo last answer |
-| `N` / `Q` | Add a note / capture a verbatim quote |
-| `/` | Search every question (opens locked topics automatically) |
-| `P` | Open the leading pitch card |
-| `C` | Coaching hints on/off |
+| `1`–`9`, `0` | Answer the question |
+| `Enter` | Done (multi-select) / next question |
+| `↑` `↓` | Switch to an "up next" question |
+| `S` / `B` | Skip / undo the last answer |
+| `N` / `Q` | Add a note / capture a quote |
+| `/` | Search every question (opens topics not in play yet) |
+| `P` | Open the pitch card |
+| `C` | Coaching on/off |
 | `W` | Wrap up |
-| `Esc` | Privacy blur (for screen-sharing) · closes panels |
-
-- **Path map (left):** Topics in the order they matter. Click a topic to focus it, or click any answer to change it. Downstream answers that no longer apply get a ⚠ and stop counting toward the scores.
-- **Question cards (center):** The current question plus the next two, so you can answer out of order as the conversation wanders. A ⚡ **Splits X vs Y** tag marks the question that best separates the leading options.
-- **Pitch Radar (right):** Every play ranked live. Hover over a play to see why it scored that way. A play is **ready** once confidence is high *and* its qualifying questions are answered. The pitch card has persona talk tracks, before/after, proof points with sources, objections, competitor landmines, and next steps.
-- **Pains:** Picking a pain answer asks for its *impact* and a *metric*, so pains get quantified on the call.
+| `Esc` | Close the top panel; with nothing open, hide the screen |
+| `?` | Shortcuts and settings |
 
 ## Edit the content
 

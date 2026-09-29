@@ -18,9 +18,7 @@
   // Timer: only touches the one element, so it never disturbs typing.
   setInterval(() => {
     const el = document.getElementById('timer');
-    if (!el || !app.s) return;
-    const call = app.s.calls[app.s.calls.length - 1];
-    el.textContent = call.startedAt ? F.dom.fmtTime(Date.now() - call.startedAt) : '0:00';
+    if (el) el.textContent = F.ui.elapsed();
   }, 1000);
 
   // Flush autosave before the tab closes.

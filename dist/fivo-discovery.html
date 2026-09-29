@@ -7,350 +7,378 @@
 <title>Fiv-o · Discovery Navigator</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%235a48d8'/%3E%3Cpath d='M9 23V9h12M9 16h9' stroke='white' stroke-width='3.2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
 <style>
-/* Fiv-o styles. Tokens first; dark mode follows the OS unless toggled. */
+/* Fiv-o styles — quiet, line-based, mostly monochrome.
+   Color is reserved for meaning: green = ready/solid, amber = pain/partial, red = risk. */
 :root {
-  --bg: #f5f6fa; --panel: #ffffff; --panel-2: #eef0f6; --border: #dfe3ec; --border-strong: #c9cfdc;
-  --text: #141824; --muted: #5a6274; --faint: #8990a2;
-  --accent: #5a48d8; --accent-soft: #ecebfd; --accent-text: #ffffff;
-  --good: #147d53; --good-soft: #e1f4ea; --warn: #9a5c00; --warn-soft: #fff1d6; --bad: #bb3129; --bad-soft: #fde6e4;
-  --shadow: 0 1px 2px rgba(16, 24, 40, .05), 0 6px 20px rgba(16, 24, 40, .06);
-  --radius: 12px; --radius-sm: 8px;
+  --bg: #ffffff; --bg-soft: #f6f6f4; --sel: #f0efeb;
+  --line: #e6e5e1; --line-strong: #d2d1cc;
+  --text: #1c1c1a; --muted: #686762; --faint: #9a9993;
+  --ink: #1c1c1a; --ink-text: #ffffff;
+  --link: #2b5797;
+  --good: #2d7a4c; --warn: #8a5a00; --bad: #b3261e;
+  --radius: 8px; --r: 4px;
   --font: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #0e1016; --panel: #161922; --panel-2: #1e222e; --border: #2a2f3d; --border-strong: #3a4053;
-    --text: #e7e9f0; --muted: #a2a8b8; --faint: #6e758a;
-    --accent: #8f82ff; --accent-soft: #25224a; --accent-text: #0e1016;
-    --good: #41cf91; --good-soft: #13302a; --warn: #f2b54f; --warn-soft: #33280f; --bad: #ff6f66; --bad-soft: #3a1b1a;
-    --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 8px 24px rgba(0, 0, 0, .25);
+    --bg: #151515; --bg-soft: #1b1b1b; --sel: #242423;
+    --line: #2a2a29; --line-strong: #3a3a38;
+    --text: #ebebe8; --muted: #a09f99; --faint: #6c6b66;
+    --ink: #ebebe8; --ink-text: #151515;
+    --link: #8fb1e6;
+    --good: #72c793; --warn: #d9ad55; --bad: #ee8a82;
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --bg: #0e1016; --panel: #161922; --panel-2: #1e222e; --border: #2a2f3d; --border-strong: #3a4053;
-  --text: #e7e9f0; --muted: #a2a8b8; --faint: #6e758a;
-  --accent: #8f82ff; --accent-soft: #25224a; --accent-text: #0e1016;
-  --good: #41cf91; --good-soft: #13302a; --warn: #f2b54f; --warn-soft: #33280f; --bad: #ff6f66; --bad-soft: #3a1b1a;
-  --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 8px 24px rgba(0, 0, 0, .25);
+  --bg: #151515; --bg-soft: #1b1b1b; --sel: #242423;
+  --line: #2a2a29; --line-strong: #3a3a38;
+  --text: #ebebe8; --muted: #a09f99; --faint: #6c6b66;
+  --ink: #ebebe8; --ink-text: #151515;
+  --link: #8fb1e6;
+  --good: #72c793; --warn: #d9ad55; --bad: #ee8a82;
   color-scheme: dark;
 }
 
+/* ── base ── */
 * { box-sizing: border-box; }
 html, body { margin: 0; }
-body { background: var(--bg); color: var(--text); font: 14px/1.45 var(--font); -webkit-font-smoothing: antialiased; }
-h1, h2, h3 { margin: 0 0 .5em; line-height: 1.25; }
-h1 { font-size: 24px; } h2 { font-size: 17px; } h3 { font-size: 13px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+body { background: var(--bg); color: var(--text); font: 15px/1.5 var(--font); -webkit-font-smoothing: antialiased; accent-color: var(--text); }
+h1, h2, h3, h4 { margin: 0; font-weight: 600; line-height: 1.25; }
+h1 { font-size: 28px; letter-spacing: -.015em; }
+h2 { font-size: 17px; }
+h2.mt { margin-top: 26px; }
 p { margin: 0 0 .6em; }
-a { color: var(--accent); }
-ul, ol { margin: .2em 0 .6em; padding-left: 1.2em; }
-li { margin: .15em 0; }
-blockquote { margin: .4em 0; padding: .4em .8em; border-left: 3px solid var(--accent); background: var(--panel-2); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; }
-.muted { color: var(--muted); } .small { font-size: 12px; } .pad { padding: 8px 12px; } .hidden { display: none; }
-.mono { font-family: var(--mono); }
-:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+a { color: var(--link); }
+ul, ol { margin: .3em 0 .6em; padding-left: 1.25em; }
+li { margin: .2em 0; }
+blockquote { margin: 8px 0; padding-left: 14px; border-left: 2px solid var(--line-strong); color: var(--muted); }
+.muted { color: var(--muted); }
+.small { font-size: 13px; }
+.mono { font-family: var(--mono); font-size: .9em; }
+.pad { padding: 12px 18px; }
+.hidden { display: none; }
+:focus-visible { outline: 2px solid var(--link); outline-offset: 1px; }
 
-kbd { display: inline-block; min-width: 18px; padding: 0 5px; margin-left: 6px; border: 1px solid var(--border-strong); border-bottom-width: 2px; border-radius: 4px; font: 11px/16px var(--mono); color: var(--muted); background: var(--panel); text-align: center; }
-.opt kbd { margin: 0 8px 0 0; }
+.eyebrow { display: flex; align-items: baseline; flex-wrap: wrap; gap: 0 8px; margin-bottom: 10px; font-size: 11.5px; font-weight: 600; letter-spacing: .07em; text-transform: uppercase; color: var(--muted); }
+.eyebrow .muted { font-weight: 500; }
+.must { font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--warn); margin-left: 8px; }
 
-/* buttons, pills, fields */
-.btn { display: inline-flex; align-items: center; gap: 4px; padding: 7px 12px; border: 1px solid var(--border-strong); border-radius: var(--radius-sm); background: var(--panel); color: var(--text); font: inherit; font-weight: 550; cursor: pointer; white-space: nowrap; }
-.btn:hover { border-color: var(--accent); }
-.btn.primary { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
-.btn.primary kbd { background: transparent; color: inherit; border-color: currentColor; opacity: .75; }
-.btn.primary:hover { filter: brightness(1.08); }
-.btn.ghost { background: transparent; border-color: transparent; color: var(--muted); }
-.btn.ghost:hover { color: var(--text); background: var(--panel-2); }
-.btn.ghost.on, .btn.on { color: var(--accent); background: var(--accent-soft); border-color: transparent; }
-.btn.danger:hover { color: var(--bad); }
-.btn.lg { padding: 11px 18px; font-size: 15px; }
-.btn.sm { padding: 4px 9px; font-size: 12px; }
-.btn.block { width: 100%; justify-content: center; margin-top: 10px; }
-.link { background: none; border: 0; padding: 0; color: var(--accent); font: inherit; cursor: pointer; text-decoration: underline; text-underline-offset: 2px; }
-.pill { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 999px; background: var(--panel-2); color: var(--muted); font-size: 12px; font-weight: 600; white-space: nowrap; }
-.pill.tiny { font-size: 11px; padding: 1px 7px; }
-.pill.accent { background: var(--accent-soft); color: var(--accent); }
-.pill.good { background: var(--good-soft); color: var(--good); }
-.pill.warn { background: var(--warn-soft); color: var(--warn); }
-.row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
-.row.end { justify-content: flex-end; margin-top: 16px; }
-input, select, textarea { width: 100%; padding: 8px 10px; border: 1px solid var(--border-strong); border-radius: var(--radius-sm); background: var(--panel); color: var(--text); font: inherit; }
+/* ── controls ── */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 7px 14px; border: 1px solid var(--line-strong); border-radius: var(--r); background: var(--bg); color: var(--text); font: inherit; font-size: 14px; font-weight: 500; cursor: pointer; white-space: nowrap; }
+.btn:hover { border-color: var(--text); }
+.btn.primary { background: var(--ink); color: var(--ink-text); border-color: var(--ink); }
+.btn.primary:hover { opacity: .88; }
+.btn.lg { padding: 10px 20px; font-size: 15px; }
+.btn.full { width: 100%; margin-top: 14px; }
+.tbtn { display: inline-flex; align-items: center; gap: 4px; padding: 6px 8px; border: 0; background: none; color: var(--muted); font: inherit; font-size: 14px; cursor: pointer; white-space: nowrap; }
+.tbtn:hover { color: var(--text); text-decoration: underline; text-underline-offset: 3px; }
+.tbtn.small { font-size: 13px; padding: 4px 6px; }
+.tbtn.danger:hover { color: var(--bad); }
+.link { padding: 0; border: 0; background: none; color: var(--text); font: inherit; cursor: pointer; text-decoration: underline; text-decoration-color: var(--line-strong); text-underline-offset: 3px; }
+.link:hover { text-decoration-color: var(--text); }
+input, select, textarea { width: 100%; padding: 8px 10px; border: 1px solid var(--line-strong); border-radius: var(--r); background: var(--bg); color: var(--text); font: inherit; font-size: 14.5px; }
+input:focus, select:focus, textarea:focus { outline: none; border-color: var(--text); }
 textarea { resize: vertical; }
 input::placeholder, textarea::placeholder { color: var(--faint); }
-.field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
-.field-label { font-size: 12px; font-weight: 600; color: var(--muted); }
-.form-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 0 16px; }
-.chips { display: flex; flex-wrap: wrap; gap: 8px; }
-.chip { padding: 6px 12px; border: 1px solid var(--border-strong); border-radius: 999px; background: var(--panel); color: var(--text); font: inherit; cursor: pointer; }
-.chip.on { background: var(--accent-soft); color: var(--accent); border-color: var(--accent); font-weight: 600; }
-.check { display: flex; gap: 8px; align-items: flex-start; padding: 5px 0; cursor: pointer; }
-.check input { width: auto; margin-top: 3px; }
-.panel { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); margin-bottom: 16px; }
+.lf { display: flex; flex-direction: column; gap: 5px; }
+.lf > span { font-size: 12.5px; font-weight: 500; color: var(--muted); }
+.check { display: flex; gap: 10px; align-items: flex-start; padding: 6px 0; cursor: pointer; }
+.check input { width: auto; margin-top: 4px; }
+.hstack { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
 
-/* pages (home, setup, recap, wrap) */
-.page { max-width: 1100px; margin: 0 auto; padding: 28px 16px 64px; }
-.topbar { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
-.topbar .muted { flex: 1; }
-.hero { padding: 24px 0 20px; }
-.brand { display: flex; align-items: baseline; gap: 12px; margin-bottom: 8px; }
-.logo { font-size: 40px; font-weight: 800; letter-spacing: -.03em; background: linear-gradient(120deg, var(--accent), var(--good)); -webkit-background-clip: text; background-clip: text; color: transparent; }
-.brand-tag { font-size: 15px; color: var(--muted); font-weight: 600; }
-.lede { font-size: 16px; color: var(--muted); max-width: 640px; margin-bottom: 18px; }
-.slist { display: flex; flex-direction: column; }
-.srow { display: flex; align-items: center; gap: 16px; padding: 12px 0; border-top: 1px solid var(--border); flex-wrap: wrap; }
-.srow:first-child { border-top: 0; }
-.srow-main { flex: 1; min-width: 220px; }
-.srow-title { font-weight: 700; font-size: 15px; }
-.srow-sub { color: var(--muted); font-size: 12px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 2px; }
-.srow-actions { display: flex; gap: 6px; flex-wrap: wrap; }
-.how { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin: 8px 0 24px; }
-.how-step { display: flex; gap: 12px; }
-.how-step p { color: var(--muted); margin: 2px 0 0; }
-.how-n { flex: none; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; background: var(--accent-soft); color: var(--accent); font-weight: 800; }
-.foot { color: var(--faint); font-size: 12px; border-top: 1px solid var(--border); padding-top: 16px; }
-.recap-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
-.recap-play { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; padding: 6px 0; }
-.agenda li { margin: .3em 0; }
-pre.small { font: 12px/1.5 var(--mono); white-space: pre-wrap; background: var(--panel-2); padding: 8px; border-radius: var(--radius-sm); }
+/* ── line-based rows (topic review, variants, pickers) ── */
+.rows { border-top: 1px solid var(--line); }
+.rows > .row { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 18px; align-items: baseline; width: 100%; padding: 12px 4px; border: 0; border-bottom: 1px solid var(--line); background: none; color: var(--text); font: inherit; text-align: left; cursor: pointer; }
+.rows > .row:hover { background: var(--bg-soft); }
+.row.static { cursor: default; }
+.rows > .row.static:hover { background: none; }
+.row.on { background: var(--sel); box-shadow: inset 3px 0 0 var(--text); padding-left: 14px; }
+.rows > .row.on:hover { background: var(--sel); }
+.row.stack { grid-template-columns: 1fr; gap: 8px; }
+.row.pick { grid-template-columns: auto minmax(0, 1fr) auto auto; align-items: center; gap: 12px; }
+.row.pick input { width: auto; margin: 0; }
+.row-q { font-weight: 500; }
+.row-a { color: var(--muted); font-size: 14px; }
+.row.open .row-a, .row.skipped .row-a { color: var(--faint); }
+.row.skipped .row-a { font-style: italic; }
+.row.stale .row-a { color: var(--warn); }
+.pair { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 
-/* interview layout */
-.interview { display: grid; grid-template-rows: auto minmax(0, 1fr); height: 100vh; }
-.ibar { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 8px 16px; background: var(--panel); border-bottom: 1px solid var(--border); flex-wrap: wrap; }
-.ibar-left, .ibar-right { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-.logo-btn { border: 0; background: none; cursor: pointer; font-weight: 800; font-size: 18px; letter-spacing: -.02em; color: var(--accent); padding: 0 4px 0 0; }
-.ibar-acct { font-weight: 700; }
-.cols { display: grid; grid-template-columns: 272px minmax(0, 1fr) 336px; min-height: 0; }
-.left, .right { overflow-y: auto; padding: 16px 14px 40px; background: var(--panel); }
-.left { border-right: 1px solid var(--border); }
-.right { border-left: 1px solid var(--border); }
-.center { overflow-y: auto; padding: 16px clamp(12px, 3vw, 36px) 80px; }
-.col-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--faint); margin: 0 0 10px 4px; }
+/* ── pages: home, setup, recap, wrap ── */
+.page { max-width: 1080px; margin: 0 auto; padding: 28px 24px 72px; }
+.page.setup { max-width: 640px; }
+.topbar { display: flex; align-items: center; gap: 12px; margin: 0 0 20px -8px; }
+.wordmark { flex: none; padding: 0; border: 0; background: none; color: var(--text); font: inherit; font-size: 17px; font-weight: 700; letter-spacing: -.01em; white-space: nowrap; cursor: pointer; }
+.wordmark.lg { font-size: 22px; cursor: default; }
+.home-head { display: flex; align-items: baseline; gap: 12px; padding-bottom: 16px; border-bottom: 1px solid var(--line); }
+.home-hero { padding: 56px 0 44px; border-bottom: 1px solid var(--line); }
+.home-hero h1 { font-size: 34px; margin-bottom: 14px; }
+.lede { max-width: 620px; margin: 0 0 26px; font-size: 17px; color: var(--muted); }
+.home-sec { padding: 28px 0; border-bottom: 1px solid var(--line); }
+.home-sec h2 { margin-bottom: 14px; }
+.slist { border-top: 1px solid var(--line); }
+.srow { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr) auto; gap: 20px; align-items: center; padding: 14px 0; border-bottom: 1px solid var(--line); }
+.srow-title { font-weight: 600; }
+.srow-sub { font-size: 13px; color: var(--muted); }
+.srow-pitch { font-size: 14px; }
+.srow-actions { display: flex; align-items: center; gap: 2px; }
+.steps-list { padding-left: 20px; color: var(--muted); max-width: 680px; }
+.steps-list li { margin: 10px 0; }
+.steps-list strong { color: var(--text); font-weight: 600; }
+.foot { padding-top: 22px; font-size: 13px; color: var(--faint); }
+.foot p { max-width: 720px; }
+
+.form { margin-top: 28px; }
+.field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 22px; }
+.field-label { font-size: 13.5px; font-weight: 600; }
+.field-hint { font-size: 12.5px; color: var(--faint); }
+.field input { padding: 10px 12px; font-size: 15px; }
+.toggles { display: flex; flex-wrap: wrap; gap: 6px; }
+.toggle { padding: 7px 12px; border: 1px solid var(--line-strong); border-radius: var(--r); background: var(--bg); color: var(--text); font: inherit; font-size: 14px; cursor: pointer; }
+.toggle:hover { border-color: var(--text); }
+.toggle.on { background: var(--ink); color: var(--ink-text); border-color: var(--ink); }
+details.more { margin: 4px 0 24px; padding: 14px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+details.more summary { cursor: pointer; font-weight: 500; color: var(--muted); }
+details.more[open] summary { margin-bottom: 18px; }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; }
+.form-foot { display: flex; justify-content: flex-end; margin-top: 12px; }
+
+.recap { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; margin-top: 12px; }
+.recap .home-sec { border-bottom: 0; }
+pre.small { font: 12.5px/1.5 var(--mono); white-space: pre-wrap; margin: 8px 0; color: var(--muted); }
+
+/* ── live call ── */
+.interview { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto auto minmax(0, 1fr); height: 100vh; }
+.bar { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 10px 24px; border-bottom: 1px solid var(--line); }
+.bar-l, .bar-r { display: flex; align-items: center; gap: 14px; min-width: 0; }
+.bar-l { flex: 1; }
+.bar-r { gap: 4px; }
+.bar-acct { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bar-meta { padding-left: 14px; border-left: 1px solid var(--line); color: var(--muted); font-size: 14px; white-space: nowrap; }
+.bar .btn.primary { margin-left: 8px; }
+
+.stepper { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 0 24px; border-bottom: 1px solid var(--line); }
+.steps { display: flex; flex: 1; min-width: 0; overflow-x: auto; scrollbar-width: none; }
+.steps::-webkit-scrollbar { display: none; }
+.step { display: inline-flex; align-items: baseline; gap: 7px; padding: 12px 12px 10px; border: 0; border-bottom: 2px solid transparent; background: none; color: var(--muted); font: inherit; font-size: 14px; white-space: nowrap; cursor: pointer; }
+.step:first-child { padding-left: 0; }
+.step:hover { color: var(--text); }
+.step.cur { color: var(--text); font-weight: 600; border-bottom-color: var(--text); }
+.step-n { font: 12px var(--mono); color: var(--faint); }
+.step.done .step-n { color: var(--good); }
+.step-new { font-size: 10.5px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--link); }
+.step.add { color: var(--link); }
+.step-meta { padding: 6px 0; border: 0; background: none; font: inherit; font-size: 13px; color: var(--warn); white-space: nowrap; cursor: pointer; }
+.step-meta:hover { text-decoration: underline; text-underline-offset: 3px; }
+.step-meta.ok { color: var(--good); cursor: default; text-decoration: none; }
+.lastline.nudge { padding: 10px 0 10px 14px; border: 0; border-left: 2px solid var(--warn); }
+
+.cols { display: grid; grid-template-columns: minmax(0, 1fr) 320px; min-height: 0; }
+.main { overflow-y: auto; }
+.main-in { max-width: 760px; margin: 0 auto; padding: 36px 40px 96px; }
+.side { overflow-y: auto; border-left: 1px solid var(--line); background: var(--bg-soft); }
+.side-in { padding: 24px 22px 40px; }
 .mtabs { display: none; }
 
-/* path map */
-.pm-mod { margin-bottom: 4px; border-radius: var(--radius-sm); border-left: 3px solid transparent; }
-.pm-mod.current { border-left-color: var(--accent); background: var(--panel-2); }
-.pm-mod.focus { border-left-color: var(--accent); background: var(--accent-soft); }
-.pm-head { display: flex; align-items: center; gap: 8px; width: 100%; padding: 7px 8px; border: 0; background: none; color: var(--text); font: inherit; font-weight: 600; cursor: pointer; text-align: left; border-radius: var(--radius-sm); }
-.pm-head:hover { background: var(--panel-2); }
-.pm-icon { width: 18px; text-align: center; color: var(--muted); flex: none; }
-.pm-label { flex: 1; }
-.pm-count { font-size: 11px; color: var(--faint); font-variant-numeric: tabular-nums; }
-.pm-mod.done .pm-icon, .pm-mod.done .pm-count { color: var(--good); }
-.pm-mod.partial .pm-icon { color: var(--accent); }
-.pm-answers { padding: 0 6px 6px 30px; display: flex; flex-direction: column; gap: 1px; }
-.pm-ans { display: flex; flex-direction: column; align-items: flex-start; border: 0; background: none; text-align: left; font: inherit; color: var(--text); padding: 3px 6px; border-radius: 6px; cursor: pointer; }
-.pm-ans:hover { background: var(--panel-2); }
-.pm-ans.pinned { background: var(--accent-soft); }
-.pm-q { font-size: 11px; color: var(--faint); }
-.pm-a { font-size: 12px; line-height: 1.3; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
-.pm-ans.stale .pm-a { color: var(--warn); text-decoration: line-through; text-decoration-color: color-mix(in srgb, var(--warn) 50%, transparent); }
-.pm-ans.skipped .pm-a { color: var(--faint); font-style: italic; }
-.pm-more { margin: 12px 0; }
-.pm-more summary { cursor: pointer; color: var(--muted); font-size: 12px; padding: 4px; }
-.pm-lock { display: flex; align-items: center; gap: 8px; width: 100%; border: 0; background: none; color: var(--muted); font: inherit; padding: 5px 8px; cursor: pointer; border-radius: 6px; text-align: left; }
-.pm-lock:hover { background: var(--panel-2); color: var(--text); }
-.pm-add { font-size: 11px; color: var(--accent); }
-.mp { margin-top: 18px; padding: 12px; background: var(--panel-2); border-radius: var(--radius-sm); }
-.mp-title { display: flex; justify-content: space-between; font-size: 11px; font-weight: 700; letter-spacing: .08em; margin-bottom: 8px; }
-.mp-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
-.mp-cell { display: grid; place-items: center; height: 28px; border-radius: 6px; font-weight: 800; font-size: 12px; cursor: help; }
-.mp-cell.l0 { background: var(--bad-soft); color: var(--bad); }
-.mp-cell.l1 { background: var(--warn-soft); color: var(--warn); }
-.mp-cell.l2 { background: var(--good-soft); color: var(--good); }
+.intro { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; margin-bottom: 28px; padding: 14px 18px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--bg-soft); font-size: 14px; }
+.intro ol { margin: 6px 0 0; padding-left: 18px; color: var(--muted); }
+.lastline { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 10px; margin-bottom: 28px; padding-bottom: 12px; border-bottom: 1px solid var(--line); font-size: 13.5px; }
 
-/* question cards */
-.just { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; font-size: 13px; padding: 6px 2px 12px; }
-.just-ok { color: var(--good); font-weight: 800; }
-.focusbar { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 8px 12px; margin-bottom: 12px; border-radius: var(--radius-sm); background: var(--accent-soft); color: var(--accent); font-weight: 600; }
-.qcard { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 20px; margin-bottom: 12px; }
-.qcard.active { border-color: var(--accent); box-shadow: var(--shadow), 0 0 0 3px var(--accent-soft); padding: 22px 24px; }
-.qcard.compact { cursor: pointer; opacity: .82; }
-.qcard.compact:hover { opacity: 1; border-color: var(--border-strong); }
-.qcard.compact .qtext { font-size: 15px; }
-.qcard.compact .opt { padding: 6px 10px; font-size: 13px; }
-.qcard.stale { border-color: var(--warn); }
-.qcard.empty { text-align: center; padding: 36px; }
-.qcard.enter { animation: rise .28s ease-out; }
-@keyframes rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
-@media (prefers-reduced-motion: reduce) { .qcard.enter { animation: none; } .bar-fill { transition: none !important; } }
-.qhead { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
-.qmod { font-size: 12px; font-weight: 600; color: var(--muted); }
-.qnext { margin-left: auto; font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--faint); }
-.qtext { font-size: 20px; font-weight: 700; margin-bottom: 14px; }
-.opts { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 8px; }
-.opts.many { grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); }
-.opt { position: relative; display: flex; align-items: center; text-align: left; padding: 10px 12px; border: 1px solid var(--border-strong); border-radius: var(--radius-sm); background: var(--panel); color: var(--text); font: inherit; cursor: pointer; transition: border-color .12s, background .12s; }
-.opt:hover { border-color: var(--accent); }
-.opt.on { background: var(--accent-soft); border-color: var(--accent); color: var(--text); font-weight: 600; }
-.opt.on kbd { border-color: var(--accent); color: var(--accent); }
-.opt-label { flex: 1; }
-.rank { margin-left: 8px; font: 700 11px var(--mono); color: var(--accent); }
-.pain-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--warn); margin-left: 8px; flex: none; }
-.hint { font-size: 12px; color: var(--faint); margin: 8px 0 0; }
-.fields { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; }
-.mini { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--muted); font-weight: 600; }
-.tip, .flagline { display: flex; gap: 8px; align-items: baseline; margin-top: 12px; padding: 9px 12px; border-radius: var(--radius-sm); background: var(--accent-soft); font-size: 13px; }
-.flagline { background: var(--bad-soft); }
-.tip-k { flex: none; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; color: var(--accent); }
-.tip-k.bad { color: var(--bad); } .tip-k.warn { color: var(--warn); }
-.painchain { margin-top: 12px; padding: 10px 12px; border-radius: var(--radius-sm); background: var(--warn-soft); }
-.pc-title { display: flex; gap: 8px; align-items: baseline; font-weight: 600; font-size: 13px; margin-bottom: 8px; }
-.pc-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-.notice { margin-top: 12px; padding: 8px 12px; border-radius: var(--radius-sm); background: var(--panel-2); color: var(--muted); font-size: 13px; }
-.notice.warn { background: var(--warn-soft); color: var(--warn); }
-.qnotes { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; }
-.qnotes .btn { align-self: flex-start; }
-.quote { font-style: italic; border-left: 3px solid var(--accent); }
-.coach { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-top: 16px; padding: 12px 14px; border-radius: var(--radius-sm); background: var(--panel-2); font-size: 13px; }
-.coach p, .coach ul { margin: 0; color: var(--muted); }
-.coach-k { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; color: var(--faint); margin-bottom: 4px; }
-.qactions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 16px; align-items: center; }
-.qtextarea { margin-top: 4px; }
+.qtitle { margin-bottom: 8px; font-size: 26px; letter-spacing: -.015em; }
+.qwhy { max-width: 62ch; margin: 0 0 4px; color: var(--muted); font-size: 14.5px; }
+.qsplit { margin: 6px 0 0; font-size: 13.5px; color: var(--link); }
+.qhint { margin: 18px 0 0; font-size: 13px; color: var(--faint); }
+.opts { display: grid; margin-top: 18px; border-top: 1px solid var(--line); }
+.opts.two { grid-template-columns: 1fr 1fr; column-gap: 32px; }
+.opt { display: flex; align-items: center; gap: 14px; width: 100%; padding: 13px 12px; border: 0; border-bottom: 1px solid var(--line); background: none; color: var(--text); font: inherit; font-size: 15px; text-align: left; cursor: pointer; }
+.opt:hover { background: var(--bg-soft); }
+.opt.on { background: var(--sel); font-weight: 600; box-shadow: inset 3px 0 0 var(--text); }
+.opt-k { width: 14px; flex: none; font: 12px var(--mono); color: var(--faint); }
+.opt-l { flex: 1; }
+.opt-m { flex: none; font: 12.5px var(--mono); }
+.fields { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-top: 20px; }
 
-/* radar */
-.lead { padding: 14px; border-radius: var(--radius); border: 1px solid var(--border-strong); background: var(--panel); margin-bottom: 16px; }
-.lead.ready { border-color: var(--good); box-shadow: 0 0 0 3px var(--good-soft); }
-.lead.empty { border-style: dashed; }
-.lead-k { display: flex; gap: 6px; align-items: center; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; color: var(--accent); margin-bottom: 4px; }
-.lead.ready .lead-k { color: var(--good); }
-.lead-name { font-size: 16px; font-weight: 750; line-height: 1.3; }
-.lead-var { font-size: 13px; font-weight: 600; color: var(--accent); margin: 2px 0 8px; }
-.lead-var.muted { color: var(--faint); font-weight: 500; }
-.lead-meta { margin: 6px 0; font-size: 13px; }
-.lead-q { font-size: 12px; display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 6px; }
-.lead-line { font-size: 13px; color: var(--muted); margin: 8px 0 0; }
-.bar { height: 6px; background: var(--panel-2); border-radius: 999px; overflow: hidden; }
-.bar.big { height: 9px; margin-top: 8px; }
-.bar-fill { height: 100%; width: 0; background: var(--accent); border-radius: 999px; transition: width .6s cubic-bezier(.2, .8, .2, 1); }
-.bar-fill.ready { background: var(--good); }
-.radar-sub { display: flex; justify-content: space-between; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--faint); margin: 6px 4px 8px; }
-.radar-sub .muted { text-transform: none; letter-spacing: 0; font-weight: 500; }
-.pbar { display: block; width: 100%; text-align: left; padding: 8px; border: 0; border-radius: var(--radius-sm); background: none; color: var(--text); font: inherit; cursor: pointer; }
-.pbar:hover { background: var(--panel-2); }
-.pbar-top { display: flex; align-items: center; gap: 6px; margin-bottom: 5px; font-size: 13px; }
-.pbar-name { font-weight: 650; }
-.pbar-var { font-size: 11px; color: var(--accent); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; flex: 1; }
-.pbar-pct { margin-left: auto; font: 600 12px var(--mono); color: var(--muted); }
-.delta { font-size: 10px; } .delta.up { color: var(--good); } .delta.down { color: var(--bad); }
-.idle { margin-top: 10px; }
-.idle summary { cursor: pointer; font-size: 12px; color: var(--faint); padding: 4px; }
-.idle-item { display: block; width: 100%; text-align: left; border: 0; background: none; color: var(--muted); font: inherit; font-size: 13px; padding: 4px 8px; cursor: pointer; border-radius: 6px; }
-.idle-item:hover { background: var(--panel-2); color: var(--text); }
-.flags { margin-top: 12px; }
-.signals { margin-top: 16px; font-size: 12px; color: var(--faint); text-align: center; }
+.follow { margin-top: 18px; padding: 2px 0 2px 16px; border-left: 2px solid var(--line-strong); font-size: 14.5px; }
+.follow p { margin: 3px 0 0; }
+.follow-k { font-size: 11px; font-weight: 600; letter-spacing: .07em; text-transform: uppercase; color: var(--muted); }
+.follow.tip { border-left-color: var(--link); } .follow.tip .follow-k { color: var(--link); }
+.follow.risk { border-left-color: var(--bad); } .follow.risk .follow-k { color: var(--bad); }
+.follow.pain { border-left-color: var(--warn); } .follow.pain .follow-k { color: var(--warn); }
+.follow .pair { margin-top: 10px; }
+.hint { margin: 8px 0 0; font-size: 13px; color: var(--faint); }
+.notice { margin-top: 18px; padding-top: 12px; border-top: 1px solid var(--line); font-size: 13.5px; color: var(--muted); }
+.notice.warn { color: var(--warn); }
 
-/* overlays */
-.overlay { position: fixed; inset: 0; background: rgba(8, 10, 16, .45); display: flex; align-items: flex-start; justify-content: center; z-index: 40; animation: fade .15s; }
-@keyframes fade { from { opacity: 0; } }
-.palette { margin-top: 12vh; width: min(640px, calc(100vw - 32px)); background: var(--panel); border: 1px solid var(--border-strong); border-radius: var(--radius); box-shadow: 0 24px 60px rgba(0, 0, 0, .3); overflow: hidden; }
-.pal-input { border: 0; border-bottom: 1px solid var(--border); border-radius: 0; padding: 16px 18px; font-size: 16px; }
-.pal-input:focus-visible { outline: none; }
-.pal-list { max-height: 50vh; overflow-y: auto; padding: 6px; }
-.pal-item { display: flex; gap: 10px; align-items: center; width: 100%; text-align: left; padding: 8px 10px; border: 0; border-radius: var(--radius-sm); background: none; color: var(--text); font: inherit; cursor: pointer; }
-.pal-item.sel { background: var(--accent-soft); }
-.pal-mod { width: 18px; text-align: center; color: var(--muted); }
-.pal-text { flex: 1; display: flex; flex-direction: column; }
-.pal-sub { font-size: 11px; color: var(--faint); }
-.pal-foot { display: flex; gap: 14px; padding: 8px 14px; border-top: 1px solid var(--border); font-size: 12px; color: var(--muted); flex-wrap: wrap; }
-.pal-foot kbd { margin: 0 2px 0 0; }
-.modal { margin-top: 12vh; width: min(480px, calc(100vw - 32px)); background: var(--panel); border-radius: var(--radius); padding: 22px; box-shadow: 0 24px 60px rgba(0, 0, 0, .3); }
-.keys { width: 100%; border-collapse: collapse; }
-.keys td { padding: 5px 4px; border-bottom: 1px solid var(--border); }
-.keys td:first-child { width: 90px; }
-.keys kbd { margin: 0; }
+.qactions { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-top: 24px; }
+.qa-main, .qa-links { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.qa-links { margin-right: -8px; }
+.capture { margin-top: 16px; }
+.quote { font-style: italic; }
+.coach { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--line); font-size: 14px; }
+.coach ul { margin: 6px 0 0; color: var(--muted); }
+
+.upnext { margin-top: 48px; }
+.upnext .eyebrow { margin-bottom: 4px; }
+.next-row { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; width: 100%; padding: 11px 0; border: 0; border-top: 1px solid var(--line); background: none; color: var(--muted); font: inherit; font-size: 14.5px; text-align: left; cursor: pointer; }
+.next-row:last-child { border-bottom: 1px solid var(--line); }
+.next-row:hover { color: var(--text); }
+.next-row .muted { flex: none; font-size: 13px; }
+.question.empty, .topic { padding-top: 8px; }
+
+.fade { animation: fade .2s ease-out; }
+@keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .fade, .overlay, .drawer { animation: none !important; } .meter-fill { transition: none !important; } }
+
+/* ── side: likely pitch ── */
+.side-sec { margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid var(--line); }
+.side-sec:last-child { border-bottom: 0; }
+.lead-status { display: flex; align-items: center; gap: 7px; font-size: 12.5px; font-weight: 600; color: var(--muted); }
+.lead-status::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--faint); }
+.lead-status.ready { color: var(--good); }
+.lead-status.ready::before { background: var(--good); }
+.lead-name { margin: 6px 0 2px; font-size: 18px; font-weight: 600; line-height: 1.3; }
+.lead-var { font-size: 14px; }
+.lead-meter { display: flex; align-items: center; gap: 10px; margin: 12px 0 6px; font-size: 13px; }
+.lead-meter .meter { flex: 1; }
+.lead-need { margin: 6px 0 0; font-size: 13px; color: var(--muted); }
+.meter { height: 4px; border-radius: 2px; background: var(--line); overflow: hidden; }
+.meter.thin { height: 3px; }
+.meter-fill { width: 0; height: 100%; background: var(--text); transition: width .5s cubic-bezier(.2, .8, .2, 1); }
+.meter-fill.ready { background: var(--good); }
+.prow { display: grid; grid-template-columns: minmax(0, 1fr) 64px 36px; gap: 10px; align-items: center; width: 100%; padding: 8px 0; border: 0; background: none; color: var(--text); font: inherit; font-size: 14px; text-align: left; cursor: pointer; }
+.prow:hover .prow-name { text-decoration: underline; text-underline-offset: 3px; }
+.prow-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.prow-v { text-align: right; color: var(--muted); }
+.side-in > .tbtn { margin: -12px 0 12px -6px; }
+.risk { margin: 8px 0 0; padding-left: 10px; border-left: 2px solid var(--bad); font-size: 13.5px; }
+.mp { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 4px; margin: 4px 0 10px; }
+.mp-l { padding: 3px 0 4px; border-bottom: 3px solid var(--line-strong); font-size: 12px; font-weight: 600; text-align: center; color: var(--faint); cursor: help; }
+.mp-l.l1 { border-bottom-color: var(--warn); color: var(--text); }
+.mp-l.l2 { border-bottom-color: var(--good); color: var(--text); }
+
+/* ── overlays ── */
+.overlay { position: fixed; inset: 0; z-index: 40; display: flex; align-items: flex-start; justify-content: center; background: rgba(15, 15, 15, .32); animation: fade .15s; }
+.palette, .modal { margin-top: 12vh; width: min(600px, calc(100vw - 32px)); background: var(--bg); border: 1px solid var(--line-strong); border-radius: var(--radius); box-shadow: 0 16px 48px rgba(0, 0, 0, .16); overflow: hidden; }
+.modal { width: min(540px, calc(100vw - 32px)); padding: 24px; }
+.modal h2 { margin-bottom: 8px; }
+.modal .rows { margin-top: 14px; }
+.modal-foot { display: flex; justify-content: flex-end; align-items: center; gap: 6px; margin-top: 20px; padding-top: 14px; border-top: 1px solid var(--line); }
+.pal-input { padding: 16px 18px; border: 0; border-bottom: 1px solid var(--line); border-radius: 0; font-size: 16px; }
+.pal-list { max-height: 52vh; overflow-y: auto; }
+.pal-item { display: flex; flex-direction: column; gap: 2px; width: 100%; padding: 10px 18px; border: 0; border-bottom: 1px solid var(--line); background: none; color: var(--text); font: inherit; text-align: left; cursor: pointer; }
+.pal-item.sel { background: var(--sel); }
+.pal-meta { font-size: 12.5px; color: var(--muted); }
+.pal-foot { padding: 9px 18px; background: var(--bg-soft); font-size: 12.5px; color: var(--muted); }
+.keys { width: 100%; margin-top: 8px; border-collapse: collapse; font-size: 14px; }
+.keys td { padding: 7px 0; border-bottom: 1px solid var(--line); }
+.keys td:first-child { width: 110px; color: var(--muted); }
+
 .drawer-wrap { justify-content: flex-end; align-items: stretch; }
-.drawer { width: min(600px, 100vw); height: 100%; overflow-y: auto; background: var(--panel); padding: 20px 24px 40px; box-shadow: -12px 0 40px rgba(0, 0, 0, .25); animation: slide .2s ease-out; }
-@keyframes slide { from { transform: translateX(24px); opacity: .6; } }
-.dhead { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
-.dhead h2 { font-size: 21px; }
-.dmeta { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin: 4px 0 16px; }
-.dsec { margin: 20px 0; }
-.oneliner { font-size: 15px; font-weight: 550; }
-.ba { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.ba-col { padding: 10px 12px; border-radius: var(--radius-sm); font-size: 13px; }
-.ba-col p { margin: 0; }
-.before { background: var(--bad-soft); } .after { background: var(--good-soft); }
-.variants { display: flex; flex-direction: column; gap: 8px; }
-.variant { padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 13px; }
-.variant.on { border-color: var(--accent); background: var(--accent-soft); }
-.variant-top { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 4px; }
-.variant p { margin: 0 0 4px; }
-.tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
-.tab { padding: 5px 10px; border: 1px solid var(--border-strong); border-radius: 999px; background: var(--panel); color: var(--muted); font: inherit; font-size: 12px; cursor: pointer; }
-.tab.attending { color: var(--text); font-weight: 600; }
-.tab.attending::before { content: "● "; color: var(--good); }
-.tab.on { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
-.track { font-size: 15px; line-height: 1.55; padding: 12px 14px; border-left: 3px solid var(--accent); background: var(--panel-2); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; }
-.trace { list-style: none; padding: 0; }
-.trace li { display: flex; gap: 8px; align-items: baseline; font-size: 13px; }
-.delta-n { font: 700 12px var(--mono); min-width: 38px; text-align: right; }
-.delta-n.up { color: var(--good); } .delta-n.down { color: var(--bad); }
-.proof li { font-size: 13px; }
-.obj { border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 8px 12px; margin-bottom: 6px; }
-.obj summary { cursor: pointer; font-weight: 600; font-size: 13px; }
-.obj p { margin: 8px 0 0; font-size: 13px; color: var(--muted); }
-.comp { padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); margin: 8px 0; font-size: 13px; }
-.comp-name { font-weight: 700; margin-bottom: 4px; }
-.blur { position: fixed; inset: 0; z-index: 90; backdrop-filter: blur(22px); -webkit-backdrop-filter: blur(22px); background: color-mix(in srgb, var(--bg) 55%, transparent); display: grid; place-items: center; cursor: pointer; }
-.blur-msg { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 16px 24px; border-radius: var(--radius); background: var(--panel); box-shadow: var(--shadow); color: var(--muted); }
-.blur-msg strong { color: var(--text); font-size: 16px; }
-.toast { position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 20px); opacity: 0; pointer-events: none; z-index: 100; max-width: min(560px, calc(100vw - 32px)); padding: 10px 16px; border-radius: var(--radius-sm); background: var(--text); color: var(--bg); font-weight: 600; box-shadow: var(--shadow); transition: opacity .2s, transform .2s; }
+.drawer { display: flex; flex-direction: column; width: min(620px, 100vw); height: 100%; overflow-y: auto; background: var(--bg); border-left: 1px solid var(--line); box-shadow: -12px 0 32px rgba(0, 0, 0, .1); animation: slide .18s ease-out; }
+@keyframes slide { from { transform: translateX(16px); opacity: .7; } }
+.dhead { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; padding: 22px 28px 10px; }
+.dhead h2 { margin: 2px 0 4px; font-size: 22px; }
+.dbar { position: sticky; top: 0; z-index: 1; display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 0 28px; border-bottom: 1px solid var(--line); background: var(--bg); }
+.utabs { display: flex; flex-wrap: wrap; }
+.utab { padding: 10px 12px; border: 0; border-bottom: 2px solid transparent; background: none; color: var(--muted); font: inherit; font-size: 14px; cursor: pointer; }
+.utab:first-child { padding-left: 0; }
+.utab:hover { color: var(--text); }
+.utab.on { color: var(--text); font-weight: 600; border-bottom-color: var(--text); }
+.dsec .utabs { border-bottom: 1px solid var(--line); }
+.dbody { padding: 4px 28px 12px; }
+.dsec { padding: 18px 0; border-bottom: 1px solid var(--line); }
+.dsec:last-child { border-bottom: 0; }
+.dsec h3, .ba h3 { margin-bottom: 10px; font-size: 11.5px; font-weight: 600; letter-spacing: .07em; text-transform: uppercase; color: var(--muted); }
+.dsec .rows { border-top: 0; }
+.dsec .row { font-size: 14px; }
+.oneliner { margin: 20px 0; font-size: 17px; line-height: 1.5; font-weight: 500; }
+.ba { display: grid; grid-template-columns: 1fr 1fr; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.ba > div { padding: 16px 18px 16px 0; font-size: 14px; }
+.ba > div + div { padding: 16px 0 16px 18px; border-left: 1px solid var(--line); }
+.ba p { margin: 0; }
+.track { margin: 14px 0 0; padding-left: 14px; border-left: 2px solid var(--text); font-size: 15.5px; line-height: 1.6; }
+ul.plain { padding-left: 1.1em; font-size: 14px; }
+ul.plain li { margin: 8px 0; }
+.verify { font-size: 11px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--warn); }
+details.obj { padding: 11px 0; border-bottom: 1px solid var(--line); font-size: 14px; }
+details.obj:first-of-type { border-top: 1px solid var(--line); }
+details.obj summary { cursor: pointer; font-weight: 500; }
+details.obj p { margin: 8px 0 0; color: var(--muted); }
+.comp { padding: 12px 0; font-size: 14px; }
+.comp + .comp { border-top: 1px solid var(--line); }
+.comp h4 { margin-bottom: 4px; font-size: 15px; }
+.dfoot { margin: auto 0 0; padding: 12px 28px 24px; }
+
+.blur { position: fixed; inset: 0; z-index: 90; display: grid; place-items: center; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); background: color-mix(in srgb, var(--bg) 70%, transparent); cursor: pointer; }
+.blur-msg { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 16px 28px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--bg); color: var(--muted); }
+.blur-msg strong { color: var(--text); }
+.toast { position: fixed; left: 50%; bottom: 24px; z-index: 100; max-width: min(560px, calc(100vw - 32px)); padding: 10px 16px; border-radius: 6px; background: var(--text); color: var(--bg); font-size: 14px; font-weight: 500; opacity: 0; transform: translate(-50%, 12px); pointer-events: none; transition: opacity .2s, transform .2s; }
 .toast.show { opacity: 1; transform: translate(-50%, 0); }
-.toast.good { background: var(--good); color: #fff; }
 .toast.warn { background: var(--warn); color: #fff; }
 .toast.bad { background: var(--bad); color: #fff; }
 
-/* wrap-up */
-.wrap-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; align-items: start; }
-.sticky { position: sticky; top: 16px; }
-.export { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
-pre.notes { font: 12px/1.55 var(--mono); white-space: pre-wrap; word-break: break-word; background: var(--panel-2); padding: 14px; border-radius: var(--radius-sm); max-height: 68vh; overflow: auto; margin: 0; }
-.pickrow { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border: 1px solid var(--border); border-radius: var(--radius-sm); margin-bottom: 6px; cursor: pointer; }
-.pickrow.on { border-color: var(--accent); background: var(--accent-soft); }
-.pickrow input { width: auto; }
-.pick-main { flex: 1; }
-.painrow { padding: 8px 0; border-top: 1px solid var(--border); }
-.painrow:first-of-type { border-top: 0; }
-.painrow-label { font-weight: 600; margin-bottom: 6px; }
-.mprow { padding: 8px 0; border-top: 1px solid var(--border); }
-.mprow-head { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
-.mprow-head .mp-cell { width: 30px; height: 24px; }
-.mprow-head .link { margin-left: auto; font-size: 12px; }
+/* ── wrap-up ── */
+.wrap-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, .92fr); gap: 44px; align-items: start; margin-top: 24px; }
+.wstep { padding: 22px 0; border-top: 1px solid var(--line); }
+.wstep-head { display: flex; align-items: baseline; gap: 14px; margin-bottom: 12px; }
+.wstep-head h2 { margin-bottom: 2px; }
+.wstep-head p { margin: 0; }
+.wstep-n { width: 18px; flex: none; font: 13px var(--mono); color: var(--faint); }
+.wstep-body { padding-left: 32px; }
+.wstep-body .lf { margin-top: 14px; }
+.mprow { display: flex; align-items: center; gap: 10px; }
+.mprow .mp-l { width: 30px; padding: 0 0 2px; }
+.notes-panel { position: sticky; top: 24px; padding: 20px; border: 1px solid var(--line); border-radius: var(--radius); }
+.notes-head { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 4px 12px; }
+.notes-actions { display: flex; gap: 8px; margin: 16px 0 4px; }
+.notes-more { display: flex; flex-wrap: wrap; margin: 0 0 12px -6px; }
+pre.notes { max-height: 62vh; overflow: auto; margin: 0; padding: 14px; border: 1px solid var(--line); border-radius: var(--r); background: var(--bg-soft); font: 12.5px/1.6 var(--mono); white-space: pre-wrap; word-break: break-word; }
 
-/* narrow screens: one column with tabs */
+/* ── narrow screens ── */
 @media (max-width: 900px) {
-  .interview { height: auto; min-height: 100vh; padding-bottom: 64px; }
-  .cols { grid-template-columns: 1fr; }
-  .left, .right, .center { overflow: visible; border: 0; }
-  .interview[data-mtab="q"] .left, .interview[data-mtab="q"] .right,
-  .interview[data-mtab="path"] .center, .interview[data-mtab="path"] .right,
-  .interview[data-mtab="pitch"] .left, .interview[data-mtab="pitch"] .center { display: none; }
-  .center { padding: 12px 16px 24px; }
-  .mtabs { display: flex; position: fixed; left: 0; right: 0; bottom: 0; z-index: 30; background: var(--panel); border-top: 1px solid var(--border); }
-  .mtabs button { flex: 1; padding: 14px 0; border: 0; background: none; color: var(--muted); font: inherit; font-weight: 600; }
-  .mtabs button.on { color: var(--accent); box-shadow: inset 0 2px 0 var(--accent); }
-  .ibar-right .btn.ghost:not(.on) { display: none; }
-  .qcard.active { padding: 16px; }
-  .qtext { font-size: 18px; }
-  .opts, .opts.many { grid-template-columns: 1fr; }
-  .opt kbd { display: none; }
-  .wrap-grid, .recap-grid, .ba, .pc-row { grid-template-columns: 1fr; }
-  .sticky { position: static; }
+  .interview { height: auto; min-height: 100vh; padding-bottom: 60px; }
+  .bar { padding: 10px 16px; }
+  .bar-r .tbtn { display: none; }
+  .bar-r .tbtn:first-child { display: inline-flex; }
+  .bar-meta.mono { display: none; }
+  .stepper { padding: 0 16px; }
+  .step-meta { display: none; }
+  .cols { grid-template-columns: minmax(0, 1fr); }
+  .rows > .row:not(.pick) { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+  .row.on { padding-left: 12px; }
+  .main, .side { overflow: visible; border: 0; }
+  .interview[data-mtab="q"] .side, .interview[data-mtab="pitch"] .main { display: none; }
+  .main-in { padding: 24px 16px 32px; }
+  .side { background: var(--bg); }
+  .side-in { padding: 24px 16px; }
+  .qtitle { font-size: 22px; }
+  .opts.two { grid-template-columns: 1fr; }
+  .opt-k { display: none; }
+  .mtabs { position: fixed; left: 0; right: 0; bottom: 0; z-index: 30; display: flex; border-top: 1px solid var(--line); background: var(--bg); }
+  .mtabs button { flex: 1; padding: 14px 0; border: 0; border-top: 2px solid transparent; background: none; color: var(--muted); font: inherit; font-weight: 500; }
+  .mtabs button.on { color: var(--text); border-top-color: var(--text); }
+  .fields { grid-template-columns: 1fr 1fr; }
+  .wrap-grid, .recap, .ba, .pair, .form-grid, .coach { grid-template-columns: 1fr; }
+  .ba > div + div { padding-left: 0; border-left: 0; border-top: 1px solid var(--line); }
+  .srow { grid-template-columns: 1fr; gap: 6px; }
+  .notes-panel { position: static; }
+  .home-hero h1 { font-size: 27px; }
+  .wstep-body { padding-left: 0; }
   .toast { bottom: 72px; }
 }
 
-/* print: just the notes */
+/* ── print: just the notes ── */
 @media print {
   body { background: #fff; color: #000; }
   #app > * { display: none !important; }
   #app > .page.wrap { display: block !important; padding: 0; }
-  .page.wrap .topbar, .page.wrap .wrap-left, .page.wrap .export, .page.wrap h2 { display: none !important; }
-  .page.wrap .wrap-grid { display: block; }
-  .page.wrap .panel { border: 0; box-shadow: none; padding: 0; }
-  pre.notes { max-height: none; overflow: visible; background: none; color: #000; font-size: 11px; }
+  .page.wrap > :not(.wrap-grid), .wrap-left, .notes-head, .notes-actions, .notes-more { display: none !important; }
+  .wrap-grid { display: block; margin: 0; }
+  .notes-panel { border: 0; padding: 0; }
+  pre.notes { max-height: none; overflow: visible; border: 0; background: none; color: #000; font-size: 11px; }
 }
 
 </style>
@@ -392,21 +420,21 @@ globalThis.Fivo = { VERSION: "0.1.0", BUILT: "2026-09-29", CONTENT_DATE: "Sept 2
     // Topic modules, in default order. `when` gates every question in the module
     // (ANDed with the question's own `when`). Terms are "questionId:optionId".
     modules: [
-      { id: 'why', label: 'Why now', icon: '◎' },
-      { id: 'env', label: 'Environment', icon: '▦' },
-      { id: 'vmware', label: 'VMware / Broadcom', icon: '⇄', when: { any: ['trigger:vmware', 'env.hypervisor:vsphere'] } },
-      { id: 'hardware', label: 'Hardware refresh', icon: '▤', when: { any: ['trigger:hardware', 'env.array.age:old'] } },
-      { id: 'ops', label: 'Operations & team', icon: '⚙', when: { any: ['trigger:ops', 'env.itteam:t1', 'env.itteam:t2'] } },
-      { id: 'resilience', label: 'DR & cyber', icon: '⛨', when: { any: ['trigger:resilience', 'env.backup:none', 'vmw.addons:srm', 'cloud.direction:dr'] } },
-      { id: 'cloud', label: 'Cloud direction', icon: '☁', when: { any: ['trigger:cloud', 'env.cloud:vmc', 'vmw.license:cloud'] } },
-      { id: 'storage', label: 'Files & storage', icon: '▣', when: { any: ['trigger:storage', 'res.files:lots', 'hw.what:backup', 'res.immutability:no'] } },
-      { id: 'edge', label: 'Remote sites / edge', icon: '⌖', when: { any: ['trigger:edge', 'env.sites:s6', 'env.sites:s20'] } },
-      { id: 'euc', label: 'VDI / EUC', icon: '▭', when: { any: ['trigger:euc', 'vmw.addons:horizon', 'stor.types:profiles'] } },
-      { id: 'db', label: 'Databases', icon: '⛁', when: { any: ['trigger:db'] } },
-      { id: 'k8s', label: 'Kubernetes', icon: '⎈', when: { any: ['trigger:k8s', 'vmw.addons:tanzu', 'cloud.refactor:native'] } },
-      { id: 'ai', label: 'AI initiatives', icon: '✦', when: { any: ['trigger:ai', 'stor.types:ai', 'edge.apps:ai'] } },
-      { id: 'cost', label: 'Cost & consolidation', icon: '$', when: { any: ['trigger:cost'] } },
-      { id: 'decision', label: 'Decision (MEDDPICC)', icon: '✓' },
+      { id: 'why', label: 'Why now', desc: 'The trigger and the date driving it' },
+      { id: 'env', label: 'Environment', desc: 'Team, hypervisor, storage, backup, cloud' },
+      { id: 'vmware', label: 'VMware', desc: 'Renewal, licensing, NSX, migration worries', when: { any: ['trigger:vmware', 'env.hypervisor:vsphere'] } },
+      { id: 'hardware', label: 'Hardware', desc: 'Servers or storage reaching end of life', when: { any: ['trigger:hardware', 'env.array.age:old'] } },
+      { id: 'ops', label: 'Operations', desc: 'Upgrades, tool sprawl, day-to-day toil', when: { any: ['trigger:ops', 'env.itteam:t1', 'env.itteam:t2'] } },
+      { id: 'resilience', label: 'DR & cyber', desc: 'Backup, disaster recovery, ransomware, audits', when: { any: ['trigger:resilience', 'env.backup:none', 'vmw.addons:srm', 'cloud.direction:dr'] } },
+      { id: 'cloud', label: 'Cloud', desc: 'Datacenter exit, cloud costs, hybrid plans', when: { any: ['trigger:cloud', 'env.cloud:vmc', 'vmw.license:cloud'] } },
+      { id: 'storage', label: 'Storage', desc: 'File servers, NAS, backup targets', when: { any: ['trigger:storage', 'res.files:lots', 'hw.what:backup', 'res.immutability:no'] } },
+      { id: 'edge', label: 'Remote sites', desc: 'Branches and sites without IT staff', when: { any: ['trigger:edge', 'env.sites:s6', 'env.sites:s20'] } },
+      { id: 'euc', label: 'VDI', desc: 'Citrix or Horizon desktops', when: { any: ['trigger:euc', 'vmw.addons:horizon', 'stor.types:profiles'] } },
+      { id: 'db', label: 'Databases', desc: 'Provisioning, cloning, patching, DBA workload', when: { any: ['trigger:db'] } },
+      { id: 'k8s', label: 'Kubernetes', desc: 'Containers and platform engineering', when: { any: ['trigger:k8s', 'vmw.addons:tanzu', 'cloud.refactor:native'] } },
+      { id: 'ai', label: 'AI', desc: 'GenAI pilots, GPUs, data sensitivity, governance', when: { any: ['trigger:ai', 'stor.types:ai', 'edge.apps:ai'] } },
+      { id: 'cost', label: 'Cost', desc: 'Savings targets and consolidation', when: { any: ['trigger:cost'] } },
+      { id: 'decision', label: 'Decision', desc: 'Buyer, criteria, process, competition, next step' },
     ],
 
     // Which module each "why now" trigger opens (ranked order drives topic order).
@@ -2778,9 +2806,18 @@ globalThis.Fivo = { VERSION: "0.1.0", BUILT: "2026-09-29", CONTENT_DATE: "Sept 2
     return new Date(ts).toLocaleDateString();
   };
 
+  // Per-browser preferences; kept in memory too, so they hold for the session even
+  // when the browser blocks storage.
+  const memPrefs = {};
   const prefs = {
-    get(k, d) { try { const p = JSON.parse(localStorage.getItem('fivo.prefs') || '{}'); return k in p ? p[k] : d; } catch (e) { return d; } },
-    set(k, v) { try { const p = JSON.parse(localStorage.getItem('fivo.prefs') || '{}'); p[k] = v; localStorage.setItem('fivo.prefs', JSON.stringify(p)); } catch (e) { /* ignore */ } },
+    get(k, d) {
+      if (k in memPrefs) return memPrefs[k];
+      try { const p = JSON.parse(localStorage.getItem('fivo.prefs') || '{}'); return k in p ? p[k] : d; } catch (e) { return d; }
+    },
+    set(k, v) {
+      memPrefs[k] = v;
+      try { const p = JSON.parse(localStorage.getItem('fivo.prefs') || '{}'); p[k] = v; localStorage.setItem('fivo.prefs', JSON.stringify(p)); } catch (e) { /* memory only */ }
+    },
   };
 
   F.dom = { h, append, toast, copy, download, slug, pct, fmtTime, ago, prefs };
@@ -2801,13 +2838,17 @@ globalThis.Fivo = { VERSION: "0.1.0", BUILT: "2026-09-29", CONTENT_DATE: "Sept 2
     ui: {
       screen: 'home',
       focusModule: null, pinned: null, active: null,
+      topic: null,          // topic review open in the main column
+      addTopic: false,      // "customer raised another topic" picker
       coaching: prefs.get('coaching', true),
+      coachOpen: false,     // listening tips expanded
       blur: false, help: false,
       search: null, searchIdx: 0,
-      drawer: null, drawerTab: null,
+      drawer: null, drawerTab: null, pitchTab: 'pitch',
+      showAll: false, setupMore: false,
       mtab: 'q',
-      undo: null, openQuote: {},
-      prevConf: {}, rankDelta: {}, unlocked: {}, prevCluster: [],
+      undo: null, openQuote: {}, openNote: {},
+      prevConf: {}, rankDelta: {}, unlocked: {}, prevActive: null, resetMain: false,
     },
   };
 
@@ -2829,7 +2870,7 @@ globalThis.Fivo = { VERSION: "0.1.0", BUILT: "2026-09-29", CONTENT_DATE: "Sept 2
 
   app.open = function (s, screen) {
     app.s = s;
-    Object.assign(app.ui, { focusModule: null, pinned: null, active: null, drawer: null, search: null, undo: null, rankDelta: {}, unlocked: {}, prevConf: {}, prevCluster: [] });
+    Object.assign(app.ui, { nudged: false, held: null, focusModule: null, pinned: null, active: null, topic: null, addTopic: false, drawer: null, search: null, undo: null, rankDelta: {}, unlocked: {}, prevConf: {}, prevActive: null, openQuote: {}, openNote: {} });
     app.recompute();
     app.go(screen);
   };
@@ -2843,6 +2884,8 @@ globalThis.Fivo = { VERSION: "0.1.0", BUILT: "2026-09-29", CONTENT_DATE: "Sept 2
     app.recompute();
     app.render();
     window.scrollTo(0, 0);
+    const af = document.querySelector('[autofocus]');
+    if (af && (!document.activeElement || document.activeElement === document.body)) af.focus();
   };
 
   // Mutate the session, recompute, announce what changed, re-render.
@@ -2883,7 +2926,7 @@ globalThis.Fivo = { VERSION: "0.1.0", BUILT: "2026-09-29", CONTENT_DATE: "Sept 2
     after.scores.list.filter((r) => r.ready && !before.scores.byId[r.id].ready).forEach((r) => {
       msgs.push(`Pitch ready: ${r.play.short}${r.variant ? ' → ' + r.variant.name : ''}`);
     });
-    if (msgs.length) toast(msgs.join(' · '), 'good');
+    if (msgs.length) toast(msgs.join(' · '));
   }
 
   // ── answer actions ──
@@ -2891,6 +2934,7 @@ globalThis.Fivo = { VERSION: "0.1.0", BUILT: "2026-09-29", CONTENT_DATE: "Sept 2
     app.ui.undo = { qid, prev: app.s.answers[qid] ? JSON.parse(JSON.stringify(app.s.answers[qid])) : null, prevLast: app.s.lastAnswered };
   }
   function release(qid) {
+    if (app.ui.held === qid) app.ui.held = null;
     if (app.ui.pinned === qid) app.ui.pinned = null;
     if (app.ui.active === qid) app.ui.active = null;
   }
@@ -2902,7 +2946,7 @@ globalThis.Fivo = { VERSION: "0.1.0", BUILT: "2026-09-29", CONTENT_DATE: "Sept 2
       snapshot(qid);
       app.act((s) => {
         F.state.selectOption(s, qid, optId);
-        if (hold) { app.ui.pinned = qid; app.ui.active = qid; } else release(qid);
+        if (hold) { app.ui.pinned = qid; app.ui.active = qid; app.ui.held = qid; } else release(qid);
       }, { answer: true });
     } else {
       app.ui.active = qid;
@@ -2934,8 +2978,10 @@ globalThis.Fivo = { VERSION: "0.1.0", BUILT: "2026-09-29", CONTENT_DATE: "Sept 2
     }, { answer: true });
   };
   app.pin = function (qid) {
+    app.ui.held = null;
     app.ui.pinned = qid;
     app.ui.active = qid;
+    app.ui.topic = null;
     app.ui.mtab = 'q';
     app.ui.search = null;
     app.recompute();
@@ -2943,6 +2989,7 @@ globalThis.Fivo = { VERSION: "0.1.0", BUILT: "2026-09-29", CONTENT_DATE: "Sept 2
   };
   app.focusModule = function (mid) {
     app.ui.focusModule = app.ui.focusModule === mid ? null : mid;
+    app.ui.topic = null;
     app.ui.pinned = null;
     app.ui.active = null;
     app.ui.mtab = 'q';
@@ -2962,6 +3009,9 @@ globalThis.Fivo = { VERSION: "0.1.0", BUILT: "2026-09-29", CONTENT_DATE: "Sept 2
       a.call = s.calls.length;
       app.ui.focusModule = mid;
       app.ui.pinned = null;
+      app.ui.active = null;
+      app.ui.topic = null;
+      app.ui.addTopic = false;
       app.ui.search = null;
     }, { answer: true });
   };
@@ -2986,6 +3036,7 @@ globalThis.Fivo = { VERSION: "0.1.0", BUILT: "2026-09-29", CONTENT_DATE: "Sept 2
     if (app.ui.screen === 'interview') {
       if (app.ui.drawer && F.screens.drawer) root.appendChild(F.screens.drawer());
       if (app.ui.search !== null && F.screens.search) root.appendChild(F.screens.search());
+      if (app.ui.addTopic && F.screens.addTopic) root.appendChild(F.screens.addTopic());
     }
     if (app.ui.help && F.screens.help) root.appendChild(F.screens.help());
     if (app.ui.blur && F.screens.blur) root.appendChild(F.screens.blur());
@@ -2993,6 +3044,13 @@ globalThis.Fivo = { VERSION: "0.1.0", BUILT: "2026-09-29", CONTENT_DATE: "Sept 2
     root.querySelectorAll('[data-scroll]').forEach((el) => {
       if (scrolls[el.dataset.scroll]) el.scrollTop = scrolls[el.dataset.scroll];
     });
+    // A new question starts at the top of the column.
+    if (app.ui.resetMain) {
+      app.ui.resetMain = false;
+      const main = root.querySelector('[data-scroll="main"]');
+      if (main) main.scrollTop = 0;
+      if (window.innerWidth <= 900) window.scrollTo(0, 0);
+    }
     if (window.scrollY !== winY) window.scrollTo(0, winY);
     if (key) {
       const el = root.querySelector(`[data-key="${CSS.escape(key)}"]`);
@@ -3009,7 +3067,7 @@ globalThis.Fivo = { VERSION: "0.1.0", BUILT: "2026-09-29", CONTENT_DATE: "Sept 2
 
 
 /* ── src/ui/home.js ── */
-/* Fiv-o UI: home (sessions), call setup, and the second-call recap. */
+/* Fiv-o UI: home (saved sessions), call setup, and the second-call recap. */
 (function (F) {
   'use strict';
 
@@ -3026,19 +3084,21 @@ globalThis.Fivo = { VERSION: "0.1.0", BUILT: "2026-09-29", CONTENT_DATE: "Sept 2
           const s = F.state.importJSON(await file.text());
           if (F.state.get(s.id) && !confirm(`Replace the saved copy of “${s.setup.account || 'this session'}” with the imported file?`)) return;
           F.state.save(s);
-          toast(`Imported ${s.setup.account || 'session'}`, 'good');
+          toast(`Imported ${s.setup.account || 'session'}`);
           app.render();
         } catch (err) {
           toast(`Import failed: ${err.message}`, 'bad');
         }
       },
     });
-    return h('label.btn', input, 'Import session (.json)');
+    return h('label.tbtn', { title: 'Open a session you saved as .json' }, input, 'Import a saved session');
   }
 
   function newSession() {
+    app.ui.setupMore = false;
     app.open(F.state.newSession({ se: prefs.get('se', '') }), 'setup');
   }
+  F.screens.newSession = newSession;
 
   F.screens.home = function () {
     const sessions = F.state.list();
@@ -3049,47 +3109,47 @@ globalThis.Fivo = { VERSION: "0.1.0", BUILT: "2026-09-29", CONTENT_DATE: "Sept 2
       return h('div.srow',
         h('div.srow-main',
           h('div.srow-title', s.setup.account || 'Untitled account'),
-          h('div.srow-sub',
-            `Call ${s.calls.length} · ${s.calls[s.calls.length - 1].date} · updated ${ago(s.updatedAt)}`,
-            top ? h('span.pill.accent', `${top.play.short}${top.variant ? ' → ' + top.variant.name : ''} · ${pct(top.conf)}`) : null)),
+          h('div.srow-sub', `Call ${s.calls.length} · ${s.calls[s.calls.length - 1].date} · updated ${ago(s.updatedAt)}`)),
+        h('div.srow-pitch', top ? [h('span', top.play.short + (top.variant ? ` · ${top.variant.name}` : '')), h('span.muted.mono', ` ${pct(top.conf)}`)] : h('span.muted', 'No pitch yet')),
         h('div.srow-actions',
-          h('button.btn.primary', { onclick: () => app.open(F.state.get(s.id), 'interview') }, 'Continue'),
-          h('button.btn', {
+          h('button.btn', { onclick: () => app.open(F.state.get(s.id), 'interview') }, 'Continue'),
+          h('button.tbtn', {
             title: 'Start the next call with a recap of what you learned',
             onclick: () => { const x = F.state.startNextCall(F.state.get(s.id)); F.state.save(x); app.open(x, 'recap'); },
           }, `Start call ${s.calls.length + 1}`),
-          h('button.btn.ghost', { onclick: () => download(`fivo-${slug(s.setup.account)}.json`, F.state.exportJSON(s), 'application/json') }, 'Export'),
-          h('button.btn.ghost.danger', {
+          h('button.tbtn', { onclick: () => download(`fivo-${slug(s.setup.account)}.json`, F.state.exportJSON(s), 'application/json') }, 'Export'),
+          h('button.tbtn.danger', {
             onclick: () => { if (confirm(`Delete “${s.setup.account || 'this session'}” from this browser? Export it first if you want a copy.`)) { F.state.remove(s.id); app.render(); } },
           }, 'Delete')));
     });
 
     return h('div.page.home',
-      h('header.hero',
-        h('div.brand', h('span.logo', 'Fiv-o'), h('span.brand-tag', 'Discovery Navigator'),
-          h('button.btn.ghost.sm', { onclick: () => F.ui.toggleTheme(), title: 'Light / dark', style: { marginLeft: 'auto' } }, '◐ Theme')),
-        h('p.lede', 'Run discovery on a live call: it suggests the next question to ask, narrows to a Nutanix pitch as you go, and gives you CRM-ready notes at the end.'),
-        h('div.row',
-          h('button.btn.primary.lg', { onclick: newSession }, 'Start new discovery'),
+      h('header.home-head',
+        h('span.wordmark.lg', 'Fiv-o'),
+        h('span.muted', 'Discovery Navigator'),
+        h('button.tbtn.small', { onclick: () => F.ui.toggleTheme(), style: { marginLeft: 'auto' } }, 'Light / dark')),
+      h('section.home-hero',
+        h('h1', 'Run the discovery call. Fiv-o keeps track.'),
+        h('p.lede', 'Ask the question on screen and click what they say. It suggests what to ask next, narrows to the Nutanix pitch that fits, and writes your CRM notes at the end.'),
+        h('div.hstack',
+          h('button.btn.primary.lg', { onclick: newSession }, 'Start a new discovery'),
           importButton())),
-      h('section.panel',
-        h('h2', 'Saved sessions'),
-        rows.length ? h('div.slist', rows) : h('p.muted', 'Nothing saved yet. Sessions autosave in this browser; export a .json to move one to another machine.')),
-      h('section.how',
-        [
-          ['1', 'Set up in 30 seconds', 'Account, who’s on the call, partner. Attendee roles tailor the talk tracks.'],
-          ['2', 'Ask, click, listen', 'Three questions on screen. Each answer reorders what comes next and updates the Pitch Radar.'],
-          ['3', 'Wrap up', 'Confirm the play, fill MEDDPICC gaps, and copy notes into Salesforce.'],
-        ].map(([n, t, p]) => h('div.how-step', h('span.how-n', n), h('div', h('strong', t), h('p', p))))),
+      rows.length
+        ? h('section.home-sec', h('h2', 'Saved sessions'), h('div.slist', rows))
+        : h('section.home-sec',
+          h('h2', 'How it works'),
+          h('ol.steps-list',
+            h('li', h('strong', 'Set up in 30 seconds. '), 'Account and who’s on the call. Their roles decide which talk tracks you see.'),
+            h('li', h('strong', 'Ask and click. '), 'One question at a time. Each answer decides what comes next and updates the likely pitch.'),
+            h('li', h('strong', 'Wrap up. '), 'Confirm the pitch, fill any MEDDPICC gaps, and copy the notes into Salesforce.'))),
       h('footer.foot',
         h('p', `Pitch content comes from public Nutanix sources as of ${F.CONTENT_DATE || 'Sept 2026'}. Check proof points marked “verify” against internal enablement before quoting them.`),
-        h('p', 'Everything stays in this browser. Nothing is sent anywhere. Press ? on any screen for keyboard shortcuts.')));
+        h('p', 'Everything stays in this browser — nothing is sent anywhere. Sessions save automatically; export one to move it to another machine.')));
   };
-
-  F.screens.newSession = newSession;
 
   F.screens.setup = function () {
     const su = app.s.setup;
+    const ui = app.ui;
     const input = (label, key, attrs) => h('label.field',
       h('span.field-label', label),
       h('input', Object.assign({ value: su[key] || '', 'data-key': `setup.${key}`, oninput: (e) => app.soft((s) => { s.setup[key] = e.target.value; }) }, attrs || {})));
@@ -3100,38 +3160,47 @@ globalThis.Fivo = { VERSION: "0.1.0", BUILT: "2026-09-29", CONTENT_DATE: "Sept 2
         options.map((o) => h('option', { value: o, selected: su[key] === o ? 'selected' : null }, o))));
 
     const start = () => {
-      if (!su.account.trim()) { toast('Add the account name first', 'warn'); document.querySelector('[data-key="setup.account"]').focus(); return; }
+      if (!su.account.trim()) {
+        toast('Add the account name first', 'warn');
+        const el = document.querySelector('[data-key="setup.account"]');
+        if (el) el.focus();
+        return;
+      }
       prefs.set('se', su.se || '');
       app.go('interview');
     };
 
     return h('div.page.setup',
-      h('div.topbar', h('button.btn.ghost', { onclick: () => app.go('home') }, '← Home'), h('span.muted', `Call ${app.s.calls.length} setup`)),
-      h('section.panel',
-        h('h1', 'Who are we talking to?'),
-        h('div.form-grid',
-          input('Account *', 'account', { placeholder: 'Acme Corp', autofocus: true }),
-          input('Opportunity', 'opp', { placeholder: 'Optional' }),
-          input('Your name (SE)', 'se', {}),
-          input('Partner / VAR', 'partner', { placeholder: 'e.g., CDW, SHI, WWT' }),
-          select('Industry', 'industry', F.meta.industries),
-          select('Segment', 'segment', F.meta.segments)),
+      h('div.topbar', h('button.tbtn', { onclick: () => app.go('home') }, '← Home')),
+      h('h1', app.s.calls.length > 1 ? `Call ${app.s.calls.length} setup` : 'New discovery'),
+      h('p.muted', 'Only the account is required. You can fill in the rest later.'),
+      h('div.form',
+        input('Account', 'account', { placeholder: 'e.g., Acme Credit Union', autofocus: true, onkeydown: (e) => { if (e.key === 'Enter') start(); } }),
+        input('Partner / reseller', 'partner', { placeholder: 'e.g., CDW, SHI, WWT' }),
         h('div.field',
-          h('span.field-label', 'Who’s on the call? (tailors the talk tracks)'),
-          h('div.chips', F.meta.personas.map((p) => {
+          h('span.field-label', 'Who’s on the call?'),
+          h('div.toggles', F.meta.personas.map((p) => {
             const on = su.attendees.includes(p.id);
-            return h('button.chip' + (on ? '.on' : ''), {
+            return h('button.toggle' + (on ? '.on' : ''), {
               'aria-pressed': on ? 'true' : 'false',
               onclick: () => app.act((s) => {
                 const i = s.setup.attendees.indexOf(p.id);
                 if (i >= 0) s.setup.attendees.splice(i, 1); else s.setup.attendees.push(p.id);
               }),
             }, p.label);
-          }))),
-        h('label.field',
-          h('span.field-label', 'Names & titles (optional)'),
-          h('textarea', { rows: 2, 'data-key': 'setup.contacts', placeholder: 'Jane Smith – IT Director; Raj – Sysadmin', oninput: (e) => app.soft((s) => { s.setup.contacts = e.target.value; }) }, su.contacts || '')),
-        h('div.row.end', h('button.btn.primary.lg', { onclick: start }, 'Start the call →'))));
+          })),
+          h('span.field-hint', 'Decides which talk tracks you see first on the pitch card.')),
+        h('details.more', { open: ui.setupMore ? true : null, ontoggle: (e) => { ui.setupMore = e.target.open; } },
+          h('summary', 'More details (optional)'),
+          h('div.form-grid',
+            input('Opportunity', 'opp', {}),
+            input('Your name', 'se', {}),
+            select('Industry', 'industry', F.meta.industries),
+            select('Segment', 'segment', F.meta.segments)),
+          h('label.field',
+            h('span.field-label', 'Names and titles'),
+            h('textarea', { rows: 2, 'data-key': 'setup.contacts', placeholder: 'Jane Smith – IT Director; Raj – Sysadmin', oninput: (e) => app.soft((s) => { s.setup.contacts = e.target.value; }) }, su.contacts || ''))),
+        h('div.form-foot', h('button.btn.primary.lg', { onclick: start }, 'Start the call'))));
   };
 
   F.screens.recap = function () {
@@ -3141,46 +3210,47 @@ globalThis.Fivo = { VERSION: "0.1.0", BUILT: "2026-09-29", CONTENT_DATE: "Sept 2
     const plays = d.scores.list.filter((r) => r.score > 0).slice(0, 3);
     const confirmed = s.recap.confirmed || (s.recap.confirmed = {});
     return h('div.page.recap',
-      h('div.topbar', h('button.btn.ghost', { onclick: () => app.go('home') }, '← Home'), h('span.muted', `${s.setup.account} · recap before call ${n}`)),
-      h('section.panel',
-        h('h1', `Recap & confirm — call ${n}`),
-        h('p.muted', 'Open with what you heard last time. Confirming pains out loud builds trust and catches anything that has changed.'),
-        h('div.recap-grid',
-          h('div',
-            h('h3', 'Where we landed'),
-            plays.length ? plays.map((r) => h('div.recap-play',
-              h('strong', r.play.name), r.variant ? h('span.muted', ` → ${r.variant.name}`) : null, h('span.pill', pct(r.conf)))) : h('p.muted', 'No play yet.'),
-            h('h3', 'Agreed next step last time'),
-            h('p', s.recap.prevNextStep || h('span.muted', 'None recorded')),
-            s.recap.prevNextSteps ? h('pre.small', s.recap.prevNextSteps) : null,
-            d.quotes.length ? [h('h3', 'In their words'), d.quotes.map((x) => h('blockquote', `“${x.text}”`))] : null),
-          h('div',
-            h('h3', 'Pains to confirm'),
-            d.pains.length ? d.pains.map((p) => {
-              const k = `${p.qid}:${p.opt}`;
-              return h('label.check',
-                h('input', { type: 'checkbox', checked: !!confirmed[k], onchange: (e) => app.act((x) => { x.recap.confirmed[k] = e.target.checked; }) }),
-                h('span', p.label, p.impact ? h('span.muted', ` — ${p.impact}`) : null));
-            }) : h('p.muted', 'No pains captured yet — make finding them the goal of this call.'),
-            h('h3', 'Agenda: open questions'),
-            h('ol.agenda', d.gaps.slice(0, 8).map((id) => h('li', F.questionById[id].text))))),
-        h('div.row.end', h('button.btn.primary.lg', { onclick: () => app.go('interview') }, `Start call ${n} →`))));
+      h('div.topbar', h('button.tbtn', { onclick: () => app.go('home') }, '← Home')),
+      h('h1', `${s.setup.account} — before call ${n}`),
+      h('p.muted', 'Open the call with what you heard last time. Confirming pains out loud builds trust and catches anything that has changed.'),
+      h('div.recap',
+        h('section.home-sec',
+          h('h2', 'Where you landed'),
+          plays.length ? h('div.rows', plays.map((r) => h('div.row.static',
+            h('span.row-q', r.play.name, r.variant ? h('span.muted', ` · ${r.variant.name}`) : null),
+            h('span.row-a.mono', pct(r.conf))))) : h('p.muted', 'No pitch yet.'),
+          h('h2.mt', 'Agreed next step'),
+          h('p', s.recap.prevNextStep || h('span.muted', 'None recorded')),
+          s.recap.prevNextSteps ? h('pre.small', s.recap.prevNextSteps) : null,
+          d.quotes.length ? [h('h2.mt', 'In their words'), d.quotes.map((x) => h('blockquote', `“${x.text}”`))] : null),
+        h('section.home-sec',
+          h('h2', 'Pains to confirm'),
+          d.pains.length ? d.pains.map((p) => {
+            const k = `${p.qid}:${p.opt}`;
+            return h('label.check',
+              h('input', { type: 'checkbox', checked: !!confirmed[k], onchange: (e) => app.act((x) => { x.recap.confirmed[k] = e.target.checked; }) }),
+              h('span', p.label, p.impact ? h('span.muted', ` — ${p.impact}`) : null));
+          }) : h('p.muted', 'No pains captured yet — make finding them the goal of this call.'),
+          h('h2.mt', 'Agenda: open questions'),
+          h('ol', d.gaps.slice(0, 8).map((id) => h('li', F.questionById[id].text))))),
+      h('div.form-foot', h('button.btn.primary.lg', { onclick: () => app.go('interview') }, `Start call ${n}`)));
   };
 })(globalThis.Fivo = globalThis.Fivo || {});
 
 
 /* ── src/ui/interview.js ── */
-/* Fiv-o UI: the live-call screen — header, path map, question cluster, search, overlays. */
+/* Fiv-o UI: the live-call screen.
+   Layout: top bar · topic steps · one focused question (+ "up next") · likely pitch on the side. */
 (function (F) {
   'use strict';
 
-  const { h } = F.dom;
+  const { h, prefs } = F.dom;
   const app = F.app;
   const MOD = Object.fromEntries(F.meta.modules.map((m) => [m.id, m]));
   const KEYS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'];
   F.ui = F.ui || {};
 
-  // Current question + next two. A pinned question (from search / path map) goes first.
+  // The focused question + the next two. A pinned question (from search / topic review) goes first.
   function cluster() {
     const { d, ui } = app;
     const ids = [];
@@ -3193,295 +3263,373 @@ globalThis.Fivo = { VERSION: "0.1.0", BUILT: "2026-09-29", CONTENT_DATE: "Sept 2
   }
   const activeOf = (ids) => (app.ui.active && ids.includes(app.ui.active) ? app.ui.active : ids[0] || null);
   F.ui.cluster = cluster;
-  F.ui.activeId = () => activeOf(cluster());
+  F.ui.activeId = () => (app.ui.topic ? null : activeOf(cluster()));
 
-  // Human-readable "appears when…" for a locked question.
+  // Human-readable "appears when…" for a question that isn't in play yet.
   function requirement(q) {
     const terms = [];
     [MOD[q.module].when, q.when].forEach((c) => (c && c.any ? c.any : []).forEach((t) => {
       const [qid, opt] = t.split(':');
       const src = F.questionById[qid];
       const o = src && (src.options || []).find((x) => x.id === opt);
-      terms.push(`${src ? src.short : qid} = ${o ? o.label : opt}`);
+      terms.push(`${src ? src.short : qid} is “${o ? o.label : opt}”`);
     }));
     return terms.join(' or ');
   }
 
-  // Answering a pain, flagged, or coached option keeps the card open so you see the follow-up.
+  // Answering a pain, risk, or coached option keeps the question open for the follow-up.
   F.ui.shouldHold = function (q, optId) {
     const o = (q.options || []).find((x) => x.id === optId);
     return !!(o && (o.pain || o.flag || (o.tip && app.ui.coaching)));
   };
-
-  // ── header ──
-  function header() {
-    const s = app.s;
-    const d = app.d;
-    const mustLeft = d.mustLeft;
-    return h('header.ibar',
-      h('div.ibar-left',
-        h('button.logo-btn', { onclick: () => app.go('home'), title: 'Home' }, 'Fiv-o'),
-        h('span.ibar-acct', s.setup.account || 'Account'),
-        h('span.pill', `Call ${s.calls.length}`),
-        h('span.pill.mono', { id: 'timer', title: 'Time on this call' }, '0:00'),
-        h('span.pill' + (mustLeft ? '.warn' : '.good'), { title: 'Must-ask questions still open for the topics in play' },
-          mustLeft ? `${mustLeft} must-ask${mustLeft > 1 ? 's' : ''} left` : 'Must-asks covered')),
-      h('div.ibar-right',
-        h('button.btn.ghost', { onclick: F.ui.openSearch, title: 'Search questions (/)' }, 'Search', h('kbd', '/')),
-        h('button.btn.ghost' + (app.ui.coaching ? '.on' : ''), { onclick: () => app.setPref('coaching', !app.ui.coaching), title: 'Coaching hints (C)', 'aria-pressed': app.ui.coaching ? 'true' : 'false' }, 'Coaching'),
-        h('button.btn.ghost', { onclick: () => { app.ui.blur = true; app.render(); }, title: 'Privacy blur (Esc)' }, 'Blur'),
-        h('button.btn.ghost', { onclick: () => { app.ui.help = true; app.render(); }, title: 'Keyboard shortcuts (?)' }, '?'),
-        h('button.btn.ghost', { onclick: () => F.ui.toggleTheme(), title: 'Light / dark' }, '◐'),
-        h('button.btn.primary', { onclick: () => app.go('wrap'), title: 'Wrap up (W)' }, 'Wrap up →')));
-  }
-
-  // ── left: path map ──
-  function pathMap() {
-    const { d, s, ui } = app;
-    const firstMod = d.queue[0] ? F.questionById[d.queue[0]].module : null;
-    const mods = d.modules.map((mid) => {
-      const m = MOD[mid];
-      const p = d.progress[mid];
-      const qs = F.questions.filter((q) => q.module === mid && (d.valid[q.id] || d.stale[q.id] || (s.answers[q.id] && s.answers[q.id].skipped)));
-      const state = p.eligible && p.answered === p.eligible ? 'done' : p.answered ? 'partial' : 'todo';
-      const isFocus = ui.focusModule === mid;
-      const isCurrent = !ui.focusModule && firstMod === mid;
-      const fresh = ui.unlocked[mid] && Date.now() - ui.unlocked[mid] < 90000;
-      return h(`div.pm-mod.${state}` + (isFocus ? '.focus' : '') + (isCurrent ? '.current' : ''),
-        h('button.pm-head', { onclick: () => app.focusModule(mid), title: isFocus ? 'Clear focus' : 'Focus this topic — its questions come first' },
-          h('span.pm-icon', m.icon),
-          h('span.pm-label', m.label),
-          fresh ? h('span.pill.accent.tiny', 'new') : null,
-          h('span.pm-count', `${p.answered}/${p.eligible}`)),
-        qs.length ? h('div.pm-answers', qs.map((q) => {
-          const a = s.answers[q.id];
-          const stale = d.stale[q.id];
-          const skipped = a.skipped && !F.hasValue(q, a);
-          return h('button.pm-ans' + (stale ? '.stale' : '') + (skipped ? '.skipped' : '') + (ui.pinned === q.id ? '.pinned' : ''), {
-            onclick: () => app.pin(q.id),
-            title: stale ? 'No longer applies — an earlier answer changed. Click to review.' : 'Click to edit',
-          },
-          h('span.pm-q', q.short),
-          h('span.pm-a', stale ? '⚠ ' : '', skipped ? 'skipped' : F.answerText(q, a)));
-        })) : null);
-    });
-
-    const locked = F.meta.modules.filter((m) => !d.modules.includes(m.id) && Object.values(F.meta.triggerModule).includes(m.id));
-    const more = locked.length ? h('details.pm-more', { open: ui.moreOpen ? true : null, ontoggle: (e) => { ui.moreOpen = e.target.open; } },
-      h('summary', `Customer raised another topic? (${locked.length})`),
-      locked.map((m) => h('button.pm-lock', { onclick: () => app.unlockModule(m.id), title: 'Adds it to “why now” and opens its questions' },
-        h('span.pm-icon', m.icon), h('span.pm-label', m.label), h('span.pm-add', '+ add')))) : null;
-
-    const mp = d.mp;
-    const meter = h('div.mp',
-      h('div.mp-title', h('span', 'MEDDPICC'), h('span.muted', `${mp.total}/${mp.max}`)),
-      h('div.mp-grid', mp.letters.map((l) => h(`div.mp-cell.l${l.level}`, { title: `${l.label}: ${l.items.length ? l.items.join('; ') : 'gap'}` }, l.k))));
-
-    return h('nav.pathmap', { 'aria-label': 'Discovery path' }, h('div.col-title', 'Path'), mods, more, meter);
-  }
-
-  // ── center: question cards ──
-  function options(q, a, isActive) {
-    const sel = F.selected(q, a);
-    return h('div.opts' + (q.options.length > 6 ? '.many' : ''), q.options.map((o, i) => {
-      const on = sel.includes(o.id);
-      const rank = q.ranked && on ? sel.indexOf(o.id) + 1 : null;
-      return h('button.opt' + (on ? '.on' : ''), {
-        'aria-pressed': on ? 'true' : 'false',
-        onclick: (e) => { e.stopPropagation(); F.ui.pick(q.id, o.id); },
-      },
-      isActive && i < KEYS.length ? h('kbd', KEYS[i]) : null,
-      h('span.opt-label', o.label),
-      rank ? h('span.rank', `#${rank}`) : null,
-      o.pain && isActive ? h('span.pain-dot', { title: 'Pain signal — you’ll be asked for impact and metric' }) : null);
-    }));
-  }
-
   F.ui.pick = function (qid, optId) {
     const q = F.questionById[qid];
     app.choose(qid, optId, q.type === 'single' && F.ui.shouldHold(q, optId));
   };
 
-  function card(qid, isActive, isNew, idx) {
-    const q = F.questionById[qid];
-    const { s, d, ui } = app;
-    const a = s.answers[qid];
-    const sel = F.selected(q, a);
-    const answered = F.isAnswered(q, a);
-    const stale = d.stale[qid];
-    const locked = !d.eligible[qid];
-    const pinned = ui.pinned === qid;
+  const lockedTopics = () => F.meta.modules.filter((m) => !app.d.modules.includes(m.id) && Object.values(F.meta.triggerModule).includes(m.id));
 
-    const head = h('div.qhead',
-      h('span.qmod', `${MOD[q.module].icon} ${MOD[q.module].label}`),
-      q.mustAsk ? h('span.pill.tiny', 'must-ask') : null,
-      d.split[qid] ? h('span.pill.accent.tiny', { title: 'Answering this separates the leading options' }, `⚡ Splits ${d.split[qid]}`) : null,
-      pinned && answered ? h('span.pill.tiny', 'editing') : null,
-      !isActive ? h('span.qnext', idx === 1 ? 'up next' : 'queued') : null);
-
-    const body = [];
-    if (q.type === 'single' || q.type === 'multi') body.push(options(q, a, isActive));
-    if (q.type === 'multi' && q.ranked && isActive) body.push(h('p.hint', 'Click in priority order — the first pick weighs most and sets the topic order.'));
-    if (q.type === 'fields') {
-      body.push(h('div.fields', q.fields.map((f) => h('label.mini',
-        h('span', f.label.charAt(0).toUpperCase() + f.label.slice(1) + (f.unit ? ` (${f.unit})` : '')),
-        h('input', {
-          inputmode: 'numeric', value: (a && a.value && a.value[f.id]) || '', 'data-key': `f.${q.id}.${f.id}`,
-          oninput: (e) => app.soft((x) => F.state.setField(x, q.id, f.id, e.target.value)),
-          onkeydown: (e) => { if (e.key === 'Enter') { e.preventDefault(); e.stopPropagation(); app.done(q.id); } },
-        })))));
-    }
-    if (q.type === 'text') {
-      body.push(h('textarea.qtextarea', {
-        rows: 2, 'data-key': `t.${q.id}`, placeholder: 'Type their answer…',
-        oninput: (e) => app.soft((x) => F.state.setText(x, q.id, e.target.value)),
-        onkeydown: (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); e.stopPropagation(); app.done(q.id); } },
-      }, (a && a.value) || ''));
-    }
-
-    if (isActive) {
-      // Coaching responses and landmines for what they just said.
-      const selOpts = sel.map((id) => q.options.find((o) => o.id === id)).filter(Boolean);
-      selOpts.filter((o) => o.flag).forEach((o) => body.push(h('div.flagline', h('span.tip-k.bad', 'Risk'), o.flag)));
-      if (ui.coaching) selOpts.filter((o) => o.tip).forEach((o) => body.push(h('div.tip', h('span.tip-k', 'Coach'), o.tip)));
-
-      // Pain chain: impact + metric for each selected pain.
-      selOpts.filter((o) => o.pain).forEach((o) => {
-        const p = (a.pains && a.pains[o.id]) || {};
-        body.push(h('div.painchain',
-          h('div.pc-title', h('span.tip-k.warn', 'Pain'), o.painLabel || `${q.short}: ${o.label}`),
-          h('div.pc-row',
-            h('input', { placeholder: 'Impact — time, money, or risk?', value: p.impact || '', 'data-key': `pi.${q.id}.${o.id}`, oninput: (e) => app.soft((x) => F.state.setPain(x, q.id, o.id, 'impact', e.target.value)) }),
-            h('input', { placeholder: 'Metric — e.g., +$180k/yr, 12 hrs/month', value: p.metric || '', 'data-key': `pm.${q.id}.${o.id}`, oninput: (e) => app.soft((x) => F.state.setPain(x, q.id, o.id, 'metric', e.target.value)) })),
-          ui.coaching ? h('p.hint', 'Ask: “What does that cost you?” then “How would you measure it getting better?”') : null));
-      });
-
-      if (stale) body.push(h('div.notice.warn', 'This answer no longer applies because an earlier answer changed. It’s kept for reference but no longer scored.'));
-      else if (locked) body.push(h('div.notice', `Not in play yet — appears when ${requirement(q) || 'its topic is opened'}. You can still capture it.`));
-
-      const quoteOpen = ui.openQuote[qid] || (a && a.quote);
-      body.push(h('div.qnotes',
-        h('input.note', {
-          placeholder: q.detail ? `${q.detail}  (N)` : 'Note  (N)', value: (a && a.note) || '', 'data-key': `note.${q.id}`,
-          oninput: (e) => app.soft((x) => F.state.setNote(x, q.id, e.target.value)),
-          onkeydown: (e) => { if (e.key === 'Enter') e.target.blur(); },
-        }),
-        quoteOpen
-          ? h('textarea.quote', {
-            rows: 2, placeholder: 'Their exact words…', 'data-key': `quote.${q.id}`,
-            oninput: (e) => app.soft((x) => F.state.setQuote(x, q.id, e.target.value)),
-          }, (a && a.quote) || '')
-          : h('button.btn.ghost.sm', { onclick: () => F.ui.openQuote(q.id) }, '❝ Capture quote', h('kbd', 'Q'))));
-
-      if (ui.coaching) {
-        body.push(h('div.coach',
-          h('div.coach-col', h('div.coach-k', 'Why ask'), h('p', q.why)),
-          q.listen && q.listen.length ? h('div.coach-col', h('div.coach-k', 'Listen for'), h('ul', q.listen.map((x) => h('li', x)))) : null,
-          q.probes && q.probes.length ? h('div.coach-col', h('div.coach-k', 'Dig deeper'), h('ul', q.probes.map((x) => h('li', x)))) : null));
-      }
-
-      const actions = [];
-      if (q.type !== 'single') actions.push(h('button.btn.primary', { onclick: () => app.done(q.id) }, F.hasValue(q, a) ? 'Done' : 'None / skip', h('kbd', '⏎')));
-      else if (pinned && answered) actions.push(h('button.btn.primary', { onclick: () => { app.ui.pinned = null; app.ui.active = null; app.render(); } }, 'Next', h('kbd', '⏎')));
-      if (!answered) actions.push(h('button.btn.ghost', { onclick: () => app.skip(q.id) }, 'Skip', h('kbd', 'S')));
-      if (a && F.hasValue(q, a)) actions.push(h('button.btn.ghost.danger', { onclick: () => app.clear(q.id) }, 'Clear answer'));
-      if (pinned && !answered) actions.push(h('button.btn.ghost', { onclick: () => { app.ui.pinned = null; app.ui.active = null; app.render(); } }, 'Unpin'));
-      body.push(h('div.qactions', actions));
-    }
-
-    return h('section.qcard' + (isActive ? '.active' : '.compact') + (isNew ? '.enter' : '') + (stale ? '.stale' : ''), {
-      onclick: isActive ? null : () => { app.ui.active = qid; app.render(); },
-      'aria-label': q.text,
-    }, head, h('h2.qtext', q.text), body);
-  }
-
-  function center() {
-    const ids = cluster();
-    const act = activeOf(ids);
-    const prev = app.ui.prevCluster || [];
-    app.ui.prevCluster = ids.slice();
-    const { s, ui } = app;
-    const parts = [];
-
-    const last = s.lastAnswered && F.questionById[s.lastAnswered];
-    const la = last && s.answers[last.id];
-    if (last && la && F.hasValue(last, la)) {
-      parts.push(h('div.just',
-        h('span.just-ok', '✓'), h('span.muted', `${last.short}:`), h('span', F.answerText(last, la)),
-        ui.undo ? h('button.link', { onclick: app.undo }, 'Undo', h('kbd', 'B')) : null));
-    }
-    if (ui.focusModule) {
-      const left = app.d.queue.some((id) => F.questionById[id].module === ui.focusModule);
-      parts.push(h('div.focusbar',
-        h('span', `Focused on ${MOD[ui.focusModule].label}`, left ? '' : ' — all answered'),
-        h('button.link', { onclick: () => app.focusModule(ui.focusModule) }, 'Clear focus')));
-    }
-    if (!ids.length) {
-      parts.push(h('section.qcard.empty',
-        h('h2.qtext', 'Every question in play is answered'),
-        h('p.muted', 'Open the pitch card, add a topic the customer raised from the left, or wrap up.'),
-        h('div.qactions',
-          app.d.primary && app.d.primary.score > 0 ? h('button.btn', { onclick: () => F.ui.openDrawer(app.d.primary.id) }, 'Open pitch card') : null,
-          h('button.btn.primary', { onclick: () => app.go('wrap') }, 'Wrap up →'))));
-    }
-    ids.forEach((id, i) => parts.push(card(id, id === act, !prev.includes(id), i)));
-    return h('main.center', { 'data-scroll': 'center' }, parts);
-  }
-
-  function mobileTabs() {
-    const tab = (id, label) => h('button' + (app.ui.mtab === id ? '.on' : ''), { onclick: () => { app.ui.mtab = id; app.render(); } }, label);
-    return h('nav.mtabs', tab('path', 'Path'), tab('q', 'Questions'), tab('pitch', 'Pitch'));
-  }
-
-  F.screens.interview = function () {
-    return h('div.interview', { 'data-mtab': app.ui.mtab },
-      header(),
-      h('div.cols',
-        h('aside.left', { 'data-scroll': 'left' }, pathMap()),
-        center(),
-        h('aside.right', { 'data-scroll': 'right' }, F.ui.radar())),
-      mobileTabs());
+  F.ui.elapsed = function () {
+    const call = app.s && app.s.calls[app.s.calls.length - 1];
+    return call && call.startedAt ? F.dom.fmtTime(Date.now() - call.startedAt) : '0:00';
   };
 
+  F.ui.openTopic = function (mid) {
+    app.ui.topic = app.ui.topic === mid ? null : mid;
+    app.ui.mtab = 'q';
+    app.ui.resetMain = true;
+    app.render();
+  };
+  F.ui.openNote = function (qid) {
+    app.ui.openNote[qid] = true;
+    app.render();
+    const el = document.querySelector(`[data-key="note.${CSS.escape(qid)}"]`);
+    if (el) el.focus();
+  };
   F.ui.openQuote = function (qid) {
     app.ui.openQuote[qid] = true;
     app.render();
     const el = document.querySelector(`[data-key="quote.${CSS.escape(qid)}"]`);
     if (el) el.focus();
   };
-  F.ui.focusNote = function (qid) {
-    const el = document.querySelector(`[data-key="note.${CSS.escape(qid)}"]`);
-    if (el) el.focus();
+
+  // ── top bar ──
+  function header() {
+    const s = app.s;
+    return h('header.bar',
+      h('div.bar-l',
+        h('button.wordmark', { onclick: () => app.go('home'), title: 'Home' }, 'Fiv-o'),
+        h('span.bar-acct', s.setup.account || 'Account'),
+        h('span.bar-meta', `Call ${s.calls.length}`),
+        h('span.bar-meta.mono', { id: 'timer', title: 'Time on this call' }, F.ui.elapsed())),
+      h('div.bar-r',
+        h('button.tbtn', { onclick: F.ui.openSearch, title: 'Search every question  ( / )' }, 'Search'),
+        h('button.tbtn', { onclick: () => { app.ui.blur = true; app.render(); }, title: 'Hide the screen while sharing  (Esc)' }, 'Hide'),
+        h('button.tbtn', { onclick: () => { app.ui.help = true; app.render(); }, title: 'Shortcuts and settings  ( ? )' }, 'Help'),
+        h('button.btn.primary', { onclick: () => app.go('wrap'), title: 'Wrap up  (W)' }, 'Wrap up')));
+  }
+
+  // ── topic steps ──
+  function stepper() {
+    const { d, ui } = app;
+    const act = F.ui.activeId();
+    const cur = ui.topic || (act ? F.questionById[act].module : null);
+    const steps = d.modules.map((mid, i) => {
+      const p = d.progress[mid];
+      const done = p.eligible > 0 && p.answered === p.eligible;
+      const fresh = ui.unlocked[mid] && Date.now() - ui.unlocked[mid] < 90000;
+      return h('button.step' + (mid === cur ? '.cur' : '') + (done ? '.done' : ''), {
+        onclick: () => F.ui.openTopic(mid),
+        title: `${p.answered} of ${p.eligible} answered — click to review`,
+      },
+      h('span.step-n', done ? '✓' : String(i + 1)),
+      h('span.step-l', MOD[mid].label),
+      fresh ? h('span.step-new', 'new') : null);
+    });
+    return h('nav.stepper', { 'aria-label': 'Topics' },
+      h('div.steps', steps,
+        lockedTopics().length ? h('button.step.add', { onclick: () => { ui.addTopic = true; app.render(); }, title: 'The customer raised another topic' }, '+ Topic') : null),
+      h('button.step-meta' + (d.mustLeft ? '' : '.ok'), {
+        onclick: () => {
+          const cur = F.ui.activeId();
+          const must = d.queue.filter((x) => F.questionById[x].mustAsk);
+          const id = must.find((x) => x !== cur);
+          if (id) app.pin(id);
+        },
+        title: d.mustLeft ? 'Jump to the next must-ask question' : '',
+      }, d.mustLeft ? `${d.mustLeft} must-ask${d.mustLeft > 1 ? 's' : ''} left` : 'Must-asks covered'));
+  }
+
+  // ── the focused question ──
+  function options(q, a) {
+    const sel = F.selected(q, a);
+    return h('div.opts' + (q.options.length > 7 ? '.two' : ''), { role: 'group', 'aria-label': q.text },
+      q.options.map((o, i) => {
+        const on = sel.includes(o.id);
+        const rank = q.ranked && on ? sel.indexOf(o.id) + 1 : null;
+        return h('button.opt' + (on ? '.on' : ''), {
+          'aria-pressed': on ? 'true' : 'false',
+          onclick: () => F.ui.pick(q.id, o.id),
+        },
+        h('span.opt-k', i < KEYS.length ? KEYS[i] : ''),
+        h('span.opt-l', o.label),
+        h('span.opt-m', rank ? `#${rank}` : on ? '✓' : ''));
+      }));
+  }
+
+  function followUps(q, a) {
+    const { ui } = app;
+    const out = [];
+    const opts = F.selected(q, a).map((id) => q.options.find((o) => o.id === id)).filter(Boolean);
+    opts.filter((o) => o.flag).forEach((o) => out.push(h('div.follow.risk', h('div.follow-k', 'Risk'), h('p', o.flag))));
+    if (ui.coaching) opts.filter((o) => o.tip).forEach((o) => out.push(h('div.follow.tip', h('div.follow-k', 'Coach'), h('p', o.tip))));
+    opts.filter((o) => o.pain).forEach((o) => {
+      const p = (a.pains && a.pains[o.id]) || {};
+      out.push(h('div.follow.pain',
+        h('div.follow-k', 'Quantify this pain'),
+        h('p', o.painLabel || `${q.short}: ${o.label}`),
+        h('div.pair',
+          h('label.lf', h('span', 'Impact'), h('input', { placeholder: 'Time, money, or risk', value: p.impact || '', 'data-key': `pi.${q.id}.${o.id}`, oninput: (e) => app.soft((x) => F.state.setPain(x, q.id, o.id, 'impact', e.target.value)) })),
+          h('label.lf', h('span', 'Metric'), h('input', { placeholder: 'e.g., +$180k/yr, 12 hrs/month', value: p.metric || '', 'data-key': `pm.${q.id}.${o.id}`, oninput: (e) => app.soft((x) => F.state.setPain(x, q.id, o.id, 'metric', e.target.value)) }))),
+        ui.coaching ? h('p.hint', 'Ask “What does that cost you?”, then “How would you measure it getting better?”') : null));
+    });
+    return out;
+  }
+
+  function questionBlock(qid, isNew) {
+    const q = F.questionById[qid];
+    const { s, d, ui } = app;
+    const a = s.answers[qid];
+    const answered = F.isAnswered(q, a);
+    const stale = d.stale[qid];
+    const locked = !d.eligible[qid];
+    const pinned = ui.pinned === qid;
+    const p = d.progress[q.module];
+    const pos = !answered && p.eligible ? Math.min(p.answered + 1, p.eligible) : null;
+
+    const out = [];
+    out.push(h('div.eyebrow',
+      h('span', MOD[q.module].label),
+      pos ? h('span.muted', ` · ${pos} of ${p.eligible}`) : null,
+      q.mustAsk ? h('span.must', 'Must ask') : null,
+      pinned && answered && ui.held !== qid ? h('span.muted', ' · editing') : null));
+    out.push(h('h1.qtitle', q.text));
+    if (ui.coaching) out.push(h('p.qwhy', q.why));
+    if (d.split[qid]) out.push(h('p.qsplit', `This answer decides: ${d.split[qid]}`));
+
+    if (q.type === 'single' || q.type === 'multi') {
+      if (q.type === 'multi') out.push(h('p.qhint', q.ranked ? 'Pick in order of priority — the first pick counts most. Then press Enter.' : 'Pick all that apply, then press Enter.'));
+      out.push(options(q, a));
+    } else if (q.type === 'fields') {
+      out.push(h('div.fields', q.fields.map((f) => h('label.lf',
+        h('span', f.label.charAt(0).toUpperCase() + f.label.slice(1) + (f.unit ? ` (${f.unit})` : '')),
+        h('input', {
+          inputmode: 'numeric', value: (a && a.value && a.value[f.id]) || '', 'data-key': `f.${q.id}.${f.id}`,
+          oninput: (e) => app.soft((x) => F.state.setField(x, q.id, f.id, e.target.value)),
+          onkeydown: (e) => { if (e.key === 'Enter') { e.preventDefault(); e.stopPropagation(); app.done(q.id); } },
+        })))));
+    } else {
+      out.push(h('textarea', {
+        rows: 2, 'data-key': `t.${q.id}`, placeholder: 'Type their answer…',
+        oninput: (e) => app.soft((x) => F.state.setText(x, q.id, e.target.value)),
+        onkeydown: (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); e.stopPropagation(); app.done(q.id); } },
+      }, (a && a.value) || ''));
+    }
+
+    out.push(...followUps(q, a || { pains: {} }));
+    if (stale) out.push(h('p.notice.warn', 'This answer no longer applies because an earlier answer changed. It’s kept for reference but doesn’t count.'));
+    else if (locked) out.push(h('p.notice', `Not in play yet — it appears when ${requirement(q) || 'its topic is opened'}. You can still record it.`));
+
+    // Actions: the main move on the left, capture links on the right.
+    const main = [];
+    if (q.type !== 'single') main.push(h('button.btn.primary', { onclick: () => app.done(q.id) }, F.hasValue(q, a) ? 'Done' : 'None of these'));
+    else if (pinned && answered) main.push(h('button.btn.primary', { onclick: () => { ui.pinned = null; ui.active = null; ui.resetMain = true; app.render(); } }, 'Next question'));
+    if (!answered) main.push(h('button.tbtn', { onclick: () => app.skip(q.id) }, 'Skip'));
+    if (a && F.hasValue(q, a) && (pinned || stale)) main.push(h('button.tbtn.danger', { onclick: () => app.clear(q.id) }, 'Clear answer'));
+    if (pinned && !answered) main.push(h('button.tbtn', { onclick: () => { ui.pinned = null; ui.active = null; app.render(); } }, 'Back to the flow'));
+
+    const noteOpen = ui.openNote[qid] || (a && a.note) || q.detail;
+    const quoteOpen = ui.openQuote[qid] || (a && a.quote);
+    const links = [
+      !noteOpen ? h('button.tbtn', { onclick: () => F.ui.openNote(qid) }, '+ Note') : null,
+      !quoteOpen ? h('button.tbtn', { onclick: () => F.ui.openQuote(qid) }, '+ Quote') : null,
+      ui.coaching && (q.listen || q.probes) ? h('button.tbtn', { onclick: () => { ui.coachOpen = !ui.coachOpen; app.render(); }, 'aria-expanded': ui.coachOpen ? 'true' : 'false' }, ui.coachOpen ? 'Hide listening tips' : 'Listening tips') : null,
+    ];
+    out.push(h('div.qactions', h('div.qa-main', main), h('div.qa-links', links)));
+
+    if (noteOpen) {
+      out.push(h('label.lf.capture',
+        h('span', q.detail || 'Note'),
+        h('input', {
+          placeholder: q.detail ? `${q.detail}…` : 'Anything worth remembering', value: (a && a.note) || '', 'data-key': `note.${q.id}`,
+          oninput: (e) => app.soft((x) => F.state.setNote(x, q.id, e.target.value)),
+          onkeydown: (e) => { if (e.key === 'Enter') e.target.blur(); },
+        })));
+    }
+    if (quoteOpen) {
+      out.push(h('label.lf.capture',
+        h('span', 'In their words'),
+        h('textarea.quote', {
+          rows: 2, placeholder: 'Type exactly what they said', 'data-key': `quote.${q.id}`,
+          oninput: (e) => app.soft((x) => F.state.setQuote(x, q.id, e.target.value)),
+        }, (a && a.quote) || '')));
+    }
+    if (ui.coaching && ui.coachOpen) {
+      out.push(h('div.coach',
+        q.listen && q.listen.length ? h('div', h('div.follow-k', 'Listen for'), h('ul', q.listen.map((x) => h('li', x)))) : null,
+        q.probes && q.probes.length ? h('div', h('div.follow-k', 'Dig deeper'), h('ul', q.probes.map((x) => h('li', x)))) : null));
+    }
+
+    return h('section.question' + (isNew ? '.fade' : ''), { 'aria-label': q.text }, out);
+  }
+
+  function intro() {
+    return h('div.intro',
+      h('div',
+        h('strong', 'How this works'),
+        h('ol',
+          h('li', 'Ask the question on screen and click what they say — or press its number.'),
+          h('li', 'Fiv-o picks the next best question. The likely Nutanix pitch builds on the right.'),
+          h('li', 'Click any topic above to review or change answers. Press Wrap up when you’re done.'))),
+      h('button.tbtn', { onclick: () => { prefs.set('introSeen', true); app.render(); } }, 'Got it'));
+  }
+
+  function questionView() {
+    const { s, d, ui } = app;
+    const ids = cluster();
+    const act = activeOf(ids);
+    const isNew = act !== ui.prevActive;
+    if (isNew && ui.prevActive !== null) ui.resetMain = true;
+    ui.prevActive = act;
+
+    const parts = [];
+    if (!prefs.get('introSeen', false)) parts.push(intro());
+
+    const last = s.lastAnswered && F.questionById[s.lastAnswered];
+    const la = last && s.answers[last.id];
+    if (last && la && F.hasValue(last, la) && last.id !== act) {
+      parts.push(h('div.lastline',
+        h('span.muted', 'Saved'), h('span', `${last.short}: ${F.answerText(last, la)}`),
+        ui.undo ? h('button.tbtn', { onclick: app.undo, title: 'Undo  (B)' }, 'Undo') : null));
+    }
+    const call = s.calls[s.calls.length - 1];
+    const minutes = call.startedAt ? (Date.now() - call.startedAt) / 60000 : 0;
+    const decisionLeft = d.queue.filter((id) => F.questionById[id].module === 'decision' && F.questionById[id].mustAsk);
+    if (minutes >= 20 && decisionLeft.length && ui.focusModule !== 'decision' && !ui.nudged) {
+      parts.push(h('div.lastline.nudge',
+        h('span', `${Math.floor(minutes)} minutes in — leave time for who signs, timing, and the next step.`),
+        h('button.tbtn', { onclick: () => { ui.nudged = true; app.focusModule('decision'); } }, 'Ask them now'),
+        h('button.tbtn', { onclick: () => { ui.nudged = true; app.render(); } }, 'Later')));
+    }
+    if (ui.focusModule) {
+      const left = d.queue.some((id) => F.questionById[id].module === ui.focusModule);
+      parts.push(h('div.lastline',
+        h('span', left ? `Asking ${MOD[ui.focusModule].label} questions first` : `${MOD[ui.focusModule].label}: all asked`),
+        h('button.tbtn', { onclick: () => app.focusModule(ui.focusModule) }, 'Back to normal order')));
+    }
+
+    if (!act) {
+      parts.push(h('section.question.empty',
+        h('div.eyebrow', 'All caught up'),
+        h('h1.qtitle', 'Every question in play has an answer'),
+        h('p.qwhy', 'Add a topic the customer raised, review the pitch, or wrap up the call.'),
+        h('div.qactions', h('div.qa-main',
+          h('button.btn.primary', { onclick: () => app.go('wrap') }, 'Wrap up'),
+          lockedTopics().length ? h('button.btn', { onclick: () => { ui.addTopic = true; app.render(); } }, 'Add a topic') : null))));
+      return parts;
+    }
+
+    parts.push(questionBlock(act, isNew));
+    const next = ids.filter((id) => id !== act);
+    if (next.length) {
+      parts.push(h('section.upnext',
+        h('div.eyebrow', 'Up next'),
+        next.map((id) => h('button.next-row', { onclick: () => { ui.active = id; app.render(); }, title: 'Ask this one now' },
+          h('span', F.questionById[id].text),
+          h('span.muted', MOD[F.questionById[id].module].label)))));
+    }
+    return parts;
+  }
+
+  // ── topic review (click a step) ──
+  function topicView(mid) {
+    const { s, d } = app;
+    const p = d.progress[mid];
+    const qs = F.questions.filter((q) => q.module === mid && (d.eligible[q.id] || d.stale[q.id] || F.hasValue(q, s.answers[q.id])));
+    return [h('section.question.topic',
+      h('div.eyebrow', 'Topic review'),
+      h('h1.qtitle', MOD[mid].label),
+      h('p.qwhy', `${p.answered} of ${p.eligible} answered. Click a question to ask it or change the answer.`),
+      h('div.rows', qs.map((q) => {
+        const a = s.answers[q.id];
+        const st = d.stale[q.id] ? 'stale' : F.isAnswered(q, a) ? 'done' : a && a.skipped ? 'skipped' : 'open';
+        const txt = {
+          done: () => F.answerText(q, a),
+          stale: () => `${F.answerText(q, a)} — no longer applies`,
+          skipped: () => 'Skipped',
+          open: () => 'Not asked yet',
+        }[st]();
+        return h('button.row.' + st, { onclick: () => app.pin(q.id) },
+          h('span.row-q', q.text, q.mustAsk && st === 'open' ? h('span.must', 'Must ask') : null),
+          h('span.row-a', txt));
+      })),
+      h('div.qactions', h('div.qa-main',
+        p.answered < p.eligible ? h('button.btn.primary', { onclick: () => app.focusModule(mid) }, 'Ask the rest of this topic now') : null,
+        h('button.tbtn', { onclick: () => F.ui.openTopic(mid) }, 'Back to the call'))))];
+  }
+
+  function mobileTabs() {
+    const tab = (id, label) => h('button' + (app.ui.mtab === id ? '.on' : ''), { onclick: () => { app.ui.mtab = id; app.render(); } }, label);
+    return h('nav.mtabs', tab('q', 'Question'), tab('pitch', 'Pitch'));
+  }
+
+  F.screens.interview = function () {
+    return h('div.interview', { 'data-mtab': app.ui.mtab },
+      header(),
+      stepper(),
+      h('div.cols',
+        h('main.main', { 'data-scroll': 'main' }, h('div.main-in', app.ui.topic ? topicView(app.ui.topic) : questionView())),
+        h('aside.side', { 'data-scroll': 'side', 'aria-label': 'Likely pitch' }, F.ui.radar())),
+      mobileTabs());
   };
 
-  // ── search palette ──
+  // ── add a topic the customer raised ──
+  F.screens.addTopic = function () {
+    const close = () => { app.ui.addTopic = false; app.render(); };
+    return h('div.overlay', { onclick: close },
+      h('div.modal', { onclick: (e) => e.stopPropagation(), role: 'dialog', 'aria-label': 'Add a topic' },
+        h('h2', 'Add a topic the customer raised'),
+        h('p.muted', 'Its questions join the flow, and it’s added to “why now” as a lower priority.'),
+        h('div.rows', lockedTopics().map((m) => h('button.row', { onclick: () => app.unlockModule(m.id) },
+          h('span.row-q', m.label), h('span.row-a', m.desc)))),
+        h('div.modal-foot', h('button.tbtn', { onclick: close }, 'Cancel'))));
+  };
+
+  // ── search ──
   function statusOf(q) {
     const { d, s } = app;
     const a = s.answers[q.id];
-    if (d.stale[q.id]) return ['stale', 'warn'];
-    if (F.isAnswered(q, a)) return ['answered', 'good'];
-    if (a && a.skipped) return ['skipped', ''];
-    if (!d.eligible[q.id]) return ['locked', ''];
-    return ['open', 'accent'];
+    if (d.stale[q.id]) return 'no longer applies';
+    if (F.isAnswered(q, a)) return 'answered';
+    if (a && a.skipped) return 'skipped';
+    if (!d.eligible[q.id]) return 'not in play yet';
+    return 'open';
   }
   function searchResults() {
-    const t = (app.ui.search || '').trim().toLowerCase();
-    const words = t.split(/\s+/).filter(Boolean);
-    const rank = { open: 0, stale: 1, skipped: 1, answered: 2, locked: 3 };
+    const words = (app.ui.search || '').trim().toLowerCase().split(/\s+/).filter(Boolean);
+    const rank = { open: 0, 'no longer applies': 1, skipped: 1, answered: 2, 'not in play yet': 3 };
     return F.questions.filter((q) => {
       const hay = `${q.text} ${q.short} ${MOD[q.module].label} ${(q.options || []).map((o) => o.label).join(' ')}`.toLowerCase();
       return words.every((w) => hay.includes(w));
-    }).map((q, i) => ({ q, i, r: words.length ? rank[statusOf(q)[0]] : 0 }))
+    }).map((q, i) => ({ q, i, r: words.length ? rank[statusOf(q)] : 0 }))
       .sort((a, b) => a.r - b.r || a.i - b.i)
-      .slice(0, 14)
+      .slice(0, 12)
       .map((x) => x.q);
   }
   F.ui.searchPick = function (q) {
     if (!q) return;
     const modOpen = F.router.cond(MOD[q.module].when, app.s, app.d.valid);
-    if (!modOpen && Object.values(F.meta.triggerModule).includes(q.module)) {
-      app.unlockModule(q.module);
-    }
+    if (!modOpen && Object.values(F.meta.triggerModule).includes(q.module)) app.unlockModule(q.module);
     app.pin(q.id);
   };
   F.ui.openSearch = function () {
@@ -3498,7 +3646,7 @@ globalThis.Fivo = { VERSION: "0.1.0", BUILT: "2026-09-29", CONTENT_DATE: "Sept 2
     return h('div.overlay', { onclick: close },
       h('div.palette', { onclick: (e) => e.stopPropagation(), role: 'dialog', 'aria-label': 'Search questions' },
         h('input.pal-input', {
-          'data-key': 'search', value: app.ui.search, placeholder: 'Jump to any question — e.g., “backup”, “NSX”, “GPU”',
+          'data-key': 'search', value: app.ui.search, placeholder: 'Find a question — e.g. backup, NSX, GPU, budget',
           oninput: (e) => { app.ui.search = e.target.value; app.ui.searchIdx = 0; app.render(); },
           onkeydown: (e) => {
             e.stopPropagation();
@@ -3508,41 +3656,45 @@ globalThis.Fivo = { VERSION: "0.1.0", BUILT: "2026-09-29", CONTENT_DATE: "Sept 2
             else if (e.key === 'Escape') { e.preventDefault(); close(); }
           },
         }),
-        h('div.pal-list', results.length ? results.map((q, i) => {
-          const [st, cls] = statusOf(q);
-          return h('button.pal-item' + (i === idx ? '.sel' : ''), { onclick: () => F.ui.searchPick(q), onmouseenter: () => { app.ui.searchIdx = i; } },
-            h('span.pal-mod', MOD[q.module].icon),
-            h('span.pal-text', h('span', q.text), h('span.pal-sub', MOD[q.module].label)),
-            h('span.pill.tiny' + (cls ? '.' + cls : ''), st));
-        }) : h('p.muted.pad', 'No matching questions.')),
-        h('div.pal-foot', h('span', h('kbd', '↑'), h('kbd', '↓'), ' move'), h('span', h('kbd', '⏎'), ' open'), h('span', h('kbd', 'Esc'), ' close'), h('span.muted', 'Locked topics open automatically'))));
+        h('div.pal-list', results.length ? results.map((q, i) => h('button.pal-item' + (i === idx ? '.sel' : ''), {
+          onclick: () => F.ui.searchPick(q), onmouseenter: () => { app.ui.searchIdx = i; },
+        },
+        h('span.pal-text', q.text),
+        h('span.pal-meta', `${MOD[q.module].label} · ${statusOf(q)}`))) : h('p.muted.pad', 'No matching questions.')),
+        h('div.pal-foot', '↑ ↓ to move · Enter to open · Esc to close · topics not in play open automatically')));
   };
 
-  // ── overlays ──
+  // ── help & settings ──
   F.screens.help = function () {
     const rows = [
-      ['1–9, 0', 'Answer the active question'], ['⏎', 'Done (multi-select) / next'], ['↑ ↓', 'Move between the on-screen questions'],
-      ['S', 'Skip'], ['B', 'Undo last answer'], ['N', 'Focus the note field'], ['Q', 'Capture a verbatim quote'],
-      ['/', 'Search every question'], ['P', 'Open the leading pitch card'], ['C', 'Toggle coaching hints'],
-      ['W', 'Wrap up'], ['Esc', 'Privacy blur on/off · close panels'], ['?', 'This help'],
+      ['1 – 9, 0', 'Answer the question'], ['Enter', 'Done (multi-select) or next question'], ['↑  ↓', 'Switch to an “up next” question'],
+      ['S', 'Skip'], ['B', 'Undo the last answer'], ['N', 'Add a note'], ['Q', 'Capture a quote'],
+      ['/', 'Search every question'], ['P', 'Open the pitch card'], ['C', 'Coaching on / off'],
+      ['W', 'Wrap up'], ['Esc', 'Close panels · hide the screen'], ['?', 'This panel'],
     ];
     const close = () => { app.ui.help = false; app.render(); };
     return h('div.overlay', { onclick: close },
-      h('div.modal', { onclick: (e) => e.stopPropagation() },
-        h('h2', 'Keyboard shortcuts'),
-        h('table.keys', rows.map(([k, v]) => h('tr', h('td', h('kbd', k)), h('td', v)))),
-        h('div.row.end', h('button.btn.primary', { onclick: close }, 'Got it'))));
+      h('div.modal', { onclick: (e) => e.stopPropagation(), role: 'dialog', 'aria-label': 'Help' },
+        h('h2', 'Shortcuts'),
+        h('table.keys', rows.map(([k, v]) => h('tr', h('td.mono', k), h('td', v)))),
+        h('h2.mt', 'Settings'),
+        h('label.check', h('input', { type: 'checkbox', checked: app.ui.coaching, onchange: (e) => app.setPref('coaching', e.target.checked) }),
+          h('span', 'Coaching — show why each question matters, tips, and listening cues')),
+        h('div.modal-foot',
+          h('button.tbtn', { onclick: () => { prefs.set('introSeen', false); close(); } }, 'Show the intro again'),
+          h('button.tbtn', { onclick: () => F.ui.toggleTheme() }, 'Light / dark'),
+          h('button.btn.primary', { onclick: close }, 'Close'))));
   };
 
   F.screens.blur = function () {
     return h('div.blur', { onclick: () => { app.ui.blur = false; app.render(); } },
-      h('div.blur-msg', h('strong', 'Hidden'), h('span', 'Press Esc or click to show')));
+      h('div.blur-msg', h('strong', 'Screen hidden'), h('span', 'Press Esc or click to show')));
   };
 })(globalThis.Fivo = globalThis.Fivo || {});
 
 
 /* ── src/ui/radar.js ── */
-/* Fiv-o UI: Pitch Radar (live play ranking) and the Pitch Card drawer. */
+/* Fiv-o UI: the likely-pitch side panel and the pitch card. */
 (function (F) {
   'use strict';
 
@@ -3550,69 +3702,136 @@ globalThis.Fivo = { VERSION: "0.1.0", BUILT: "2026-09-29", CONTENT_DATE: "Sept 2
   const app = F.app;
   const personaLabel = (id) => (F.meta.personas.find((p) => p.id === id) || { label: id }).label;
 
-  F.ui.openDrawer = function (pid) { app.ui.drawer = pid; app.ui.drawerTab = null; app.render(); };
+  F.ui.openDrawer = function (pid) { app.ui.drawer = pid; app.ui.drawerTab = null; app.ui.pitchTab = 'pitch'; app.render(); };
   const closeDrawer = () => { app.ui.drawer = null; app.render(); };
 
   function whyTitle(r) {
-    const t = r.trace.slice(0, 5).map((x) => `${x.delta > 0 ? '+' : ''}${x.delta}  ${x.label}`).join('\n');
-    return t ? `Why:\n${t}` : 'No signals yet';
+    const t = [...new Set(r.trace.filter((x) => x.delta > 0).map((x) => x.label))].slice(0, 4).join('\n');
+    return t ? `Because:\n${t}` : 'No signals yet';
   }
+  const meter = (r, cls) => h('div.meter' + (cls ? '.' + cls : ''),
+    h('div.meter-fill' + (r.ready ? '.ready' : ''), { style: { width: pct(app.ui.prevConf[r.id] || 0) }, 'data-w': pct(r.conf) }));
 
-  function bar(r, big) {
-    const from = pct(app.ui.prevConf[r.id] || 0);
-    return h('div.bar' + (big ? '.big' : ''), h('div.bar-fill' + (r.ready ? '.ready' : ''), { style: { width: from }, 'data-w': pct(r.conf) }));
-  }
-
-  function leadCard(r) {
+  function lead(r) {
     const p = r.play;
     const variant = r.variant && p.variants.find((v) => v.id === r.variant.id);
-    return h('div.lead' + (r.ready ? '.ready' : ''),
-      h('div.lead-k', r.ready ? 'Pitch ready' : 'Leading pitch', app.s.primaryPlay === r.id ? h('span.pill.tiny', 'your pick') : null),
+    return h('div.lead',
+      h('div.lead-status' + (r.ready ? '.ready' : ''), r.ready ? 'Ready to pitch' : 'Building confidence'),
       h('div.lead-name', p.name),
-      variant ? h('div.lead-var', '→ ', variant.name)
-        : p.variants ? h('div.lead-var.muted', 'Variant not decided yet') : null,
-      bar(r, true),
-      h('div.lead-meta', h('strong', pct(r.conf)), h('span.muted', ' confidence')),
-      r.missingQualifiers.length ? h('div.lead-q',
-        h('span.muted', 'To lock it in, confirm: '),
-        r.missingQualifiers.map((qid) => h('button.link', { onclick: () => app.pin(qid) }, F.questionById[qid].short))) : null,
-      h('p.lead-line', variant ? variant.pitch : p.oneLiner),
-      h('button.btn.primary.block', { onclick: () => F.ui.openDrawer(r.id) }, 'Open pitch card', h('kbd', 'P')));
+      variant ? h('div.lead-var', variant.name)
+        : p.variants ? h('div.lead-var.muted', 'Version not decided yet') : null,
+      h('div.lead-meter', meter(r), h('span.mono', pct(r.conf))),
+      r.missingQualifiers.length ? h('p.lead-need', 'To confirm: ',
+        r.missingQualifiers.map((qid, i) => [i ? ', ' : '', h('button.link', { onclick: () => app.pin(qid) }, F.questionById[qid].short)])) : null,
+      h('button.btn.full', { onclick: () => F.ui.openDrawer(r.id), title: 'Pitch card  (P)' }, 'Open pitch card'));
   }
 
   F.ui.radar = function () {
     const d = app.d;
-    const list = d.scores.list;
-    const live = list.filter((r) => r.score > 0);
-    const idle = list.filter((r) => r.score === 0);
-    const lead = d.primary && d.primary.score > 0 ? leadCard(d.primary)
-      : h('div.lead.empty', h('div.lead-k', 'Pitch radar'), h('p.muted', 'Answer “why now” and the plays will start ranking here as you learn more.'));
+    const ui = app.ui;
+    const all = d.scores.list;
+    const top = d.primary && d.primary.score > 0 ? d.primary : null;
+    const rest = all.filter((r) => r !== top && (ui.showAll || r.score > 0));
+    const shown = ui.showAll ? rest : rest.slice(0, 3);
 
-    return h('div.radar',
-      h('div.col-title', 'Pitch radar'),
-      lead,
-      live.length ? h('div.radar-list',
-        h('div.radar-sub', h('span', 'All plays'), h('span.muted', 'hover for why · click for card')),
-        live.map((r) => {
-          const delta = app.ui.rankDelta[r.id];
-          return h('button.pbar' + (r.ready ? '.ready' : '') + (d.primary === r ? '.lead-row' : ''), { onclick: () => F.ui.openDrawer(r.id), title: whyTitle(r) },
-            h('div.pbar-top',
-              h('span.pbar-name', r.play.short),
-              delta ? h('span.delta' + (delta > 0 ? '.up' : '.down'), delta > 0 ? '▲' : '▼') : null,
-              r.variant ? h('span.pbar-var', r.variant.name) : null,
-              h('span.pbar-pct', pct(r.conf))),
-            bar(r));
-        })) : null,
-      idle.length ? h('details.idle', { open: app.ui.idleOpen ? true : null, ontoggle: (e) => { app.ui.idleOpen = e.target.open; } },
-        h('summary', `${idle.length} play${idle.length > 1 ? 's' : ''} not indicated yet`),
-        idle.map((r) => h('button.idle-item', { onclick: () => F.ui.openDrawer(r.id) }, r.play.name))) : null,
-      d.flags.length ? h('div.flags', h('div.radar-sub', 'Risks'), d.flags.map((f) => h('div.flagline', h('span.tip-k.bad', 'Risk'), f.text))) : null,
-      h('div.signals', `${d.pains.length} pain${d.pains.length === 1 ? '' : 's'} · ${d.quotes.length} quote${d.quotes.length === 1 ? '' : 's'} captured`));
+    return h('div.side-in',
+      h('section.side-sec',
+        h('div.eyebrow', 'Likely pitch'),
+        top ? lead(top) : h('p.muted.small', 'Nothing yet. As they answer, the best-fit Nutanix pitch shows up here.')),
+      shown.length ? h('section.side-sec',
+        h('div.eyebrow', 'Also in play'),
+        shown.map((r) => h('button.prow', { onclick: () => F.ui.openDrawer(r.id), title: whyTitle(r) },
+          h('span.prow-name', r.play.short),
+          meter(r, 'thin'),
+          h('span.prow-v.mono', r.score ? pct(r.conf) : '—')))) : null,
+      top || rest.length ? h('button.tbtn.small', { onclick: () => { ui.showAll = !ui.showAll; app.render(); } },
+        ui.showAll ? 'Show fewer' : `See all ${all.length} pitches`) : null,
+      d.flags.length ? h('section.side-sec',
+        h('div.eyebrow', 'Risks'),
+        d.flags.map((f) => h('p.risk', f.text))) : null,
+      h('section.side-sec',
+        h('div.eyebrow', 'MEDDPICC'),
+        h('div.mp', d.mp.letters.map((l) => h(`span.mp-l.l${l.level}`, { title: `${l.label} — ${['gap', 'partial', 'solid'][l.level]}${l.items.length ? ': ' + l.items.join('; ') : ''}` }, l.k))),
+        h('p.muted.small', `${d.pains.length} pain${d.pains.length === 1 ? '' : 's'} · ${d.quotes.length} quote${d.quotes.length === 1 ? '' : 's'} captured`)));
   };
 
   // ── Pitch card ──
-  function section(title, ...body) {
-    return h('section.dsec', h('h3', title), body);
+  const sec = (title, ...body) => h('section.dsec', h('h3', title), body);
+
+  function pitchTab(r, p, variant) {
+    const s = app.s;
+    const trackIds = Object.keys(p.personas);
+    const ordered = [...s.setup.attendees.filter((id) => trackIds.includes(id)), ...trackIds.filter((id) => !s.setup.attendees.includes(id))];
+    const tab = app.ui.drawerTab && ordered.includes(app.ui.drawerTab) ? app.ui.drawerTab : ordered[0];
+    return [
+      p.variants ? sec('Which version',
+        h('div.rows', r.variants.map((v) => {
+          const def = p.variants.find((x) => x.id === v.id);
+          const on = variant && variant.id === v.id;
+          return h('div.row.static' + (on ? '.on' : ''),
+            h('span.row-q', def.name, on ? h('span.must', 'Best fit') : null),
+            h('span.row-a', def.pitch));
+        }))) : null,
+      h('p.oneliner', p.oneLiner),
+      h('div.ba',
+        h('div', h('h3', 'Before'), h('p', p.before)),
+        h('div', h('h3', 'After'), h('p', p.after))),
+      sec('Talk track',
+        h('div.utabs', ordered.map((id) => h('button.utab' + (id === tab ? '.on' : ''), {
+          onclick: () => { app.ui.drawerTab = id; app.render(); },
+          title: s.setup.attendees.includes(id) ? 'On this call' : '',
+        }, personaLabel(id), s.setup.attendees.includes(id) ? ' •' : ''))),
+        h('p.track', p.personas[tab])),
+    ];
+  }
+
+  function proofTab(r, p) {
+    const confirms = app.s.confirms[p.id] || [];
+    const why = [];
+    const seen = new Set();
+    r.trace.forEach((t) => { const k = t.qid + t.opt; if (!seen.has(k)) { seen.add(k); why.push(t); } });
+    return [
+      sec('Why this pitch — from their answers',
+        why.length ? h('div.rows', why.slice(0, 8).map((t) => h('button.row', { onclick: () => { app.ui.drawer = null; app.pin(t.qid); } },
+          h('span.row-q', t.label), h('span.row-a.mono', `${t.delta > 0 ? '+' : ''}${t.delta}`)))) : h('p.muted', 'No signals yet.')),
+      sec('Capabilities to confirm',
+        p.capabilities.map((c, i) => h('label.check',
+          h('input', { type: 'checkbox', checked: !!confirms[i], onchange: (e) => app.act((x) => { (x.confirms[p.id] = x.confirms[p.id] || [])[i] = e.target.checked; }) }),
+          h('span', c)))),
+      sec('Proof points',
+        h('ul.plain', p.proof.map((x) => h('li',
+          x.t, ' ',
+          x.verify ? h('span.verify', { title: 'Check against current internal enablement before quoting' }, 'verify') : null, ' ',
+          h('a', { href: x.src, target: '_blank', rel: 'noopener noreferrer' }, 'source'))))),
+    ];
+  }
+
+  function objectionsTab(p) {
+    const s = app.s;
+    const comps = F.selected(F.questionById['dec.competition'], s.answers['dec.competition']).filter((id) => F.competitors[id]);
+    const compBlock = (id) => {
+      const c = F.competitors[id];
+      return h('div.comp',
+        h('h4', c.name),
+        h('p.muted', `Their pitch: ${c.theirPitch}`),
+        h('div.follow-k', 'Questions to plant'),
+        h('ul', c.landmines.map((x) => h('li', x))),
+        h('p', h('strong', 'Our angle: '), c.counter));
+    };
+    return [
+      sec('Objections', p.objections.map((o) => h('details.obj', h('summary', o.q), h('p', o.a)))),
+      sec('Competition',
+        comps.length ? comps.map(compBlock)
+          : [h('p.muted', 'No competitors captured yet. All battlecards:'), Object.keys(F.competitors).map((id) => h('details.obj', h('summary', F.competitors[id].name), compBlock(id)))]),
+    ];
+  }
+
+  function nextTab(p, variant) {
+    return [
+      sec('Recommended next steps', h('ol', p.nextSteps.map((x) => h('li', x)))),
+      sec('Products', h('p', (variant ? variant.products : p.products).join(' · '))),
+      sec('Licensing', h('p', p.editions, ' ', h('a', { href: p.editionsSrc, target: '_blank', rel: 'noopener noreferrer' }, 'source'))),
+    ];
   }
 
   F.screens.drawer = function () {
@@ -3622,172 +3841,114 @@ globalThis.Fivo = { VERSION: "0.1.0", BUILT: "2026-09-29", CONTENT_DATE: "Sept 2
     const s = app.s;
     const isPrimary = s.primaryPlay === p.id;
     const variant = r.variant && p.variants.find((v) => v.id === r.variant.id);
-
-    // Talk tracks: attendees first, then the rest.
-    const trackIds = Object.keys(p.personas);
-    const ordered = [...s.setup.attendees.filter((id) => trackIds.includes(id)), ...trackIds.filter((id) => !s.setup.attendees.includes(id))];
-    const tab = app.ui.drawerTab && ordered.includes(app.ui.drawerTab) ? app.ui.drawerTab : ordered[0];
-
-    const comps = F.selected(F.questionById['dec.competition'], s.answers['dec.competition']).filter((id) => F.competitors[id]);
-    const compCard = (id) => {
-      const c = F.competitors[id];
-      return h('div.comp',
-        h('div.comp-name', c.name),
-        h('p.muted', h('em', 'Their pitch: '), c.theirPitch),
-        h('div.coach-k', 'Plant these'),
-        h('ul', c.landmines.map((x) => h('li', x))),
-        h('p', h('strong', 'Our angle: '), c.counter));
-    };
-    const confirms = s.confirms[p.id] || [];
+    const tabs = [['pitch', 'Pitch'], ['proof', 'Proof'], ['objections', 'Objections'], ['next', 'Next steps']];
+    const tab = app.ui.pitchTab || 'pitch';
+    const status = r.ready ? 'ready to pitch' : r.missingQualifiers.length ? `to confirm: ${r.missingQualifiers.map((q) => F.questionById[q].short).join(', ')}` : 'still building';
 
     return h('div.overlay.drawer-wrap', { onclick: closeDrawer },
       h('aside.drawer', { onclick: (e) => e.stopPropagation(), 'data-scroll': 'drawer', role: 'dialog', 'aria-label': `Pitch card: ${p.name}` },
         h('div.dhead',
-          h('div', h('div.lead-k', 'Pitch card'), h('h2', p.name)),
-          h('button.btn.ghost', { onclick: closeDrawer }, 'Close', h('kbd', 'Esc'))),
-        h('div.dmeta',
-          h('span.pill.accent', `${pct(r.conf)} confidence`),
-          r.ready ? h('span.pill.good', 'ready to pitch') : r.missingQualifiers.length ? h('span.pill.warn', `confirm ${r.missingQualifiers.length} qualifier${r.missingQualifiers.length > 1 ? 's' : ''}`) : null,
-          h('button.btn.sm' + (isPrimary ? '.on' : ''), {
+          h('div',
+            h('div.eyebrow', 'Pitch card'),
+            h('h2', p.name),
+            h('p.muted.small', `${pct(r.conf)} confidence · ${status}`)),
+          h('button.tbtn', { onclick: closeDrawer }, 'Close')),
+        h('div.dbar',
+          h('div.utabs', tabs.map(([id, label]) => h('button.utab' + (id === tab ? '.on' : ''), { onclick: () => { app.ui.pitchTab = id; app.render(); } }, label))),
+          h('button.tbtn.small', {
             onclick: () => app.act((x) => { x.primaryPlay = isPrimary ? null : p.id; }),
-            title: 'Override the auto-ranking for the report',
-          }, isPrimary ? '✓ Your primary play' : 'Make primary play')),
-
-        p.variants ? section('Which version of this pitch',
-          h('div.variants', r.variants.map((v) => {
-            const def = p.variants.find((x) => x.id === v.id);
-            const on = variant && variant.id === v.id;
-            return h('div.variant' + (on ? '.on' : ''),
-              h('div.variant-top', h('strong', def.name), h('span.muted', v.score ? pct(v.share) : '—')),
-              h('p', def.pitch),
-              h('p.small.muted', def.products.join(' · ')));
-          }))) : null,
-
-        h('p.oneliner', p.oneLiner),
-        h('div.ba',
-          h('div.ba-col.before', h('div.coach-k', 'Before'), h('p', p.before)),
-          h('div.ba-col.after', h('div.coach-k', 'After'), h('p', p.after))),
-
-        section('Talk track',
-          h('div.tabs', ordered.map((id) => h('button.tab' + (id === tab ? '.on' : '') + (s.setup.attendees.includes(id) ? '.attending' : ''), {
-            onclick: () => { app.ui.drawerTab = id; app.render(); },
-            title: s.setup.attendees.includes(id) ? 'On this call' : '',
-          }, personaLabel(id)))),
-          h('p.track', p.personas[tab])),
-
-        section('Why this play — from their answers',
-          r.trace.length ? h('ul.trace', r.trace.slice(0, 8).map((t) => h('li',
-            h('span.delta-n' + (t.delta > 0 ? '.up' : '.down'), `${t.delta > 0 ? '+' : ''}${t.delta}`),
-            h('button.link', { onclick: () => { app.ui.drawer = null; app.pin(t.qid); } }, t.label),
-            t.target.includes('.') ? h('span.muted.small', ` → ${(p.variants.find((v) => `${p.id}.${v.id}` === t.target) || {}).name || ''}`) : null))) : h('p.muted', 'No signals yet.')),
-
-        section('Capabilities to confirm',
-          p.capabilities.map((c, i) => h('label.check',
-            h('input', { type: 'checkbox', checked: !!confirms[i], onchange: (e) => app.act((x) => { (x.confirms[p.id] = x.confirms[p.id] || [])[i] = e.target.checked; }) }),
-            h('span', c)))),
-
-        section('Proof points',
-          h('ul.proof', p.proof.map((x) => h('li',
-            h('span', x.t), ' ',
-            x.verify ? h('span.pill.warn.tiny', { title: 'Check against current internal enablement before quoting' }, 'verify') : null, ' ',
-            h('a', { href: x.src, target: '_blank', rel: 'noopener noreferrer' }, 'source'))))),
-
-        section('Objections',
-          p.objections.map((o) => h('details.obj', h('summary', o.q), h('p', o.a)))),
-
-        section('Competitive landmines',
-          comps.length ? comps.map(compCard)
-            : h('details.obj', h('summary', 'No competitors captured yet — show all battlecards'), Object.keys(F.competitors).map(compCard))),
-
-        section('Recommended next steps', h('ol', p.nextSteps.map((x) => h('li', x)))),
-
-        section('Products', h('p', (variant ? variant.products : p.products).join(' · '))),
-
-        section('Licensing hint', h('p', p.editions, ' ', h('a', { href: p.editionsSrc, target: '_blank', rel: 'noopener noreferrer' }, 'source'))),
-        h('p.small.muted.pad', 'Public-source content. Validate proof points and editions against current internal enablement.')));
+            title: 'Use this pitch as the primary play in your notes',
+          }, isPrimary ? '✓ Primary pitch' : 'Make primary')),
+        h('div.dbody',
+          tab === 'pitch' ? pitchTab(r, p, variant)
+            : tab === 'proof' ? proofTab(r, p)
+              : tab === 'objections' ? objectionsTab(p)
+                : nextTab(p, variant)),
+        h('p.small.muted.dfoot', 'Public-source content. Validate proof points and licensing against current internal enablement.')));
   };
 })(globalThis.Fivo = globalThis.Fivo || {});
 
 
 /* ── src/ui/wrapup.js ── */
-/* Fiv-o UI: wrap-up — confirm the play, close MEDDPICC gaps, export CRM notes. */
+/* Fiv-o UI: wrap-up — five quick checks, then copy the CRM notes. */
 (function (F) {
   'use strict';
 
   const { h, pct, copy, download, slug } = F.dom;
   const app = F.app;
 
+  const step = (n, title, hint, ...body) => h('section.wstep',
+    h('div.wstep-head', h('span.wstep-n', String(n)), h('div', h('h2', title), hint ? h('p.muted.small', hint) : null)),
+    h('div.wstep-body', body));
+
   F.screens.wrap = function () {
     const s = app.s;
     const d = app.d;
+    const Q = F.questionById;
     const notes = F.report.crm(s, d);
     const plays = d.scores.list.filter((r) => r.score > 0).slice(0, 4);
-    const Q = F.questionById;
     const fname = `${slug(s.setup.account)}-call${s.calls.length}-${s.calls[s.calls.length - 1].date}`;
+    const backTo = (fn) => (e) => { e.preventDefault(); app.go('interview'); fn(); };
 
-    const playPicker = plays.length ? plays.map((r) => {
+    const pitch = plays.length ? h('div.rows', plays.map((r) => {
       const on = d.primary === r;
-      return h('label.pickrow' + (on ? '.on' : ''),
+      return h('label.row.pick' + (on ? '.on' : ''),
         h('input', { type: 'radio', name: 'primary', checked: on, onchange: () => app.act((x) => { x.primaryPlay = r.id; }) }),
-        h('span.pick-main', h('strong', r.play.name), r.variant ? h('span.muted', ` → ${r.variant.name}`) : null),
-        h('span.pill' + (r.ready ? '.good' : ''), pct(r.conf)),
-        h('button.link', { onclick: (e) => { e.preventDefault(); app.go('interview'); F.ui.openDrawer(r.id); } }, 'card'));
-    }) : h('p.muted', 'No play indicated yet — go back and answer “why now”.');
+        h('span.row-q', r.play.name, r.variant ? h('span.muted', ` · ${r.variant.name}`) : null),
+        h('span.row-a.mono', pct(r.conf)),
+        h('button.tbtn.small', { onclick: backTo(() => F.ui.openDrawer(r.id)) }, 'Card'));
+    })) : h('p.muted', 'No pitch indicated yet — go back and answer “why now”.');
 
-    const pains = d.pains.length ? d.pains.map((p) => h('div.painrow',
-      h('div.painrow-label', p.label),
-      h('div.pc-row',
-        h('input', { placeholder: 'Impact', value: p.impact, 'data-key': `wpi.${p.qid}.${p.opt}`, oninput: (e) => app.soft((x) => F.state.setPain(x, p.qid, p.opt, 'impact', e.target.value)) }),
-        h('input', { placeholder: 'Metric', value: p.metric, 'data-key': `wpm.${p.qid}.${p.opt}`, oninput: (e) => app.soft((x) => F.state.setPain(x, p.qid, p.opt, 'metric', e.target.value)) }))))
-      : h('p.muted', 'No pains captured. That’s the first thing to fix on the next call.');
+    const pains = d.pains.length ? h('div.rows', d.pains.map((p) => h('div.row.static.stack',
+      h('span.row-q', p.label),
+      h('div.pair',
+        h('input', { placeholder: 'Impact — time, money, or risk', value: p.impact, 'data-key': `wpi.${p.qid}.${p.opt}`, oninput: (e) => app.soft((x) => F.state.setPain(x, p.qid, p.opt, 'impact', e.target.value)) }),
+        h('input', { placeholder: 'Metric', value: p.metric, 'data-key': `wpm.${p.qid}.${p.opt}`, oninput: (e) => app.soft((x) => F.state.setPain(x, p.qid, p.opt, 'metric', e.target.value)) })))))
+      : h('p.muted', 'No pains captured. Finding them is the first job of the next call.');
 
-    const mp = d.mp.letters.map((l) => {
-      const auto = l.items.join('; ');
-      return h('div.mprow',
-        h('div.mprow-head',
-          h(`span.mp-cell.l${l.level}`, l.k),
-          h('strong', l.label),
-          h('span.muted.small', ['gap', 'partial', 'solid'][l.level]),
-          h('button.link', { onclick: () => copy(F.report.mpText(s, d, l.k), `${l.label}`) }, 'copy')),
-        h('textarea', {
-          rows: 2, 'data-key': `mp.${l.k}`, placeholder: auto || 'Gap — what do you know?',
-          oninput: (e) => app.soft((x) => { x.wrap.mp[l.k] = e.target.value; }),
-        }, s.wrap.mp[l.k] || ''));
-    });
+    const mp = h('div.rows', d.mp.letters.map((l) => h('div.row.static.stack',
+      h('div.mprow',
+        h(`span.mp-l.l${l.level}`, l.k),
+        h('strong', l.label),
+        h('span.muted.small', ['gap', 'partial', 'solid'][l.level]),
+        h('button.tbtn.small', { onclick: () => copy(F.report.mpText(s, d, l.k), l.label), style: { marginLeft: 'auto' } }, 'Copy')),
+      h('textarea', {
+        rows: 1, 'data-key': `mp.${l.k}`, placeholder: l.items.join('; ') || 'Gap — what do you know?',
+        oninput: (e) => app.soft((x) => { x.wrap.mp[l.k] = e.target.value; }),
+      }, s.wrap.mp[l.k] || ''))));
 
     const gaps = d.gaps.length ? d.gaps.map((id) => h('label.check',
       h('input', { type: 'checkbox', checked: !s.wrap.gapsExcluded[id], onchange: (e) => app.act((x) => { x.wrap.gapsExcluded[id] = !e.target.checked; }) }),
-      h('span', Q[id].text, ' ', h('button.link', { onclick: (e) => { e.preventDefault(); app.go('interview'); app.pin(id); } }, 'answer now')))) : h('p.muted', 'No open high-value questions.');
+      h('span', Q[id].text, ' ', h('button.link.small', { onclick: backTo(() => app.pin(id)) }, 'ask now')))) : h('p.muted', 'No open high-value questions.');
 
     const agreed = d.valid['dec.nextstep'] ? F.answerText(Q['dec.nextstep'], s.answers['dec.nextstep']) : null;
 
     return h('div.page.wrap',
       h('div.topbar',
-        h('button.btn.ghost', { onclick: () => app.go('interview') }, '← Back to the call'),
-        h('span.muted', `${s.setup.account} · call ${s.calls.length} wrap-up`),
-        h('button.btn.ghost', { onclick: () => app.go('home') }, 'Home')),
+        h('button.tbtn', { onclick: () => app.go('interview') }, '← Back to the call'),
+        h('button.tbtn', { onclick: () => app.go('home'), style: { marginLeft: 'auto' } }, 'Home')),
+      h('h1', `Wrap up — ${s.setup.account}`),
+      h('p.muted', 'Five quick checks, then copy the notes into Salesforce. Everything you change here updates the notes on the right.'),
       h('div.wrap-grid',
         h('div.wrap-left',
-          h('section.panel', h('h2', 'Recommended play'), h('p.muted.small', 'Pick the primary play for the notes. The top ones are ranked from their answers.'), playPicker),
-          h('section.panel', h('h2', 'Pains — quantify them'), pains),
-          h('section.panel', h('h2', 'MEDDPICC'), h('p.muted.small', 'Auto-filled from answers (shown as placeholder). Type to override what goes into the notes.'), mp),
-          h('section.panel', h('h2', 'Open questions for the next call'), gaps),
-          h('section.panel',
-            h('h2', 'Next steps'),
-            agreed ? h('p', h('strong', 'Agreed: '), agreed) : h('p.muted', 'No next step recorded — add one below with an owner and date.'),
-            h('textarea', { rows: 3, 'data-key': 'wrap.next', placeholder: 'Owner — action — date (one per line)', oninput: (e) => app.soft((x) => { x.wrap.nextSteps = e.target.value; }) }, s.wrap.nextSteps || '')),
-          h('section.panel',
-            h('h2', 'Notes'),
-            h('textarea', { rows: 3, 'data-key': 'wrap.notes', placeholder: 'Anything else for the opportunity record', oninput: (e) => app.soft((x) => { x.wrap.notes = e.target.value; }) }, s.wrap.notes || ''))),
+          step(1, 'Primary pitch', 'Ranked from their answers. Pick the one to lead with.', pitch),
+          step(2, 'Quantify the pains', 'An impact and a metric turn a complaint into a business case.', pains),
+          step(3, 'MEDDPICC', 'Filled from their answers (shown in grey). Type to replace what goes into the notes.', mp),
+          step(4, 'Open questions for next time', 'Checked items go into the notes as the next call’s agenda.', gaps),
+          step(5, 'Next steps and notes', null,
+            agreed ? h('p', h('span.muted', 'Agreed on the call: '), agreed) : h('p.muted', 'No next step was recorded — add one with an owner and a date.'),
+            h('label.lf', h('span', 'Next steps'), h('textarea', { rows: 3, 'data-key': 'wrap.next', placeholder: 'Owner — action — date (one per line)', oninput: (e) => app.soft((x) => { x.wrap.nextSteps = e.target.value; }) }, s.wrap.nextSteps || '')),
+            h('label.lf', h('span', 'Other notes'), h('textarea', { rows: 3, 'data-key': 'wrap.notes', placeholder: 'Anything else for the opportunity record', oninput: (e) => app.soft((x) => { x.wrap.notes = e.target.value; }) }, s.wrap.notes || '')))),
         h('div.wrap-right',
-          h('section.panel.sticky',
-            h('h2', 'CRM notes'),
-            h('div.export',
-              h('button.btn.primary', { onclick: () => copy(notes, 'Notes') }, 'Copy full notes'),
-              h('button.btn', { onclick: () => copy(F.report.meddpicc(s, d), 'MEDDPICC') }, 'Copy MEDDPICC'),
-              h('button.btn', { onclick: () => download(`${fname}.txt`, notes) }, 'Download .txt'),
-              h('button.btn', { onclick: () => download(`fivo-${slug(s.setup.account)}.json`, F.state.exportJSON(s), 'application/json'), title: 'Keep this to resume or run call 2 on another machine' }, 'Save session (.json)'),
-              h('button.btn.ghost', { onclick: () => window.print() }, 'Print / PDF')),
+          h('section.notes-panel',
+            h('div.notes-head', h('h2', 'CRM notes'), h('span.muted.small', 'Plain text — pastes cleanly into Salesforce')),
+            h('div.notes-actions',
+              h('button.btn.primary', { onclick: () => copy(notes, 'Notes') }, 'Copy notes'),
+              h('button.btn', { onclick: () => copy(F.report.meddpicc(s, d), 'MEDDPICC') }, 'Copy MEDDPICC')),
+            h('div.notes-more',
+              h('button.tbtn.small', { onclick: () => download(`${fname}.txt`, notes) }, 'Download .txt'),
+              h('button.tbtn.small', { onclick: () => download(`fivo-${slug(s.setup.account)}.json`, F.state.exportJSON(s), 'application/json'), title: 'Keep this to resume or run call 2 on another machine' }, 'Save session (.json)'),
+              h('button.tbtn.small', { onclick: () => window.print() }, 'Print')),
             h('pre.notes', { id: 'print-notes', 'data-scroll': 'notes' }, notes)))));
   };
 })(globalThis.Fivo = globalThis.Fivo || {});
@@ -3806,22 +3967,25 @@ globalThis.Fivo = { VERSION: "0.1.0", BUILT: "2026-09-29", CONTENT_DATE: "Sept 2
     const ui = app.ui;
     if (e.metaKey || e.ctrlKey || e.altKey) return;
 
-    // Keys typed into a field belong to that field (check the target: a field may be
+    // Keys typed into a field belong to that field (check the target too: a field can be
     // re-rendered away while its own handler runs).
     const inField = typing(e.target) || typing(document.activeElement);
 
-    // Esc: leave a field, close a panel, or toggle the privacy blur.
+    // Esc peels back one layer at a time; with nothing open it hides the screen.
     if (e.key === 'Escape') {
       if (inField && ui.search === null) { if (document.activeElement && document.activeElement.blur) document.activeElement.blur(); return; }
+      if (ui.blur) { ui.blur = false; app.render(); return; }
       if (ui.search !== null) { ui.search = null; app.render(); return; }
       if (ui.help) { ui.help = false; app.render(); return; }
+      if (ui.addTopic) { ui.addTopic = false; app.render(); return; }
       if (ui.drawer) { ui.drawer = null; app.render(); return; }
-      if (ui.screen === 'interview' || ui.blur) { ui.blur = !ui.blur; app.render(); }
+      if (ui.screen === 'interview' && ui.topic) { ui.topic = null; app.render(); return; }
+      if (ui.screen === 'interview') { ui.blur = true; app.render(); }
       return;
     }
     if (ui.blur || inField) return;
     if (e.key === '?') { ui.help = !ui.help; app.render(); e.preventDefault(); return; }
-    if (ui.screen !== 'interview' || ui.search !== null || ui.help) return;
+    if (ui.screen !== 'interview' || ui.search !== null || ui.help || ui.addTopic) return;
 
     const k = e.key.toLowerCase();
     if (ui.drawer) {
@@ -3842,11 +4006,10 @@ globalThis.Fivo = { VERSION: "0.1.0", BUILT: "2026-09-29", CONTENT_DATE: "Sept 2
     if (e.key === 'Enter' && q) {
       hit();
       if (q.type !== 'single') app.done(q.id);
-      else if (ui.pinned === q.id) { ui.pinned = null; ui.active = null; app.render(); }
+      else if (ui.pinned === q.id) { ui.pinned = null; ui.active = null; ui.resetMain = true; app.render(); }
       return;
     }
-    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
-      if (!ids.length) return;
+    if ((e.key === 'ArrowDown' || e.key === 'ArrowUp') && q) {
       hit();
       const i = Math.max(0, ids.indexOf(qid));
       ui.active = ids[(i + (e.key === 'ArrowDown' ? 1 : ids.length - 1)) % ids.length];
@@ -3857,7 +4020,7 @@ globalThis.Fivo = { VERSION: "0.1.0", BUILT: "2026-09-29", CONTENT_DATE: "Sept 2
       case '/': hit(); F.ui.openSearch(); break;
       case 's': if (q) { hit(); app.skip(q.id); } break;
       case 'b': hit(); app.undo(); break;
-      case 'n': if (q) { hit(); F.ui.focusNote(q.id); } break;
+      case 'n': if (q) { hit(); F.ui.openNote(q.id); } break;
       case 'q': if (q) { hit(); F.ui.openQuote(q.id); } break;
       case 'c': hit(); app.setPref('coaching', !ui.coaching); break;
       case 'p': if (app.d.primary && app.d.primary.score > 0) { hit(); F.ui.openDrawer(app.d.primary.id); } break;
@@ -3889,9 +4052,7 @@ globalThis.Fivo = { VERSION: "0.1.0", BUILT: "2026-09-29", CONTENT_DATE: "Sept 2
   // Timer: only touches the one element, so it never disturbs typing.
   setInterval(() => {
     const el = document.getElementById('timer');
-    if (!el || !app.s) return;
-    const call = app.s.calls[app.s.calls.length - 1];
-    el.textContent = call.startedAt ? F.dom.fmtTime(Date.now() - call.startedAt) : '0:00';
+    if (el) el.textContent = F.ui.elapsed();
   }, 1000);
 
   // Flush autosave before the tab closes.

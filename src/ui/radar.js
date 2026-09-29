@@ -1,4 +1,4 @@
-/* Fiv-o UI: Pitch Radar (live play ranking) and the Pitch Card drawer. */
+/* Fiv-o UI: the likely-pitch side panel and the pitch card. */
 (function (F) {
   'use strict';
 
@@ -6,69 +6,136 @@
   const app = F.app;
   const personaLabel = (id) => (F.meta.personas.find((p) => p.id === id) || { label: id }).label;
 
-  F.ui.openDrawer = function (pid) { app.ui.drawer = pid; app.ui.drawerTab = null; app.render(); };
+  F.ui.openDrawer = function (pid) { app.ui.drawer = pid; app.ui.drawerTab = null; app.ui.pitchTab = 'pitch'; app.render(); };
   const closeDrawer = () => { app.ui.drawer = null; app.render(); };
 
   function whyTitle(r) {
-    const t = r.trace.slice(0, 5).map((x) => `${x.delta > 0 ? '+' : ''}${x.delta}  ${x.label}`).join('\n');
-    return t ? `Why:\n${t}` : 'No signals yet';
+    const t = [...new Set(r.trace.filter((x) => x.delta > 0).map((x) => x.label))].slice(0, 4).join('\n');
+    return t ? `Because:\n${t}` : 'No signals yet';
   }
+  const meter = (r, cls) => h('div.meter' + (cls ? '.' + cls : ''),
+    h('div.meter-fill' + (r.ready ? '.ready' : ''), { style: { width: pct(app.ui.prevConf[r.id] || 0) }, 'data-w': pct(r.conf) }));
 
-  function bar(r, big) {
-    const from = pct(app.ui.prevConf[r.id] || 0);
-    return h('div.bar' + (big ? '.big' : ''), h('div.bar-fill' + (r.ready ? '.ready' : ''), { style: { width: from }, 'data-w': pct(r.conf) }));
-  }
-
-  function leadCard(r) {
+  function lead(r) {
     const p = r.play;
     const variant = r.variant && p.variants.find((v) => v.id === r.variant.id);
-    return h('div.lead' + (r.ready ? '.ready' : ''),
-      h('div.lead-k', r.ready ? 'Pitch ready' : 'Leading pitch', app.s.primaryPlay === r.id ? h('span.pill.tiny', 'your pick') : null),
+    return h('div.lead',
+      h('div.lead-status' + (r.ready ? '.ready' : ''), r.ready ? 'Ready to pitch' : 'Building confidence'),
       h('div.lead-name', p.name),
-      variant ? h('div.lead-var', '→ ', variant.name)
-        : p.variants ? h('div.lead-var.muted', 'Variant not decided yet') : null,
-      bar(r, true),
-      h('div.lead-meta', h('strong', pct(r.conf)), h('span.muted', ' confidence')),
-      r.missingQualifiers.length ? h('div.lead-q',
-        h('span.muted', 'To lock it in, confirm: '),
-        r.missingQualifiers.map((qid) => h('button.link', { onclick: () => app.pin(qid) }, F.questionById[qid].short))) : null,
-      h('p.lead-line', variant ? variant.pitch : p.oneLiner),
-      h('button.btn.primary.block', { onclick: () => F.ui.openDrawer(r.id) }, 'Open pitch card', h('kbd', 'P')));
+      variant ? h('div.lead-var', variant.name)
+        : p.variants ? h('div.lead-var.muted', 'Version not decided yet') : null,
+      h('div.lead-meter', meter(r), h('span.mono', pct(r.conf))),
+      r.missingQualifiers.length ? h('p.lead-need', 'To confirm: ',
+        r.missingQualifiers.map((qid, i) => [i ? ', ' : '', h('button.link', { onclick: () => app.pin(qid) }, F.questionById[qid].short)])) : null,
+      h('button.btn.full', { onclick: () => F.ui.openDrawer(r.id), title: 'Pitch card  (P)' }, 'Open pitch card'));
   }
 
   F.ui.radar = function () {
     const d = app.d;
-    const list = d.scores.list;
-    const live = list.filter((r) => r.score > 0);
-    const idle = list.filter((r) => r.score === 0);
-    const lead = d.primary && d.primary.score > 0 ? leadCard(d.primary)
-      : h('div.lead.empty', h('div.lead-k', 'Pitch radar'), h('p.muted', 'Answer “why now” and the plays will start ranking here as you learn more.'));
+    const ui = app.ui;
+    const all = d.scores.list;
+    const top = d.primary && d.primary.score > 0 ? d.primary : null;
+    const rest = all.filter((r) => r !== top && (ui.showAll || r.score > 0));
+    const shown = ui.showAll ? rest : rest.slice(0, 3);
 
-    return h('div.radar',
-      h('div.col-title', 'Pitch radar'),
-      lead,
-      live.length ? h('div.radar-list',
-        h('div.radar-sub', h('span', 'All plays'), h('span.muted', 'hover for why · click for card')),
-        live.map((r) => {
-          const delta = app.ui.rankDelta[r.id];
-          return h('button.pbar' + (r.ready ? '.ready' : '') + (d.primary === r ? '.lead-row' : ''), { onclick: () => F.ui.openDrawer(r.id), title: whyTitle(r) },
-            h('div.pbar-top',
-              h('span.pbar-name', r.play.short),
-              delta ? h('span.delta' + (delta > 0 ? '.up' : '.down'), delta > 0 ? '▲' : '▼') : null,
-              r.variant ? h('span.pbar-var', r.variant.name) : null,
-              h('span.pbar-pct', pct(r.conf))),
-            bar(r));
-        })) : null,
-      idle.length ? h('details.idle', { open: app.ui.idleOpen ? true : null, ontoggle: (e) => { app.ui.idleOpen = e.target.open; } },
-        h('summary', `${idle.length} play${idle.length > 1 ? 's' : ''} not indicated yet`),
-        idle.map((r) => h('button.idle-item', { onclick: () => F.ui.openDrawer(r.id) }, r.play.name))) : null,
-      d.flags.length ? h('div.flags', h('div.radar-sub', 'Risks'), d.flags.map((f) => h('div.flagline', h('span.tip-k.bad', 'Risk'), f.text))) : null,
-      h('div.signals', `${d.pains.length} pain${d.pains.length === 1 ? '' : 's'} · ${d.quotes.length} quote${d.quotes.length === 1 ? '' : 's'} captured`));
+    return h('div.side-in',
+      h('section.side-sec',
+        h('div.eyebrow', 'Likely pitch'),
+        top ? lead(top) : h('p.muted.small', 'Nothing yet. As they answer, the best-fit Nutanix pitch shows up here.')),
+      shown.length ? h('section.side-sec',
+        h('div.eyebrow', 'Also in play'),
+        shown.map((r) => h('button.prow', { onclick: () => F.ui.openDrawer(r.id), title: whyTitle(r) },
+          h('span.prow-name', r.play.short),
+          meter(r, 'thin'),
+          h('span.prow-v.mono', r.score ? pct(r.conf) : '—')))) : null,
+      top || rest.length ? h('button.tbtn.small', { onclick: () => { ui.showAll = !ui.showAll; app.render(); } },
+        ui.showAll ? 'Show fewer' : `See all ${all.length} pitches`) : null,
+      d.flags.length ? h('section.side-sec',
+        h('div.eyebrow', 'Risks'),
+        d.flags.map((f) => h('p.risk', f.text))) : null,
+      h('section.side-sec',
+        h('div.eyebrow', 'MEDDPICC'),
+        h('div.mp', d.mp.letters.map((l) => h(`span.mp-l.l${l.level}`, { title: `${l.label} — ${['gap', 'partial', 'solid'][l.level]}${l.items.length ? ': ' + l.items.join('; ') : ''}` }, l.k))),
+        h('p.muted.small', `${d.pains.length} pain${d.pains.length === 1 ? '' : 's'} · ${d.quotes.length} quote${d.quotes.length === 1 ? '' : 's'} captured`)));
   };
 
   // ── Pitch card ──
-  function section(title, ...body) {
-    return h('section.dsec', h('h3', title), body);
+  const sec = (title, ...body) => h('section.dsec', h('h3', title), body);
+
+  function pitchTab(r, p, variant) {
+    const s = app.s;
+    const trackIds = Object.keys(p.personas);
+    const ordered = [...s.setup.attendees.filter((id) => trackIds.includes(id)), ...trackIds.filter((id) => !s.setup.attendees.includes(id))];
+    const tab = app.ui.drawerTab && ordered.includes(app.ui.drawerTab) ? app.ui.drawerTab : ordered[0];
+    return [
+      p.variants ? sec('Which version',
+        h('div.rows', r.variants.map((v) => {
+          const def = p.variants.find((x) => x.id === v.id);
+          const on = variant && variant.id === v.id;
+          return h('div.row.static' + (on ? '.on' : ''),
+            h('span.row-q', def.name, on ? h('span.must', 'Best fit') : null),
+            h('span.row-a', def.pitch));
+        }))) : null,
+      h('p.oneliner', p.oneLiner),
+      h('div.ba',
+        h('div', h('h3', 'Before'), h('p', p.before)),
+        h('div', h('h3', 'After'), h('p', p.after))),
+      sec('Talk track',
+        h('div.utabs', ordered.map((id) => h('button.utab' + (id === tab ? '.on' : ''), {
+          onclick: () => { app.ui.drawerTab = id; app.render(); },
+          title: s.setup.attendees.includes(id) ? 'On this call' : '',
+        }, personaLabel(id), s.setup.attendees.includes(id) ? ' •' : ''))),
+        h('p.track', p.personas[tab])),
+    ];
+  }
+
+  function proofTab(r, p) {
+    const confirms = app.s.confirms[p.id] || [];
+    const why = [];
+    const seen = new Set();
+    r.trace.forEach((t) => { const k = t.qid + t.opt; if (!seen.has(k)) { seen.add(k); why.push(t); } });
+    return [
+      sec('Why this pitch — from their answers',
+        why.length ? h('div.rows', why.slice(0, 8).map((t) => h('button.row', { onclick: () => { app.ui.drawer = null; app.pin(t.qid); } },
+          h('span.row-q', t.label), h('span.row-a.mono', `${t.delta > 0 ? '+' : ''}${t.delta}`)))) : h('p.muted', 'No signals yet.')),
+      sec('Capabilities to confirm',
+        p.capabilities.map((c, i) => h('label.check',
+          h('input', { type: 'checkbox', checked: !!confirms[i], onchange: (e) => app.act((x) => { (x.confirms[p.id] = x.confirms[p.id] || [])[i] = e.target.checked; }) }),
+          h('span', c)))),
+      sec('Proof points',
+        h('ul.plain', p.proof.map((x) => h('li',
+          x.t, ' ',
+          x.verify ? h('span.verify', { title: 'Check against current internal enablement before quoting' }, 'verify') : null, ' ',
+          h('a', { href: x.src, target: '_blank', rel: 'noopener noreferrer' }, 'source'))))),
+    ];
+  }
+
+  function objectionsTab(p) {
+    const s = app.s;
+    const comps = F.selected(F.questionById['dec.competition'], s.answers['dec.competition']).filter((id) => F.competitors[id]);
+    const compBlock = (id) => {
+      const c = F.competitors[id];
+      return h('div.comp',
+        h('h4', c.name),
+        h('p.muted', `Their pitch: ${c.theirPitch}`),
+        h('div.follow-k', 'Questions to plant'),
+        h('ul', c.landmines.map((x) => h('li', x))),
+        h('p', h('strong', 'Our angle: '), c.counter));
+    };
+    return [
+      sec('Objections', p.objections.map((o) => h('details.obj', h('summary', o.q), h('p', o.a)))),
+      sec('Competition',
+        comps.length ? comps.map(compBlock)
+          : [h('p.muted', 'No competitors captured yet. All battlecards:'), Object.keys(F.competitors).map((id) => h('details.obj', h('summary', F.competitors[id].name), compBlock(id)))]),
+    ];
+  }
+
+  function nextTab(p, variant) {
+    return [
+      sec('Recommended next steps', h('ol', p.nextSteps.map((x) => h('li', x)))),
+      sec('Products', h('p', (variant ? variant.products : p.products).join(' · '))),
+      sec('Licensing', h('p', p.editions, ' ', h('a', { href: p.editionsSrc, target: '_blank', rel: 'noopener noreferrer' }, 'source'))),
+    ];
   }
 
   F.screens.drawer = function () {
@@ -78,88 +145,29 @@
     const s = app.s;
     const isPrimary = s.primaryPlay === p.id;
     const variant = r.variant && p.variants.find((v) => v.id === r.variant.id);
-
-    // Talk tracks: attendees first, then the rest.
-    const trackIds = Object.keys(p.personas);
-    const ordered = [...s.setup.attendees.filter((id) => trackIds.includes(id)), ...trackIds.filter((id) => !s.setup.attendees.includes(id))];
-    const tab = app.ui.drawerTab && ordered.includes(app.ui.drawerTab) ? app.ui.drawerTab : ordered[0];
-
-    const comps = F.selected(F.questionById['dec.competition'], s.answers['dec.competition']).filter((id) => F.competitors[id]);
-    const compCard = (id) => {
-      const c = F.competitors[id];
-      return h('div.comp',
-        h('div.comp-name', c.name),
-        h('p.muted', h('em', 'Their pitch: '), c.theirPitch),
-        h('div.coach-k', 'Plant these'),
-        h('ul', c.landmines.map((x) => h('li', x))),
-        h('p', h('strong', 'Our angle: '), c.counter));
-    };
-    const confirms = s.confirms[p.id] || [];
+    const tabs = [['pitch', 'Pitch'], ['proof', 'Proof'], ['objections', 'Objections'], ['next', 'Next steps']];
+    const tab = app.ui.pitchTab || 'pitch';
+    const status = r.ready ? 'ready to pitch' : r.missingQualifiers.length ? `to confirm: ${r.missingQualifiers.map((q) => F.questionById[q].short).join(', ')}` : 'still building';
 
     return h('div.overlay.drawer-wrap', { onclick: closeDrawer },
       h('aside.drawer', { onclick: (e) => e.stopPropagation(), 'data-scroll': 'drawer', role: 'dialog', 'aria-label': `Pitch card: ${p.name}` },
         h('div.dhead',
-          h('div', h('div.lead-k', 'Pitch card'), h('h2', p.name)),
-          h('button.btn.ghost', { onclick: closeDrawer }, 'Close', h('kbd', 'Esc'))),
-        h('div.dmeta',
-          h('span.pill.accent', `${pct(r.conf)} confidence`),
-          r.ready ? h('span.pill.good', 'ready to pitch') : r.missingQualifiers.length ? h('span.pill.warn', `confirm ${r.missingQualifiers.length} qualifier${r.missingQualifiers.length > 1 ? 's' : ''}`) : null,
-          h('button.btn.sm' + (isPrimary ? '.on' : ''), {
+          h('div',
+            h('div.eyebrow', 'Pitch card'),
+            h('h2', p.name),
+            h('p.muted.small', `${pct(r.conf)} confidence · ${status}`)),
+          h('button.tbtn', { onclick: closeDrawer }, 'Close')),
+        h('div.dbar',
+          h('div.utabs', tabs.map(([id, label]) => h('button.utab' + (id === tab ? '.on' : ''), { onclick: () => { app.ui.pitchTab = id; app.render(); } }, label))),
+          h('button.tbtn.small', {
             onclick: () => app.act((x) => { x.primaryPlay = isPrimary ? null : p.id; }),
-            title: 'Override the auto-ranking for the report',
-          }, isPrimary ? '✓ Your primary play' : 'Make primary play')),
-
-        p.variants ? section('Which version of this pitch',
-          h('div.variants', r.variants.map((v) => {
-            const def = p.variants.find((x) => x.id === v.id);
-            const on = variant && variant.id === v.id;
-            return h('div.variant' + (on ? '.on' : ''),
-              h('div.variant-top', h('strong', def.name), h('span.muted', v.score ? pct(v.share) : '—')),
-              h('p', def.pitch),
-              h('p.small.muted', def.products.join(' · ')));
-          }))) : null,
-
-        h('p.oneliner', p.oneLiner),
-        h('div.ba',
-          h('div.ba-col.before', h('div.coach-k', 'Before'), h('p', p.before)),
-          h('div.ba-col.after', h('div.coach-k', 'After'), h('p', p.after))),
-
-        section('Talk track',
-          h('div.tabs', ordered.map((id) => h('button.tab' + (id === tab ? '.on' : '') + (s.setup.attendees.includes(id) ? '.attending' : ''), {
-            onclick: () => { app.ui.drawerTab = id; app.render(); },
-            title: s.setup.attendees.includes(id) ? 'On this call' : '',
-          }, personaLabel(id)))),
-          h('p.track', p.personas[tab])),
-
-        section('Why this play — from their answers',
-          r.trace.length ? h('ul.trace', r.trace.slice(0, 8).map((t) => h('li',
-            h('span.delta-n' + (t.delta > 0 ? '.up' : '.down'), `${t.delta > 0 ? '+' : ''}${t.delta}`),
-            h('button.link', { onclick: () => { app.ui.drawer = null; app.pin(t.qid); } }, t.label),
-            t.target.includes('.') ? h('span.muted.small', ` → ${(p.variants.find((v) => `${p.id}.${v.id}` === t.target) || {}).name || ''}`) : null))) : h('p.muted', 'No signals yet.')),
-
-        section('Capabilities to confirm',
-          p.capabilities.map((c, i) => h('label.check',
-            h('input', { type: 'checkbox', checked: !!confirms[i], onchange: (e) => app.act((x) => { (x.confirms[p.id] = x.confirms[p.id] || [])[i] = e.target.checked; }) }),
-            h('span', c)))),
-
-        section('Proof points',
-          h('ul.proof', p.proof.map((x) => h('li',
-            h('span', x.t), ' ',
-            x.verify ? h('span.pill.warn.tiny', { title: 'Check against current internal enablement before quoting' }, 'verify') : null, ' ',
-            h('a', { href: x.src, target: '_blank', rel: 'noopener noreferrer' }, 'source'))))),
-
-        section('Objections',
-          p.objections.map((o) => h('details.obj', h('summary', o.q), h('p', o.a)))),
-
-        section('Competitive landmines',
-          comps.length ? comps.map(compCard)
-            : h('details.obj', h('summary', 'No competitors captured yet — show all battlecards'), Object.keys(F.competitors).map(compCard))),
-
-        section('Recommended next steps', h('ol', p.nextSteps.map((x) => h('li', x)))),
-
-        section('Products', h('p', (variant ? variant.products : p.products).join(' · '))),
-
-        section('Licensing hint', h('p', p.editions, ' ', h('a', { href: p.editionsSrc, target: '_blank', rel: 'noopener noreferrer' }, 'source'))),
-        h('p.small.muted.pad', 'Public-source content. Validate proof points and editions against current internal enablement.')));
+            title: 'Use this pitch as the primary play in your notes',
+          }, isPrimary ? '✓ Primary pitch' : 'Make primary')),
+        h('div.dbody',
+          tab === 'pitch' ? pitchTab(r, p, variant)
+            : tab === 'proof' ? proofTab(r, p)
+              : tab === 'objections' ? objectionsTab(p)
+                : nextTab(p, variant)),
+        h('p.small.muted.dfoot', 'Public-source content. Validate proof points and licensing against current internal enablement.')));
   };
 })(globalThis.Fivo = globalThis.Fivo || {});
