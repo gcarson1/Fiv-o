@@ -1,0 +1,12 @@
+{
+  "name": "fiv-o",
+  "version": "0.1.0",
+  "description": "Guided discovery navigator for Nutanix sales engineers — a single offline HTML file.",
+  "private": true,
+  "type": "module",
+  "contentDate": "Sept 2026",
+  "scripts": {
+    "build": "node build.mjs",
+    "test": "node --test tests/*.test.mjs"
+  }
+}
