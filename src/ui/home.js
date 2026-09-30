@@ -61,7 +61,7 @@
         h('button.tbtn.small', { onclick: () => F.ui.toggleTheme(), style: { marginLeft: 'auto' } }, 'Light / dark')),
       h('section.home-hero',
         h('h1', 'Run the discovery call. Fiv-o keeps track.'),
-        h('p.lede', 'Ask the question on screen and click what they say. It suggests what to ask next, narrows to the Nutanix pitch that fits, and writes your CRM notes at the end.'),
+        h('p.lede', 'Ask the question on screen and click what they say. It keeps the call in order — why now, environment, pain and cost, change, decision — narrows to the Nutanix pitch that fits, and writes your CRM notes at the end.'),
         h('div.hstack',
           h('button.btn.primary.lg', { onclick: newSession }, 'Start a new discovery'),
           importButton())),
@@ -71,7 +71,8 @@
           h('h2', 'How it works'),
           h('ol.steps-list',
             h('li', h('strong', 'Set up in 30 seconds. '), 'Account and who’s on the call. Their roles decide which talk tracks you see.'),
-            h('li', h('strong', 'Ask and click. '), 'One question at a time. Each answer decides what comes next and updates the likely pitch.'),
+            h('li', h('strong', 'Ask and click, phase by phase. '), 'Why now, then their environment, then pain and cost, then change and risk, then the decision. Each answer decides what comes next and updates the likely pitch.'),
+            h('li', h('strong', 'Get the number. '), 'When they name a pain, Fiv-o asks what it costs — hours, dollars, people — so the business case builds as you go.'),
             h('li', h('strong', 'Wrap up. '), 'Confirm the pitch, fill any MEDDPICC gaps, and copy the notes into Salesforce.'))),
       h('footer.foot',
         h('p', `Pitch content comes from public Nutanix sources as of ${F.CONTENT_DATE || 'Sept 2026'}. Check proof points marked “verify” against internal enablement before quoting them.`),
@@ -170,7 +171,7 @@
             const k = `${p.qid}:${p.opt}`;
             return h('label.check',
               h('input', { type: 'checkbox', checked: !!confirmed[k], onchange: (e) => app.act((x) => { x.recap.confirmed[k] = e.target.checked; }) }),
-              h('span', p.label, p.impact ? h('span.muted', ` — ${p.impact}`) : null));
+              h('span', p.label, p.metric || p.impact ? h('span.muted', ` — ${[p.metric, p.impact].filter(Boolean).join(' · ')}`) : h('span.muted', ' — no number yet')));
           }) : h('p.muted', 'No pains captured yet — make finding them the goal of this call.'),
           h('h2.mt', 'Agenda: open questions'),
           h('ol', d.gaps.slice(0, 8).map((id) => h('li', F.questionById[id].text))))),

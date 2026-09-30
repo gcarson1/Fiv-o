@@ -23,7 +23,7 @@
       if (ui.addTopic) { ui.addTopic = false; app.render(); return; }
       if (ui.techPicker) { ui.techPicker = false; app.render(); return; }
       if (ui.drawer) { ui.drawer = null; app.render(); return; }
-      if (ui.screen === 'interview' && ui.topic) { ui.topic = null; app.render(); return; }
+      if (ui.screen === 'interview' && ui.review) { ui.review = null; app.render(); return; }
       if (ui.screen === 'interview') { ui.blur = true; app.render(); }
       return;
     }
@@ -49,8 +49,8 @@
     }
     if (e.key === 'Enter' && q) {
       hit();
-      if (q.type !== 'single') app.done(q.id);
-      else if (ui.pinned === q.id) { ui.pinned = null; ui.active = null; ui.resetMain = true; app.render(); }
+      if (q.type !== 'single') F.ui.finish(q.id);
+      else if (ui.pinned === q.id) app.proceed(q.id);
       return;
     }
     if ((e.key === 'ArrowDown' || e.key === 'ArrowUp') && q) {

@@ -1,11 +1,17 @@
-/* Fiv-o engine: eligibility, stale answers, question ordering (next-best-question),
-   gaps, and the single `evaluate()` the UI and report read from. */
+/* Fiv-o engine: eligibility, stale answers, question ordering, gaps, and the single
+   `evaluate()` the UI and report read from.
+
+   Ordering follows the five phases (F.meta.phases): a phase is finished before the next
+   one starts, so the call follows the customer's story instead of hopping between topics.
+   The only way back to an earlier phase is a topic that surfaces late (its "why now" and
+   environment questions are asked as a quick catch-up). */
 (function (F) {
   'use strict';
 
   const MOD = Object.fromEntries(F.meta.modules.map((m) => [m.id, m]));
+  const PHASE = Object.fromEntries(F.meta.phases.map((p) => [p.id, p]));
   const QIDX = Object.fromEntries(F.questions.map((q, i) => [q.id, i]));
-  const FIXED = ['why', 'env', 'decision'];
+  const generic = (mid) => !!(MOD[mid] && MOD[mid].generic);
 
   function term(t, s, valid) {
     const [qid, opt] = t.split(':');
@@ -49,13 +55,13 @@
     const tech = F.techEngine.evaluate(s, valid, scores);
 
     // Topics whose pitches were all turned down are set aside: their open questions leave
-    // the flow (they stay reachable through search and topic review).
+    // the flow (they stay reachable through search and phase review).
     const aside = {};
     F.meta.modules.forEach((m) => {
       if (m.serves && m.serves.length && m.serves.every((pid) => scores.byId[pid] && scores.byId[pid].declined)) aside[m.id] = true;
     });
 
-    // 3. Pains, flags, coaching tips, quotes.
+    // 3. Pains (each with the number behind it), flags, coaching tips, quotes.
     const pains = [], flags = [], tips = [], quotes = [];
     for (const q of F.questions) {
       const a = s.answers[q.id];
@@ -66,21 +72,31 @@
         if (!o) return;
         if (o.pain) {
           const p = a.pains[o.id] || {};
-          pains.push({ qid: q.id, opt: o.id, label: o.painLabel || `${q.short}: ${o.label}`, impact: (p.impact || '').trim(), metric: (p.metric || '').trim() });
+          const c = F.costs.ask(q, o);
+          const pain = {
+            qid: q.id, opt: o.id, phase: q.phase, label: o.painLabel || `${q.short}: ${o.label}`,
+            ask: c.text, unit: p.unit || c.unit, amount: String(p.amount || '').trim(),
+            impact: (p.impact || '').trim(), later: !!p.later, metric: (p.metric || '').trim(),
+          };
+          pain.value = F.costs.value(pain, s);
+          if (pain.value) pain.metric = pain.value.text; // what MEDDPICC and the notes show
+          pains.push(pain);
         }
         if (o.flag) flags.push({ qid: q.id, text: o.flag });
         if (o.tip) tips.push({ qid: q.id, opt: o.id, text: o.tip });
       });
     }
+    const costs = F.costs.summary(pains, s);
 
-    // 4. Topic order: why → env → triggered (ranked) → other unlocked topics → late env → decision.
+    // 4. Topics in play: the customer's ranked triggers, then topics opened by answers.
     const trig = valid.trigger ? F.selected(F.questionById.trigger, s.answers.trigger) : [];
     const topicHasEligible = (mid) => F.questions.some((q) => q.module === mid && eligible[q.id]);
     const triggered = [...new Set(trig.map((t) => F.meta.triggerModule[t]).filter(Boolean))].filter(topicHasEligible);
-    const others = F.meta.modules.map((m) => m.id).filter((id) => !FIXED.includes(id) && !triggered.includes(id) && topicHasEligible(id));
-    const order = ['why', 'env', ...triggered, ...others, 'late', 'decision'];
-    const modules = ['why', 'env', ...triggered, ...others, 'decision'];
-    const rankOf = (q) => { const i = order.indexOf(q.late ? 'late' : q.module); return i < 0 ? 99 : i; };
+    const others = F.meta.modules.filter((m) => !m.generic && !triggered.includes(m.id) && topicHasEligible(m.id)).map((m) => m.id);
+    const topics = [...triggered, ...others];
+    const order = ['why', 'env', ...topics, 'change', 'decision'];
+    const modules = order;
+    const rankOf = (q) => (generic(q.module) ? -1 : topics.indexOf(q.module) < 0 ? 99 : topics.indexOf(q.module));
 
     // 5. Next-best-question: which unanswered questions split the leading plays / variants?
     const pairs = [];
@@ -103,37 +119,57 @@
       }
     });
 
-    // 6. Queue (skipped questions drop out but stay reachable via search / topics).
-    // Drill-down: children of the last answer — and its siblings (same parent) — come first.
-    const last = s.lastAnswered;
-    const lastParents = last && F.questionById[last] ? refs(F.questionById[last].when) : [];
-    const isChild = (q) => !!last && refs(q.when).some((r) => r === last || lastParents.includes(r));
-    const queue = F.questions
-      .filter((q) => isOpen(q) && !(s.answers[q.id] && s.answers[q.id].skipped))
+    // 6. Queue (skipped questions drop out but stay reachable via search / phase review).
+    //    Phase first. Inside a phase: follow-ups to the last answer, then the phase's own
+    //    order (seq), then — in "by topic" phases — the topic being discussed and the
+    //    customer's ranking, then the order questions are written in.
+    //    A topic the customer just raised (ui.focusModule) catches up to the current phase first;
+    //    ui.focusPhase jumps to a phase (e.g., decision questions before time runs out).
+    const candidates = F.questions.filter((q) => isOpen(q) && !(s.answers[q.id] && s.answers[q.id].skipped));
+    const phaseNow = Math.min(Infinity, ...candidates.filter((q) => q.module !== ui.focusModule).map((q) => q.phase));
+    const catchUp = (q) => !!ui.focusModule && q.module === ui.focusModule && q.phase <= phaseNow;
+    const lastQ = s.lastAnswered && F.questionById[s.lastAnswered];
+    const lastParents = lastQ ? refs(lastQ.when) : [];
+    const isChild = (q) => !!lastQ && refs(q.when).some((r) => r === lastQ.id || lastParents.includes(r));
+    const sameTopic = (q) => !!lastQ && !generic(lastQ.module) && lastQ.phase === q.phase && lastQ.module === q.module;
+    const queue = candidates
       .sort((a, b) => {
-        const k = (q) => [
-          ui.focusModule ? (q.module === ui.focusModule ? 0 : 1) : 0,
-          rankOf(q),
-          isChild(q) ? 0 : 1,
-          q.mustAsk ? 0 : 1,
-          split[q.id] ? 0 : 1,
-          QIDX[q.id],
-        ];
+        const k = (q) => {
+          const byTopic = PHASE[q.phase] && PHASE[q.phase].byTopic;
+          return [
+            catchUp(q) ? 0 : 1,
+            ui.focusPhase ? (q.phase === ui.focusPhase ? 0 : 1) : 0,
+            q.phase,
+            isChild(q) ? 0 : 1,
+            q.seq || 0,
+            byTopic && sameTopic(q) ? 0 : 1,
+            byTopic ? rankOf(q) : 0,
+            QIDX[q.id],
+          ];
+        };
         const ka = k(a), kb = k(b);
         for (let i = 0; i < ka.length; i++) if (ka[i] !== kb[i]) return ka[i] - kb[i];
         return 0;
       })
       .map((q) => q.id);
+    const focusLeft = candidates.filter(catchUp).length;
 
-    // 7. Topic progress.
+    // 7. Progress per topic and per phase (set-aside topics don't count).
     const progress = {};
     F.meta.modules.forEach((m) => {
       const qs = F.questions.filter((q) => q.module === m.id && eligible[q.id]);
       progress[m.id] = { eligible: qs.length, answered: qs.filter((q) => F.isAnswered(q, s.answers[q.id])).length };
     });
+    const phases = {};
+    F.meta.phases.forEach((ph) => {
+      const qs = F.questions.filter((q) => q.phase === ph.id && eligible[q.id] && !aside[q.module]);
+      const answered = qs.filter((q) => F.isAnswered(q, s.answers[q.id])).length;
+      const open = qs.filter((q) => !F.isAnswered(q, s.answers[q.id]) && !(s.answers[q.id] && s.answers[q.id].skipped)).length;
+      phases[ph.id] = { eligible: qs.length, answered, open, skipped: qs.length - answered - open };
+    });
 
     // 8. Must-asks left and gaps for the next-call agenda.
-    const mustLeft = F.questions.filter((q) => q.mustAsk && isOpen(q) && !(s.answers[q.id] && s.answers[q.id].skipped)).length;
+    const mustLeft = candidates.filter((q) => q.mustAsk).length;
     const topIds = L.slice(0, 2).filter((r) => r.score > 0).map((r) => r.id);
     const quals = L[0] && L[0].score > 0 ? L[0].play.qualifiers || [] : [];
     const gaps = F.questions
@@ -151,7 +187,10 @@
     const primary = (pinnedPlay && !pinnedPlay.declined && pinnedPlay) || L[0];
     const license = F.licensingEngine.recommend(s, { valid, scores, primary, tech });
 
-    return { valid, eligible, stale, scores, primary, tech, aside, license, pains, flags, tips, quotes, order, modules, triggered, queue, split, progress, mustLeft, gaps, mp };
+    return {
+      valid, eligible, stale, scores, primary, tech, aside, license, pains, costs, flags, tips, quotes,
+      order, modules, topics, triggered, queue, focusLeft, split, progress, phases, mustLeft, gaps, mp,
+    };
   }
 
   F.router = { evaluate, isEligible, cond };

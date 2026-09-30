@@ -19,7 +19,7 @@
     {
       id: 'move', name: 'Nutanix Move', play: 'vmw', core: [],
       what: 'Free migration tool — incremental VM replication with a scheduled cutover.',
-      evidence: [['vmw.intent:exit', 0.7], ['vmw.intent:hedge', 0.5], ['vmw.worry:downtime', 0.5], ['play:vmw', 0.5], ['cloud.refactor:none', 0.3]],
+      evidence: [['vmw.intent:exit', 0.7], ['vmw.intent:hedge', 0.5], ['chg.fears:downtime', 0.5], ['play:vmw', 0.5], ['cloud.refactor:none', 0.3]],
     },
     {
       id: 'hci', name: 'HCI storage (AOS)', play: 'refresh', core: ['vmw.hci', 'refresh'],
@@ -29,7 +29,7 @@
     {
       id: 'extstorage', name: 'AHV on their existing array (NCI-Compute)', play: 'vmw', core: ['vmw.ext'],
       what: 'Keep the array, change the hypervisor: AHV and Prism on qualified external storage.',
-      evidence: [['variant:vmw.ext', 1], ['hw.reuse:array', 0.6], ['env.array.age:new', 0.5], ['vmw.worry:hardware', 0.4], ['env.array.vendor:everpure', 0.4], ['env.array.vendor:powerflex', 0.4], ['env.array.vendor:powerstore', 0.4]],
+      evidence: [['variant:vmw.ext', 1], ['hw.reuse:array', 0.6], ['env.array.age:new', 0.5], ['chg.fears:hardware', 0.4], ['env.array.vendor:everpure', 0.4], ['env.array.vendor:powerflex', 0.4], ['env.array.vendor:powerstore', 0.4]],
     },
     {
       id: 'ncm_ops', name: 'NCM Intelligent Operations', play: 'ops', core: ['ops'],

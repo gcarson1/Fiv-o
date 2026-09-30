@@ -66,6 +66,22 @@
       h('button.tbtn.small', { onclick: () => { ui.techPicker = true; app.render(); }, title: 'Mark any technology you pitched' }, 'All technologies'));
   }
 
+  // ── Cost of pain: the business case building as pains get their numbers ──
+  function costSection() {
+    const d = app.d;
+    if (!d.pains.length) return null;
+    const c = d.costs;
+    const money = F.costs.money;
+    const parts = [c.annual ? `≈ ${money(c.annual)} a year` : null, c.once ? `${money(c.once)} one-time` : null, c.perDay ? `${money(c.perDay)} per day down` : null].filter(Boolean);
+    const first = c.missing[0];
+    return h('section.side-sec',
+      h('div.eyebrow', 'Cost of pain'),
+      parts.length ? [h('div.cost-big', parts[0]), parts.length > 1 ? h('p.cost-rest', parts.slice(1).join(' · ')) : null]
+        : h('p.muted.small', 'No numbers yet.'),
+      h('p.muted.small', `${c.quantified} of ${c.count} pain${c.count === 1 ? '' : 's'} ${c.count === 1 ? 'has' : 'have'} a number${c.hours ? ` · hours at $${c.rate}/hr` : ''}`),
+      first ? h('button.tbtn.small.warnlink', { onclick: () => app.pin(first.qid), title: first.ask }, `Get the number: ${first.label}`) : null);
+  }
+
   function pitchTab() {
     const d = app.d;
     const ui = app.ui;
@@ -77,6 +93,7 @@
       h('section.side-sec',
         h('div.eyebrow', 'Likely pitch'),
         top ? lead(top) : h('p.muted.small', 'Nothing yet. As they answer, the best-fit Nutanix pitch shows up here.')),
+      costSection(),
       techSection(),
       shown.length ? h('section.side-sec',
         h('div.eyebrow', 'Also in play'),

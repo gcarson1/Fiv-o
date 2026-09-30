@@ -9,6 +9,7 @@ export const CORE = [
   'src/content/tech.js',
   'src/content/licensing.js',
   'src/engine/state.js',
+  'src/engine/costs.js',
   'src/engine/scoring.js',
   'src/engine/meddpicc.js',
   'src/engine/tech.js',

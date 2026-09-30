@@ -33,7 +33,7 @@
     s.confirms = s.confirms || {};
     s.tech = s.tech || {}; // technology id → { status: 'interested' | 'declined', note }
     s.recap = s.recap || {};
-    s.wrap = Object.assign({ mp: {}, nextSteps: '', notes: '', gapsExcluded: {} }, s.wrap || {});
+    s.wrap = Object.assign({ mp: {}, nextSteps: '', notes: '', gapsExcluded: {}, rate: F.meta.hourlyRate }, s.wrap || {});
     return s;
   }
 
@@ -137,9 +137,11 @@
   function clear(s, qid) { delete s.answers[qid]; }
   function setNote(s, qid, v) { ans(s, qid).note = v; }
   function setQuote(s, qid, v) { ans(s, qid).quote = v; }
+  // The number behind a pain: amount + unit (e.g., "16" hrs/month), impact, or `later`
+  // (no number yet — it goes on the next call's agenda). `metric` is free text from older sessions.
   function setPain(s, qid, optId, key, v) {
     const a = ans(s, qid);
-    a.pains[optId] = Object.assign({ impact: '', metric: '' }, a.pains[optId] || {}, { [key]: v });
+    a.pains[optId] = Object.assign({ impact: '', amount: '', unit: '', later: false }, a.pains[optId] || {}, { [key]: v });
   }
 
   // Shared predicates used by the router, scoring and UI.

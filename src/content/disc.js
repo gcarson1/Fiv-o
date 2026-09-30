@@ -27,6 +27,12 @@
         S: 'Is there a date you’re working toward, so we can plan a comfortable timeline around it?',
         C: 'What’s the exact date driving this, and what’s contractually or operationally tied to it?',
       },
+      'why.consequence': {
+        D: 'And if that date passes — what happens?',
+        I: 'Who feels it if this slips — and how would that land?',
+        S: 'If the date came and went, what would that mean for you and the team?',
+        C: 'What specifically happens after that date — support, pricing, compliance?',
+      },
 
       // ── Environment ──
       'env.itteam': {
@@ -58,6 +64,12 @@
         I: 'What’s the storage setup behind all this, and how do people feel about it?',
         S: 'What storage are the VMs running on, and has it been dependable for you?',
         C: 'What’s the storage architecture under the hypervisor — vendor, protocol and model?',
+      },
+      'env.servers': {
+        D: 'How old are the servers — still under warranty?',
+        I: 'What’s the story with the servers — newer gear, or hosts that have been around a while?',
+        S: 'How are the servers holding up, and are they still covered by warranty?',
+        C: 'What are the server models, purchase dates and warranty end dates?',
       },
       'env.array.vendor': {
         D: 'Which array vendor?',
@@ -91,6 +103,12 @@
         S: 'What VMware licensing do you have now, and what’s changing for you?',
         C: 'Which VMware editions do you own, and what exactly did the new proposal include?',
       },
+      'vmw.version': {
+        D: 'What vSphere version are you on?',
+        I: 'Where are you on versions — have you made the jump to 8 yet?',
+        S: 'Which version are most hosts running, and has upgrading been a headache?',
+        C: 'Which vSphere versions are in production, and on how many hosts each?',
+      },
       'vmw.renewal': {
         D: 'When does your VMware term end?',
         I: 'When’s the VMware renewal coming up — is it on everyone’s radar yet?',
@@ -121,11 +139,11 @@
         S: 'Besides vSphere, which VMware tools does the team depend on?',
         C: 'Which VMware products beyond vSphere are licensed and actually in production?',
       },
-      'vmw.worry': {
-        D: 'What’s the biggest risk you see in moving off VMware?',
+      'chg.fears': {
+        D: 'What’s the biggest risk you see in switching?',
         I: 'What would people be most nervous about if you switched?',
         S: 'What worries you most about making a change like this?',
-        C: 'What concerns need to be resolved before a migration — technical, operational or contractual?',
+        C: 'What has to be resolved before a migration — compatibility, compliance-sensitive systems, skills?',
       },
 
       // ── Hardware ──
@@ -164,6 +182,12 @@
         I: 'Is there anything you’d love to keep, or would a fresh start be exciting?',
         S: 'Is there existing hardware you’d like to keep using so the change feels smaller?',
         C: 'Which assets are still depreciating or under support and need to be reused?',
+      },
+      'chg.openness': {
+        D: 'Is the team ready to change, or dug in?',
+        I: 'How does the team feel about trying something new?',
+        S: 'How would the team feel about a change — is anyone attached to how things work today?',
+        C: 'Where does each person on the team stand on changing platforms, and why?',
       },
 
       // ── Operations ──
@@ -528,6 +552,12 @@
         I: 'Who else needs to be excited about this for it to happen?',
         S: 'Who else will need to be comfortable with this decision?',
         C: 'Who has final budget approval, and what’s their approval threshold?',
+      },
+      'dec.budget': {
+        D: 'Is it budgeted? Above what number does it go higher?',
+        I: 'Is there money set aside for this, and who else gets pulled in once it’s big?',
+        S: 'Is budget already set aside, and what’s the approval path once it gets bigger?',
+        C: 'What’s the budget status, and at what dollar threshold does it need CFO or board approval?',
       },
       'dec.criteria': {
         D: 'What matters most in the decision?',

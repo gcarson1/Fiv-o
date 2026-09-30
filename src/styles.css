@@ -223,6 +223,32 @@ pre.small { font: 12.5px/1.5 var(--mono); white-space: pre-wrap; margin: 8px 0; 
 @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { .fade, .overlay, .drawer { animation: none !important; } .meter-fill { transition: none !important; } }
 
+/* ── phases and the number behind each pain ── */
+.step-left { font-size: 12.5px; font-weight: 400; color: var(--muted); }
+.painflag { margin-left: 8px; font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--warn); cursor: help; }
+.phase-intro { margin-bottom: 28px; padding: 2px 0 2px 16px; border-left: 2px solid var(--text); }
+.phase-intro-k { font-size: 11.5px; font-weight: 600; letter-spacing: .07em; text-transform: uppercase; color: var(--muted); }
+.phase-intro p { margin: 4px 0 0; font-size: 14.5px; }
+.phase-intro .bridge { color: var(--muted); font-style: italic; }
+.follow-sub { font-weight: 500; letter-spacing: 0; text-transform: none; color: var(--text); }
+.num-ask { margin: 6px 0 10px; font-size: 15px; font-style: italic; }
+.num-ask.small { margin: 2px 0 4px; font-size: 13.5px; color: var(--muted); }
+.num-row { display: grid; grid-template-columns: 110px 160px minmax(0, 1fr); gap: 8px; }
+.num-amt { font-family: var(--mono); }
+.num-foot { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 2px 12px; margin-top: 6px; }
+.num-foot .tbtn { margin-right: -8px; }
+.num-est { font-size: 13px; color: var(--muted); }
+.num-later { margin: 6px 0 0; font-size: 14px; color: var(--muted); }
+.rows-head { margin: 24px 0 6px; font-size: 11.5px; font-weight: 600; letter-spacing: .07em; text-transform: uppercase; color: var(--muted); }
+.cost-big { margin: 2px 0 0; font-size: 18px; font-weight: 600; }
+.cost-rest { margin: 2px 0 0; font-size: 13.5px; }
+.side-sec .muted.small { margin: 4px 0 0; }
+.tbtn.warnlink { padding-left: 0; color: var(--warn); white-space: normal; text-align: left; }
+.cost-total { margin-top: 14px; }
+.cost-total p { margin: 0 0 8px; }
+.rate { display: inline-flex; align-items: center; flex-wrap: wrap; gap: 4px; font-size: 13.5px; color: var(--muted); }
+.rate-in { width: 64px; padding: 4px 8px; font-family: var(--mono); font-size: 13.5px; }
+
 /* ── how to ask it (DISC) ── */
 .key { margin-left: 8px; font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--link); cursor: help; }
 .ask { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; margin-top: 4px; }
@@ -404,6 +430,8 @@ pre.notes { max-height: 62vh; overflow: auto; margin: 0; padding: 14px; border: 
   .mtabs button { flex: 1; padding: 14px 0; border: 0; border-top: 2px solid transparent; background: none; color: var(--muted); font: inherit; font-weight: 500; }
   .mtabs button.on { color: var(--text); border-top-color: var(--text); }
   .fields { grid-template-columns: 1fr 1fr; }
+  .num-row { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .num-impact { grid-column: 1 / -1; }
   .wrap-grid, .recap, .ba, .pair, .form-grid, .coach { grid-template-columns: 1fr; }
   .ba > div + div { padding-left: 0; border-left: 0; border-top: 1px solid var(--line); }
   .srow { grid-template-columns: 1fr; gap: 6px; }

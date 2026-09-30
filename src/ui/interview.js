@@ -1,11 +1,12 @@
 /* Fiv-o UI: the live-call screen.
-   Layout: top bar · topic steps · one focused question (+ "up next") · likely pitch on the side. */
+   Layout: top bar · the five phases · one focused question (+ "up next") · likely pitch on the side. */
 (function (F) {
   'use strict';
 
   const { h, prefs } = F.dom;
   const app = F.app;
   const MOD = Object.fromEntries(F.meta.modules.map((m) => [m.id, m]));
+  const PH = Object.fromEntries(F.meta.phases.map((p) => [p.id, p]));
   const KEYS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'];
   F.ui = F.ui || {};
 
@@ -22,7 +23,9 @@
   }
   const activeOf = (ids) => (app.ui.active && ids.includes(app.ui.active) ? app.ui.active : ids[0] || null);
   F.ui.cluster = cluster;
-  F.ui.activeId = () => (app.ui.topic ? null : activeOf(cluster()));
+  F.ui.activeId = () => (app.ui.review ? null : activeOf(cluster()));
+  const hasPain = (q) => (q.options || []).some((o) => o.pain);
+  const topicLabel = (q) => (MOD[q.module].generic ? null : MOD[q.module].label);
 
   // Human-readable "appears when…" for a question that isn't in play yet.
   function requirement(q) {
@@ -53,11 +56,36 @@
     return call && call.startedAt ? F.dom.fmtTime(Date.now() - call.startedAt) : '0:00';
   };
 
-  F.ui.openTopic = function (mid) {
-    app.ui.topic = app.ui.topic === mid ? null : mid;
+  F.ui.openPhase = function (n) {
+    app.ui.review = app.ui.review === n ? null : n;
     app.ui.mtab = 'q';
     app.ui.resetMain = true;
     app.render();
+  };
+
+  // ── the number behind a pain ──
+  function focusKey(key) {
+    const el = document.querySelector(`[data-key="${CSS.escape(key)}"]`);
+    if (el) { el.focus({ preventScroll: true }); el.scrollIntoView({ block: 'nearest' }); }
+  }
+  // Enter in a number: go to the next pain on this question still missing one, else move on.
+  F.ui.afterNumber = function (qid, optId) {
+    const q = F.questionById[qid];
+    const pains = app.d.pains.filter((p) => p.qid === qid);
+    const i = pains.findIndex((p) => p.opt === optId);
+    const next = pains.slice(i + 1).find((p) => !p.amount && !p.later);
+    if (next) return focusKey(`pa.${qid}.${next.opt}`);
+    if (q.type === 'single') app.proceed(qid); else app.done(qid);
+  };
+  // Done on a multi-select: the first time, a pain still missing its number gets the cursor.
+  F.ui.finish = function (qid) {
+    const missing = app.d.pains.filter((p) => p.qid === qid && !p.amount && !p.later);
+    if (missing.length && app.ui.prompted !== qid) {
+      app.ui.prompted = qid;
+      F.dom.toast('Get the number first — or press Done again to move on');
+      return focusKey(`pa.${qid}.${missing[0].opt}`);
+    }
+    app.done(qid);
   };
   F.ui.openNote = function (qid) {
     app.ui.openNote[qid] = true;
@@ -88,25 +116,24 @@
         h('button.btn.primary', { onclick: () => app.go('wrap'), title: 'Wrap up  (W)' }, 'Wrap up')));
   }
 
-  // ── topic steps ──
+  // ── the five phases ──
   function stepper() {
     const { d, ui } = app;
     const act = F.ui.activeId();
-    const cur = ui.topic || (act ? F.questionById[act].module : null);
-    const steps = d.modules.map((mid, i) => {
-      const p = d.progress[mid];
-      const done = p.eligible > 0 && p.answered === p.eligible;
-      const fresh = ui.unlocked[mid] && Date.now() - ui.unlocked[mid] < 90000;
-      const off = d.aside[mid];
-      return h('button.step' + (mid === cur ? '.cur' : '') + (done ? '.done' : '') + (off ? '.aside' : ''), {
-        onclick: () => F.ui.openTopic(mid),
-        title: off ? 'Set aside — the customer isn’t interested in what this topic covers' : `${p.answered} of ${p.eligible} answered — click to review`,
+    const cur = ui.review || (act ? F.questionById[act].phase : null);
+    const steps = F.meta.phases.map((ph) => {
+      const p = d.phases[ph.id];
+      const done = p.eligible > 0 && p.open === 0;
+      const isCur = ph.id === cur;
+      return h('button.step' + (isCur ? '.cur' : '') + (done ? '.done' : ''), {
+        onclick: () => F.ui.openPhase(ph.id),
+        title: `${ph.desc}\n${p.answered} of ${p.eligible} answered${p.skipped ? ` · ${p.skipped} skipped` : ''} — click to review`,
       },
-      h('span.step-n', off ? '–' : done ? '✓' : String(i + 1)),
-      h('span.step-l', MOD[mid].label),
-      fresh ? h('span.step-new', 'new') : null);
+      h('span.step-n', done && !isCur ? '✓' : String(ph.id)),
+      h('span.step-l', ph.label),
+      isCur && !ui.review && p.open > 1 ? h('span.step-left', `${p.open} left`) : null);
     });
-    return h('nav.stepper', { 'aria-label': 'Topics' },
+    return h('nav.stepper', { 'aria-label': 'Call phases' },
       h('div.steps', steps,
         lockedTopics().length ? h('button.step.add', { onclick: () => { ui.addTopic = true; app.render(); }, title: 'The customer raised another topic' }, '+ Topic') : null),
       h('button.step-meta' + (d.mustLeft ? '' : '.ok'), {
@@ -144,14 +171,35 @@
     opts.filter((o) => o.flag).forEach((o) => out.push(h('div.follow.risk', h('div.follow-k', 'Risk'), h('p', o.flag))));
     if (ui.coaching) opts.filter((o) => o.tip).forEach((o) => out.push(h('div.follow.tip', h('div.follow-k', 'Coach'), h('p', o.tip))));
     opts.filter((o) => o.pain).forEach((o) => {
-      const p = (a.pains && a.pains[o.id]) || {};
-      out.push(h('div.follow.pain',
-        h('div.follow-k', `Quantify: ${o.painLabel || `${q.short} — ${o.label}`}`),
-        h('div.pair',
-          h('input', { placeholder: 'Impact — time, money, or risk', 'aria-label': 'Impact', value: p.impact || '', 'data-key': `pi.${q.id}.${o.id}`, oninput: (e) => app.soft((x) => F.state.setPain(x, q.id, o.id, 'impact', e.target.value)) }),
-          h('input', { placeholder: 'Metric — e.g., +$180k/yr', 'aria-label': 'Metric', value: p.metric || '', 'data-key': `pm.${q.id}.${o.id}`, oninput: (e) => app.soft((x) => F.state.setPain(x, q.id, o.id, 'metric', e.target.value)) }))));
+      const p = app.d.pains.find((x) => x.qid === q.id && x.opt === o.id);
+      if (p) out.push(numberBlock(q, o, p));
     });
     return out;
+  }
+
+  // "Get the number": the question to ask, the number and its unit, and what it means.
+  // Enter moves on (to the next pain's number, or the next question).
+  function numberBlock(q, o, p) {
+    const k = `${q.id}.${o.id}`;
+    const set = (field, v) => app.soft((x) => F.state.setPain(x, q.id, o.id, field, v));
+    const onKey = (e) => { if (e.key === 'Enter') { e.preventDefault(); e.stopPropagation(); F.ui.afterNumber(q.id, o.id); } };
+    const est = p.value ? F.costs.estimate(p.value, app.s) : '';
+    return h('div.follow.pain',
+      h('div.follow-k', 'Get the number', h('span.follow-sub', ` — ${p.label}`)),
+      h('p.num-ask', `“${p.ask}”`),
+      p.later
+        ? h('p.num-later', 'No number yet — it’s on the next call’s agenda. ',
+          h('button.link', { onclick: () => app.act((x) => F.state.setPain(x, q.id, o.id, 'later', false)) }, 'Add one now'))
+        : [
+          h('div.num-row',
+            h('input.num-amt', { 'data-key': `pa.${k}`, placeholder: F.costs.unitById[p.unit].eg, 'aria-label': `The number for: ${p.label}`, value: p.amount, oninput: (e) => set('amount', e.target.value), onkeydown: onKey }),
+            h('select.num-unit', { 'data-key': `pu.${k}`, 'aria-label': 'Unit', onchange: (e) => app.act((x) => F.state.setPain(x, q.id, o.id, 'unit', e.target.value)) },
+              F.meta.units.map((u) => h('option', { value: u.id, selected: u.id === p.unit ? 'selected' : null }, u.label))),
+            h('input.num-impact', { 'data-key': `pi.${k}`, placeholder: 'What it means for the business (optional)', 'aria-label': 'Impact', value: p.impact, oninput: (e) => set('impact', e.target.value), onkeydown: onKey })),
+          h('div.num-foot',
+            h('span.num-est', est || (p.value ? p.value.text : 'Hours, dollars, days, people — whatever they can give you.')),
+            p.amount ? null : h('button.tbtn.small', { onclick: () => app.act((x) => F.state.setPain(x, q.id, o.id, 'later', true)) }, 'No number yet — ask next call')),
+        ]);
   }
 
   // DISC: with the buyer's style set, its phrasing sits under the question; the dropdown
@@ -191,14 +239,16 @@
     const stale = d.stale[qid];
     const locked = !d.eligible[qid];
     const pinned = ui.pinned === qid;
-    const p = d.progress[q.module];
-    const pos = !answered && p.eligible ? Math.min(p.answered + 1, p.eligible) : null;
+    const lastQ = s.lastAnswered && F.questionById[s.lastAnswered];
+    const catchUp = !answered && !MOD[q.module].generic && ((ui.focusModule === q.module && d.focusLeft) || (lastQ && lastQ.phase > q.phase && !pinned));
 
     const out = [];
     out.push(h('div.eyebrow',
-      h('span', MOD[q.module].label),
-      pos ? h('span.muted', ` · ${pos} of ${p.eligible}`) : null,
+      h('span', PH[q.phase].label),
+      topicLabel(q) ? h('span.muted', ` · ${topicLabel(q)}`) : null,
+      catchUp ? h('span.muted', ' · catching up') : null,
       q.type === 'multi' ? h('span.muted', q.ranked ? ' · in priority order' : ' · pick all that apply') : null,
+      hasPain(q) ? h('span.painflag', { title: 'If they name a pain here, ask for the number — hours, dollars, people — before moving on.' }, 'Pain? Get the number') : null,
       q.mustAsk ? h('span.must', 'Must ask') : null,
       d.split[qid] ? h('span.key', { title: `This answer decides: ${d.split[qid]}` }, 'Key question') : null,
       pinned && answered && ui.held !== qid ? h('span.muted', ' · editing') : null));
@@ -230,8 +280,8 @@
 
     // Actions: the main move on the left, capture links on the right.
     const main = [];
-    if (q.type !== 'single') main.push(h('button.btn.primary', { onclick: () => app.done(q.id) }, F.hasValue(q, a) ? 'Done' : 'None of these'));
-    else if (pinned && answered) main.push(h('button.btn.primary', { onclick: () => { ui.pinned = null; ui.active = null; ui.resetMain = true; app.render(); } }, 'Next question'));
+    if (q.type !== 'single') main.push(h('button.btn.primary', { onclick: () => F.ui.finish(q.id) }, F.hasValue(q, a) ? 'Done' : 'None of these'));
+    else if (pinned && answered) main.push(h('button.btn.primary', { onclick: () => app.proceed(q.id) }, 'Next question'));
     if (!answered) main.push(h('button.tbtn', { onclick: () => app.skip(q.id) }, 'Skip'));
     if (a && F.hasValue(q, a) && (pinned || stale)) main.push(h('button.tbtn.danger', { onclick: () => app.clear(q.id) }, 'Clear answer'));
     if (pinned && !answered) main.push(h('button.tbtn', { onclick: () => { ui.pinned = null; ui.active = null; app.render(); } }, 'Back to the flow'));
@@ -271,8 +321,9 @@
         h('strong', 'How this works'),
         h('ol',
           h('li', 'Ask the question on screen and click what they say — or press its number.'),
-          h('li', 'Fiv-o picks the next best question. The likely Nutanix pitch builds on the right.'),
-          h('li', 'Click any topic above to review or change answers. Press Wrap up when you’re done.'))),
+          h('li', 'The call runs in five phases, in order: why now, environment, pain & cost, change & risk, decision. The likely Nutanix pitch builds on the right.'),
+          h('li', 'When they name a pain, Fiv-o asks for the number — hours, dollars, people — before you move on.'),
+          h('li', 'Click a phase above to review or change answers. Press Wrap up when you’re done.'))),
       h('button.tbtn', { onclick: () => { prefs.set('introSeen', true); app.render(); } }, 'Got it'));
   }
 
@@ -296,18 +347,34 @@
     }
     const call = s.calls[s.calls.length - 1];
     const minutes = call.startedAt ? (Date.now() - call.startedAt) / 60000 : 0;
-    const decisionLeft = d.queue.filter((id) => F.questionById[id].module === 'decision' && F.questionById[id].mustAsk);
-    if (minutes >= 20 && decisionLeft.length && ui.focusModule !== 'decision' && !ui.nudged) {
+    const decisionLeft = d.queue.filter((id) => F.questionById[id].phase === 5 && F.questionById[id].mustAsk);
+    const actQ = act && F.questionById[act];
+    if (minutes >= 20 && decisionLeft.length && actQ && actQ.phase < 5 && ui.focusPhase !== 5 && !ui.nudged) {
       parts.push(h('div.lastline.nudge',
-        h('span', `${Math.floor(minutes)} minutes in — leave time for who signs, timing, and the next step.`),
-        h('button.tbtn', { onclick: () => { ui.nudged = true; app.focusModule('decision'); } }, 'Ask them now'),
+        h('span', `${Math.floor(minutes)} minutes in — leave time for who signs, budget, and the next step.`),
+        h('button.tbtn', { onclick: () => { ui.nudged = true; app.focusPhase(5); } }, 'Go to Decision'),
         h('button.tbtn', { onclick: () => { ui.nudged = true; app.render(); } }, 'Later')));
     }
+    // A topic raised mid-call is done catching up once its earlier-phase questions are asked.
+    if (ui.focusModule && !d.focusLeft) ui.focusModule = null;
     if (ui.focusModule) {
-      const left = d.queue.some((id) => F.questionById[id].module === ui.focusModule);
+      const rest = d.queue.filter((id) => F.questionById[id].module !== ui.focusModule).map((id) => F.questionById[id].phase);
       parts.push(h('div.lastline',
-        h('span', left ? `Asking ${MOD[ui.focusModule].label} questions first` : `${MOD[ui.focusModule].label}: all asked`),
-        h('button.tbtn', { onclick: () => app.focusModule(ui.focusModule) }, 'Back to normal order')));
+        h('span', `Catching up on ${MOD[ui.focusModule].label} — ${rest.length ? `then back to ${PH[Math.min(...rest)].label}` : 'then you’re caught up'}`),
+        h('button.tbtn', { onclick: () => app.focusModule(ui.focusModule) }, 'Skip the catch-up')));
+    } else if (ui.focusPhase) {
+      const left = d.queue.some((id) => F.questionById[id].phase === ui.focusPhase);
+      parts.push(h('div.lastline',
+        h('span', left ? `Asking ${PH[ui.focusPhase].label} questions first` : `${PH[ui.focusPhase].label}: all asked`),
+        h('button.tbtn', { onclick: () => app.focusPhase(ui.focusPhase) }, 'Back to normal order')));
+    }
+    // Starting a new phase: say what it's for, and a line to bridge into it.
+    if (actQ && last && actQ.phase > last.phase && !ui.pinned && !ui.focusModule) {
+      const ph = PH[actQ.phase];
+      parts.push(h('div.phase-intro',
+        h('div.phase-intro-k', `Phase ${ph.id} of ${F.meta.phases.length} · ${ph.label}`),
+        h('p', ph.desc),
+        ui.coaching ? h('p.bridge', `Bridge: “${ph.bridge}”`) : null));
     }
 
     if (!act) {
@@ -326,40 +393,57 @@
     if (next.length) {
       parts.push(h('section.upnext',
         h('div.eyebrow', 'Up next'),
-        next.map((id) => h('button.next-row', { onclick: () => { ui.active = id; app.render(); }, title: 'Ask this one now' },
-          h('span', F.questionById[id].text),
-          h('span.muted', MOD[F.questionById[id].module].label)))));
+        next.map((id) => {
+          const nq = F.questionById[id];
+          return h('button.next-row', { onclick: () => { ui.active = id; app.render(); }, title: 'Ask this one now' },
+            h('span', nq.text),
+            h('span.muted', nq.phase !== (actQ && actQ.phase) ? PH[nq.phase].label : topicLabel(nq) || PH[nq.phase].label));
+        })));
     }
     return parts;
   }
 
-  // ── topic review (click a step) ──
-  function topicView(mid) {
+  // ── phase review (click a step) ──
+  function phaseView(n) {
     const { s, d } = app;
-    const p = d.progress[mid];
-    const qs = F.questions.filter((q) => q.module === mid && (d.eligible[q.id] || d.stale[q.id] || F.hasValue(q, s.answers[q.id])));
+    const ph = PH[n];
+    const p = d.phases[n];
+    const qs = F.questions.filter((q) => q.phase === n && (d.eligible[q.id] || d.stale[q.id] || F.hasValue(q, s.answers[q.id])));
+    const rank = (mid) => (MOD[mid].generic ? -1 : d.topics.indexOf(mid) < 0 ? 99 : d.topics.indexOf(mid));
+    const groups = [];
+    qs.forEach((q) => {
+      let g = groups.find((x) => x.mid === q.module);
+      if (!g) groups.push(g = { mid: q.module, qs: [] });
+      g.qs.push(q);
+    });
+    groups.sort((x, y) => rank(x.mid) - rank(y.mid));
+    const row = (q) => {
+      const a = s.answers[q.id];
+      const st = d.stale[q.id] ? 'stale' : F.isAnswered(q, a) ? 'done' : a && a.skipped ? 'skipped' : 'open';
+      const pains = d.pains.filter((x) => x.qid === q.id);
+      const txt = {
+        done: () => F.answerText(q, a) + (pains.length ? ` — ${pains.map((x) => x.metric || 'no number yet').join('; ')}` : ''),
+        stale: () => `${F.answerText(q, a)} — no longer applies`,
+        skipped: () => 'Skipped',
+        open: () => (d.aside[q.module] ? 'Set aside' : 'Not asked yet'),
+      }[st]();
+      return h('button.row.' + st, { onclick: () => app.pin(q.id) },
+        h('span.row-q', q.text, q.mustAsk && st === 'open' && !d.aside[q.module] ? h('span.must', 'Must ask') : null),
+        h('span.row-a', txt));
+    };
     return [h('section.question.topic',
-      h('div.eyebrow', 'Topic review'),
-      h('h1.qtitle', MOD[mid].label),
-      h('p.qwhy', d.aside[mid]
-        ? 'Set aside — the customer isn’t interested in what this topic covers. Its questions are out of the flow; undo that in the pitch panel.'
-        : `${p.answered} of ${p.eligible} answered. Click a question to ask it or change the answer.`),
-      h('div.rows', qs.map((q) => {
-        const a = s.answers[q.id];
-        const st = d.stale[q.id] ? 'stale' : F.isAnswered(q, a) ? 'done' : a && a.skipped ? 'skipped' : 'open';
-        const txt = {
-          done: () => F.answerText(q, a),
-          stale: () => `${F.answerText(q, a)} — no longer applies`,
-          skipped: () => 'Skipped',
-          open: () => 'Not asked yet',
-        }[st]();
-        return h('button.row.' + st, { onclick: () => app.pin(q.id) },
-          h('span.row-q', q.text, q.mustAsk && st === 'open' ? h('span.must', 'Must ask') : null),
-          h('span.row-a', txt));
-      })),
+      h('div.eyebrow', `Phase ${n} of ${F.meta.phases.length}`),
+      h('h1.qtitle', ph.label),
+      h('p.qwhy', ph.desc),
+      qs.length ? h('p.muted.small', `${p.answered} of ${p.eligible} answered${p.skipped ? ` · ${p.skipped} skipped` : ''}. Click a question to ask it or change the answer.`)
+        : h('p.muted.small', 'No questions here yet — they appear as topics come up in “why now”.'),
+      groups.map((g) => [
+        MOD[g.mid].generic ? null : h('div.rows-head', MOD[g.mid].label, d.aside[g.mid] ? h('span.muted', ' · set aside') : null),
+        h('div.rows', g.qs.map(row)),
+      ]),
       h('div.qactions', h('div.qa-main',
-        p.answered < p.eligible && !d.aside[mid] ? h('button.btn.primary', { onclick: () => app.focusModule(mid) }, 'Ask the rest of this topic now') : null,
-        h('button.tbtn', { onclick: () => F.ui.openTopic(mid) }, 'Back to the call'))))];
+        p.open ? h('button.btn.primary', { onclick: () => app.focusPhase(n) }, 'Ask the rest of this phase now') : null,
+        h('button.tbtn', { onclick: () => F.ui.openPhase(n) }, 'Back to the call'))))];
   }
 
   function mobileTabs() {
@@ -372,7 +456,7 @@
       header(),
       stepper(),
       h('div.cols',
-        h('main.main', { 'data-scroll': 'main' }, h('div.main-in', app.ui.topic ? topicView(app.ui.topic) : questionView())),
+        h('main.main', { 'data-scroll': 'main' }, h('div.main-in', app.ui.review ? phaseView(app.ui.review) : questionView())),
         h('aside.side', { 'data-scroll': 'side', 'aria-label': 'Likely pitch' }, F.ui.radar())),
       mobileTabs());
   };
@@ -383,7 +467,7 @@
     return h('div.overlay', { onclick: close },
       h('div.modal', { onclick: (e) => e.stopPropagation(), role: 'dialog', 'aria-label': 'Add a topic' },
         h('h2', 'Add a topic the customer raised'),
-        h('p.muted', 'Its questions join the flow, and it’s added to “why now” as a lower priority.'),
+        h('p.muted', 'Fiv-o catches up on it first — its deadline and environment — then its pains join the Pain & cost phase.'),
         h('div.rows', lockedTopics().map((m) => h('button.row', { onclick: () => app.unlockModule(m.id) },
           h('span.row-q', m.label), h('span.row-a', m.desc)))),
         h('div.modal-foot', h('button.tbtn', { onclick: close }, 'Cancel'))));
@@ -403,7 +487,7 @@
     const words = (app.ui.search || '').trim().toLowerCase().split(/\s+/).filter(Boolean);
     const rank = { open: 0, 'no longer applies': 1, skipped: 1, answered: 2, 'not in play yet': 3 };
     return F.questions.filter((q) => {
-      const hay = `${q.text} ${q.short} ${MOD[q.module].label} ${(q.options || []).map((o) => o.label).join(' ')}`.toLowerCase();
+      const hay = `${q.text} ${q.short} ${MOD[q.module].label} ${PH[q.phase].label} ${(q.options || []).map((o) => o.label).join(' ')}`.toLowerCase();
       return words.every((w) => hay.includes(w));
     }).map((q, i) => ({ q, i, r: words.length ? rank[statusOf(q)] : 0 }))
       .sort((a, b) => a.r - b.r || a.i - b.i)
@@ -444,14 +528,14 @@
           onclick: () => F.ui.searchPick(q), onmouseenter: () => { app.ui.searchIdx = i; },
         },
         h('span.pal-text', q.text),
-        h('span.pal-meta', `${MOD[q.module].label} · ${statusOf(q)}`))) : h('p.muted.pad', 'No matching questions.')),
+        h('span.pal-meta', [PH[q.phase].label, topicLabel(q), statusOf(q)].filter(Boolean).join(' · ')))) : h('p.muted.pad', 'No matching questions.')),
         h('div.pal-foot', '↑ ↓ to move · Enter to open · Esc to close · topics not in play open automatically')));
   };
 
   // ── help & settings ──
   F.screens.help = function () {
     const rows = [
-      ['1 – 9, 0', 'Answer the question'], ['Enter', 'Done (multi-select) or next question'], ['↑  ↓', 'Switch to an “up next” question'],
+      ['1 – 9, 0', 'Answer the question'], ['Enter', 'Done or next question — in a number, save it and move on'], ['↑  ↓', 'Switch to an “up next” question'],
       ['S', 'Skip'], ['B', 'Undo the last answer'], ['H', 'How to ask it (DISC)'], ['N', 'Add a note'], ['Q', 'Capture a quote'],
       ['/', 'Search every question'], ['P', 'Open the pitch card'], ['L', 'Switch the side panel to License'], ['C', 'Coaching on / off'],
       ['W', 'Wrap up'], ['Esc', 'Close panels · hide the screen'], ['?', 'This panel'],

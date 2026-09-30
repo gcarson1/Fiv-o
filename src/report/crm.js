@@ -1,10 +1,10 @@
-/* Fiv-o report: plain-text CRM / Salesforce notes (no markdown, paste-safe). */
+/* Fiv-o report: plain-text CRM / Salesforce notes (no markdown, paste-safe).
+   The body follows the call's five phases, so the notes read like the conversation. */
 (function (F) {
   'use strict';
 
   const pct = (x) => `${Math.round(x * 100)}%`;
   const personaLabel = (id) => (F.meta.personas.find((p) => p.id === id) || { label: id }).label;
-  const modLabel = (id) => (F.meta.modules.find((m) => m.id === id) || { label: id }).label;
 
   function answerLine(s, d, q) {
     const a = s.answers[q.id];
@@ -13,6 +13,14 @@
     const note = a.note && a.note.trim() ? ` (${a.note.trim()})` : '';
     const isNew = n > 1 && a.call === n ? ' [new]' : '';
     return `- ${q.short}: ${F.answerText(q, a)}${note}${isNew}`;
+  }
+
+  // A pain, the number behind it (and what that adds up to a year), and the impact.
+  function painLine(s, p) {
+    const est = p.value ? F.costs.estimate(p.value, s) : '';
+    const num = p.value ? p.value.text + (est ? ` (${est})` : '')
+      : p.metric || (p.later ? 'no number yet — ask next call' : 'no number');
+    return `- ${p.label} — ${num}${p.impact ? ` — impact: ${p.impact}` : ''}`;
   }
 
   function mpText(s, d, k) {
@@ -76,25 +84,32 @@
     const style = su.disc && F.disc.styles.find((x) => x.k === su.disc);
     if (style) push(`Buyer style (DISC): ${style.label} — ${style.name}. ${style.adapt}`);
 
+    // The body follows the five phases of the call.
     const Q = F.questionById;
-    section('WHY NOW', [
-      d.valid.trigger ? `- Triggers (ranked): ${F.answerText(Q.trigger, s.answers.trigger)}` : null,
-      ...['why.urgency', 'vmw.renewal', 'hw.when', 'cloud.deadline'].map((id) => answerLine(s, d, Q[id])),
+    const inPhase = (n) => F.questions.filter((q) => q.phase === n);
+    const onlyPains = (q) => {
+      const sel = F.selected(q, s.answers[q.id]);
+      return sel.length > 0 && sel.every((id) => (q.options.find((x) => x.id === id) || {}).pain);
+    };
+
+    section('WHY NOW', inPhase(1).map((q) => (q.id === 'trigger'
+      ? (d.valid.trigger ? `- Triggers (ranked): ${F.answerText(Q.trigger, s.answers.trigger)}` : null)
+      : answerLine(s, d, q))));
+
+    section('CURRENT ENVIRONMENT', inPhase(2).map((q) => answerLine(s, d, q)));
+
+    const c = d.costs;
+    section('PAIN AND COST', [
+      ...d.pains.map((p) => painLine(s, p)),
+      c.quantified && F.costs.line(c)
+        ? `- Total: ${F.costs.line(c)} — ${c.quantified} of ${c.count} pain${c.count === 1 ? ' has' : 's have'} a number${c.hours ? ` (hours at $${c.rate}/hr loaded)` : ''}`
+        : null,
+      ...inPhase(3).filter((q) => !onlyPains(q)).map((q) => answerLine(s, d, q)),
     ]);
 
-    section('CURRENT STATE', F.questions.filter((q) => q.module === 'env').map((q) => answerLine(s, d, q)));
+    section('CHANGE AND RISK', inPhase(4).map((q) => answerLine(s, d, q)));
 
-    const detail = [];
-    d.modules.filter((m) => !['why', 'env', 'decision'].includes(m)).forEach((mid) => {
-      const lines = F.questions.filter((q) => q.module === mid && !['vmw.renewal', 'hw.when', 'cloud.deadline'].includes(q.id)).map((q) => answerLine(s, d, q)).filter(Boolean);
-      if (lines.length) detail.push(`[${modLabel(mid)}]`, ...lines);
-    });
-    section('DISCOVERY DETAIL', detail);
-
-    section('PAINS (impact / metric)', d.pains.map((p) => {
-      const extra = [p.impact && `impact: ${p.impact}`, p.metric && `metric: ${p.metric}`].filter(Boolean).join(' / ');
-      return `- ${p.label}${extra ? ` (${extra})` : ''}`;
-    }));
+    section('DECISION', inPhase(5).filter((q) => q.id !== 'dec.nextstep').map((q) => answerLine(s, d, q)));
 
     section('IN THEIR WORDS', d.quotes.map((x) => `- "${x.text}" (re: ${x.short})`));
 
@@ -113,7 +128,10 @@
 
     section('MEDDPICC', [meddpicc(s, d)]);
 
-    section('OPEN QUESTIONS FOR NEXT CALL', d.gaps.filter((id) => !s.wrap.gapsExcluded[id]).map((id) => `- ${Q[id].text}`));
+    section('OPEN QUESTIONS FOR NEXT CALL', [
+      ...d.gaps.filter((id) => !s.wrap.gapsExcluded[id]).map((id) => `- ${Q[id].text}`),
+      ...[...c.later, ...c.missing].map((p) => `- Put a number on: ${p.label}`),
+    ]);
 
     section('NEXT STEPS', [
       answerLine(s, d, Q['dec.nextstep']),

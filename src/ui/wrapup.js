@@ -27,12 +27,29 @@
         h('button.tbtn.small', { onclick: backTo(() => F.ui.openDrawer(r.id)) }, 'Card'));
     })) : h('p.muted', 'No pitch indicated yet — go back and answer “why now”.');
 
-    const pains = d.pains.length ? h('div.rows', d.pains.map((p) => h('div.row.static.stack',
-      h('span.row-q', p.label),
-      h('div.pair',
-        h('input', { placeholder: 'Impact — time, money, or risk', value: p.impact, 'data-key': `wpi.${p.qid}.${p.opt}`, oninput: (e) => app.soft((x) => F.state.setPain(x, p.qid, p.opt, 'impact', e.target.value)) }),
-        h('input', { placeholder: 'Metric', value: p.metric, 'data-key': `wpm.${p.qid}.${p.opt}`, oninput: (e) => app.soft((x) => F.state.setPain(x, p.qid, p.opt, 'metric', e.target.value)) })))))
-      : h('p.muted', 'No pains captured. Finding them is the first job of the next call.');
+    // Cost of pain: every pain with its number, the hourly rate, and the total.
+    const c = d.costs;
+    const painRow = (p) => {
+      const set = (k) => (e) => app.soft((x) => F.state.setPain(x, p.qid, p.opt, k, e.target.value));
+      const est = p.value ? F.costs.estimate(p.value, s) : '';
+      return h('div.row.static.stack',
+        h('span.row-q', p.label, p.later && !p.amount ? h('span.muted', ' · no number yet — on the next call’s agenda') : null),
+        h('p.num-ask.small', `“${p.ask}”`),
+        h('div.num-row',
+          h('input.num-amt', { placeholder: F.costs.unitById[p.unit].eg, value: p.amount, 'data-key': `wpa.${p.qid}.${p.opt}`, 'aria-label': `The number for: ${p.label}`, oninput: set('amount') }),
+          h('select.num-unit', { 'data-key': `wpu.${p.qid}.${p.opt}`, 'aria-label': 'Unit', onchange: (e) => app.act((x) => F.state.setPain(x, p.qid, p.opt, 'unit', e.target.value)) },
+            F.meta.units.map((u) => h('option', { value: u.id, selected: u.id === p.unit ? 'selected' : null }, u.label))),
+          h('input.num-impact', { placeholder: 'What it means for the business', value: p.impact, 'data-key': `wpi.${p.qid}.${p.opt}`, 'aria-label': 'Impact', oninput: set('impact') })),
+        est ? h('span.num-est', est) : p.metric && !p.value ? h('span.num-est', `Noted earlier: ${p.metric}`) : null);
+    };
+    const pains = d.pains.length ? [
+      h('div.rows', d.pains.map(painRow)),
+      h('div.cost-total',
+        h('p', h('strong', F.costs.line(c) || 'No numbers yet'), h('span.muted', ` · ${c.quantified} of ${c.count} pain${c.count === 1 ? ' has' : 's have'} a number`)),
+        h('label.rate', h('span', 'Hours valued at $'),
+          h('input.rate-in', { inputmode: 'numeric', value: String(s.wrap.rate), 'data-key': 'wrap.rate', 'aria-label': 'Loaded hourly rate', oninput: (e) => app.soft((x) => { x.wrap.rate = e.target.value.replace(/[^\d.]/g, ''); }) }),
+          h('span', ' an hour (loaded cost of an IT hour)'))),
+    ] : h('p.muted', 'No pains captured. Finding them is the first job of the next call.');
 
     const mp = h('div.rows', d.mp.letters.map((l) => h('div.row.static.stack',
       h('div.mprow',
@@ -85,7 +102,7 @@
         h('div.wrap-left',
           step(1, 'Primary pitch', 'Ranked from their answers. Pick the one to lead with.', pitch),
           step(2, 'Technology and licensing', 'What they want, what they turned down (and why), and the license it adds up to.', tech),
-          step(3, 'Quantify the pains', 'An impact and a metric turn a complaint into a business case.', pains),
+          step(3, 'Cost of pain', 'The number behind each pain, from the call. Blanks go on the next call’s agenda. The total adds numbers as given — check for overlap before using it in a business case.', pains),
           step(4, 'MEDDPICC', 'Filled from their answers (shown in grey). Type to replace what goes into the notes.', mp),
           step(5, 'Open questions for next time', 'Checked items go into the notes as the next call’s agenda.', gaps),
           step(6, 'Next steps and notes', null,

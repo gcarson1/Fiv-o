@@ -134,7 +134,7 @@ test('report contains the key sections and no stale answers', () => {
   answer(F, s, 'dec.nextstep', ['collector'], { note: 'Jane, by 10/6' });
   const d = F.router.evaluate(s);
   const txt = F.report.crm(s, d);
-  for (const h of ['DISCOVERY NOTES — Acme', 'WHY NOW', 'CURRENT STATE', 'RECOMMENDED PLAY', 'MEDDPICC', 'OPEN QUESTIONS FOR NEXT CALL', 'NEXT STEPS', 'IN THEIR WORDS']) {
+  for (const h of ['DISCOVERY NOTES — Acme', 'WHY NOW', 'CURRENT ENVIRONMENT', 'RECOMMENDED PLAY', 'MEDDPICC', 'OPEN QUESTIONS FOR NEXT CALL', 'NEXT STEPS', 'IN THEIR WORDS']) {
     assert.ok(txt.includes(h), `missing ${h}`);
   }
   assert.ok(!txt.includes('Everpure'), 'stale array answer must not appear');

@@ -10,8 +10,12 @@
     d: null, // derived state from F.router.evaluate
     ui: {
       screen: 'home',
-      focusModule: null, pinned: null, active: null,
-      topic: null,          // topic review open in the main column
+      pinned: null, active: null,
+      focusPhase: null,     // ask this phase's questions first (e.g., decision before time runs out)
+      focusModule: null,    // a topic the customer just raised catches up to the current phase
+      review: null,         // phase number being reviewed in the main column
+      focusKey: null,       // field to focus after the next render (a pain's number)
+      prompted: null,       // question whose Done already sent you to a missing number once
       addTopic: false,      // "customer raised another topic" picker
       coaching: prefs.get('coaching', true),
       askOpen: prefs.get('askOpen', false), // "How to ask it" (DISC + coaching) expanded
@@ -45,7 +49,7 @@
 
   app.open = function (s, screen) {
     app.s = s;
-    Object.assign(app.ui, { sideTab: 'pitch', techAll: false, techPicker: false, freshTech: {}, nudged: false, held: null, focusModule: null, pinned: null, active: null, topic: null, addTopic: false, drawer: null, search: null, undo: null, rankDelta: {}, unlocked: {}, prevConf: {}, prevActive: null, openQuote: {}, openNote: {} });
+    Object.assign(app.ui, { sideTab: 'pitch', techAll: false, techPicker: false, freshTech: {}, nudged: false, held: null, focusPhase: null, focusModule: null, focusKey: null, prompted: null, pinned: null, active: null, review: null, addTopic: false, drawer: null, search: null, undo: null, rankDelta: {}, unlocked: {}, prevConf: {}, prevActive: null, openQuote: {}, openNote: {} });
     app.recompute();
     app.go(screen);
   };
@@ -96,7 +100,7 @@
     opened.forEach((m) => { app.ui.unlocked[m] = Date.now(); });
     if (opened.length) {
       const labels = opened.map((m) => F.meta.modules.find((x) => x.id === m).label);
-      msgs.push(`New topic${labels.length > 1 ? 's' : ''} unlocked: ${labels.join(', ')}`);
+      msgs.push(`New topic${labels.length > 1 ? 's' : ''}: ${labels.join(', ')}`);
     }
     after.scores.list.filter((r) => r.ready && !before.scores.byId[r.id].ready).forEach((r) => {
       msgs.push(`Pitch ready: ${r.play.short}${r.variant ? ' → ' + r.variant.name : ''}`);
@@ -119,10 +123,14 @@
   }
 
   // hold: keep a just-answered single on screen (pain follow-up, risk, or coaching tip).
+  // A pain puts the cursor straight into its number, so the number gets asked right away.
   app.choose = function (qid, optId, hold) {
     const q = F.questionById[qid];
     if (q.type === 'single') {
       snapshot(qid);
+      const o = q.options.find((x) => x.id === optId);
+      app.ui.prompted = null;
+      if (hold && o && o.pain) app.ui.focusKey = `pa.${qid}.${optId}`;
       app.act((s) => {
         F.state.selectOption(s, qid, optId);
         if (hold) { app.ui.pinned = qid; app.ui.active = qid; app.ui.held = qid; } else release(qid);
@@ -134,7 +142,15 @@
   };
   app.done = function (qid) {
     snapshot(qid);
+    app.ui.prompted = null;
     app.act((s) => { F.state.markDone(s, qid); release(qid); }, { answer: true });
+  };
+  // Move on from a question held open for its follow-up (a pain's number, a risk, a tip).
+  app.proceed = function (qid) {
+    release(qid);
+    app.ui.resetMain = true;
+    app.recompute();
+    app.render();
   };
   app.skip = function (qid) {
     const q = F.questionById[qid];
@@ -160,22 +176,26 @@
     app.ui.held = null;
     app.ui.pinned = qid;
     app.ui.active = qid;
-    app.ui.topic = null;
+    app.ui.review = null;
     app.ui.mtab = 'q';
     app.ui.search = null;
     app.recompute();
     app.render();
   };
-  app.focusModule = function (mid) {
-    app.ui.focusModule = app.ui.focusModule === mid ? null : mid;
-    app.ui.topic = null;
+  function refocus(key, value) {
+    app.ui[key] = app.ui[key] === value ? null : value;
+    app.ui.review = null;
     app.ui.pinned = null;
     app.ui.active = null;
     app.ui.mtab = 'q';
+    app.ui.resetMain = true;
     app.recompute();
     app.render();
-  };
+  }
+  app.focusPhase = (n) => { app.ui.focusModule = null; refocus('focusPhase', n); };
+  app.focusModule = (mid) => refocus('focusModule', mid);
   // A topic the customer raised that wasn't in "why now": append its trigger (lowest rank).
+  // Its earlier-phase questions (its deadline, its environment) are asked first as a catch-up.
   app.unlockModule = function (mid) {
     const trig = Object.keys(F.meta.triggerModule).find((t) => F.meta.triggerModule[t] === mid);
     if (!trig) return;
@@ -187,9 +207,10 @@
       a.skipped = false;
       a.call = s.calls.length;
       app.ui.focusModule = mid;
+      app.ui.focusPhase = null;
       app.ui.pinned = null;
       app.ui.active = null;
-      app.ui.topic = null;
+      app.ui.review = null;
       app.ui.addTopic = false;
       app.ui.search = null;
     }, { answer: true });
@@ -252,6 +273,12 @@
         el.focus({ preventScroll: true });
         if (sel && typeof el.setSelectionRange === 'function') { try { el.setSelectionRange(sel[0], sel[1]); } catch (e) { /* ignore */ } }
       }
+    }
+    // Jump to a field asked for by an action (e.g., the number behind a pain just picked).
+    if (app.ui.focusKey) {
+      const el = root.querySelector(`[data-key="${CSS.escape(app.ui.focusKey)}"]`);
+      app.ui.focusKey = null;
+      if (el) { el.focus({ preventScroll: true }); el.scrollIntoView({ block: 'nearest' }); }
     }
     // Confidence bars animate from their previous width.
     requestAnimationFrame(() => root.querySelectorAll('[data-w]').forEach((el) => { el.style.width = el.dataset.w; }));
