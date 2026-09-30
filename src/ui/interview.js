@@ -97,11 +97,12 @@
       const p = d.progress[mid];
       const done = p.eligible > 0 && p.answered === p.eligible;
       const fresh = ui.unlocked[mid] && Date.now() - ui.unlocked[mid] < 90000;
-      return h('button.step' + (mid === cur ? '.cur' : '') + (done ? '.done' : ''), {
+      const off = d.aside[mid];
+      return h('button.step' + (mid === cur ? '.cur' : '') + (done ? '.done' : '') + (off ? '.aside' : ''), {
         onclick: () => F.ui.openTopic(mid),
-        title: `${p.answered} of ${p.eligible} answered — click to review`,
+        title: off ? 'Set aside — the customer isn’t interested in what this topic covers' : `${p.answered} of ${p.eligible} answered — click to review`,
       },
-      h('span.step-n', done ? '✓' : String(i + 1)),
+      h('span.step-n', off ? '–' : done ? '✓' : String(i + 1)),
       h('span.step-l', MOD[mid].label),
       fresh ? h('span.step-new', 'new') : null);
     });
@@ -145,13 +146,40 @@
     opts.filter((o) => o.pain).forEach((o) => {
       const p = (a.pains && a.pains[o.id]) || {};
       out.push(h('div.follow.pain',
-        h('div.follow-k', 'Quantify this pain'),
-        h('p', o.painLabel || `${q.short}: ${o.label}`),
+        h('div.follow-k', `Quantify: ${o.painLabel || `${q.short} — ${o.label}`}`),
         h('div.pair',
-          h('label.lf', h('span', 'Impact'), h('input', { placeholder: 'Time, money, or risk', value: p.impact || '', 'data-key': `pi.${q.id}.${o.id}`, oninput: (e) => app.soft((x) => F.state.setPain(x, q.id, o.id, 'impact', e.target.value)) })),
-          h('label.lf', h('span', 'Metric'), h('input', { placeholder: 'e.g., +$180k/yr, 12 hrs/month', value: p.metric || '', 'data-key': `pm.${q.id}.${o.id}`, oninput: (e) => app.soft((x) => F.state.setPain(x, q.id, o.id, 'metric', e.target.value)) }))),
-        ui.coaching ? h('p.hint', 'Ask “What does that cost you?”, then “How would you measure it getting better?”') : null));
+          h('input', { placeholder: 'Impact — time, money, or risk', 'aria-label': 'Impact', value: p.impact || '', 'data-key': `pi.${q.id}.${o.id}`, oninput: (e) => app.soft((x) => F.state.setPain(x, q.id, o.id, 'impact', e.target.value)) }),
+          h('input', { placeholder: 'Metric — e.g., +$180k/yr', 'aria-label': 'Metric', value: p.metric || '', 'data-key': `pm.${q.id}.${o.id}`, oninput: (e) => app.soft((x) => F.state.setPain(x, q.id, o.id, 'metric', e.target.value)) }))));
     });
+    return out;
+  }
+
+  // DISC: with the buyer's style set, its phrasing sits under the question; the dropdown
+  // shows all four ways to ask it plus the coaching (why ask, listen for, dig deeper).
+  F.ui.toggleAsk = () => app.setPref('askOpen', !app.ui.askOpen);
+  function howToAsk(q) {
+    const { s, ui } = app;
+    const ask = F.disc.ask[q.id] || {};
+    const style = s.setup.disc;
+    const cur = style && F.disc.styles.find((x) => x.k === style);
+    const open = ui.askOpen;
+    const out = [h('div.ask',
+      cur && ask[style] ? h('p.ask-line', h('span.ask-k', { title: `${cur.name}: ${cur.cue}` }, cur.label), h('span', `“${ask[style]}”`)) : null,
+      h('button.tbtn.ask-toggle', { onclick: F.ui.toggleAsk, 'aria-expanded': open ? 'true' : 'false', title: 'Four ways to ask it, one per DISC style  (H)' },
+        open ? 'Hide' : cur ? 'Other ways to ask' : 'How to ask it', h('span.caret', open ? '▴' : '▾')))];
+    if (!open) return out;
+    out.push(h('div.askpanel',
+      h('div.askpanel-head', h('span.follow-k', 'Ask it their way'), h('span.muted.small', 'Click a style to set it for this buyer')),
+      F.disc.styles.map((x) => h('button.askrow' + (style === x.k ? '.on' : ''), {
+        onclick: () => app.act((ss) => { ss.setup.disc = ss.setup.disc === x.k ? '' : x.k; }),
+        title: style === x.k ? 'Clear the buyer’s style' : `Set ${x.name} as the buyer’s style`,
+      },
+      h('span.ask-k', x.label),
+      h('span.askrow-body', h('span.askrow-name', `${x.name} — ${x.cue.toLowerCase()}`), h('span.askrow-q', `“${ask[x.k]}”`)))),
+      ui.coaching ? h('div.coach',
+        h('div', h('div.follow-k', 'Why ask'), h('p', q.why)),
+        q.listen && q.listen.length ? h('div', h('div.follow-k', 'Listen for'), h('ul', q.listen.map((x) => h('li', x)))) : null,
+        q.probes && q.probes.length ? h('div', h('div.follow-k', 'Dig deeper'), h('ul', q.probes.map((x) => h('li', x)))) : null) : null));
     return out;
   }
 
@@ -170,14 +198,14 @@
     out.push(h('div.eyebrow',
       h('span', MOD[q.module].label),
       pos ? h('span.muted', ` · ${pos} of ${p.eligible}`) : null,
+      q.type === 'multi' ? h('span.muted', q.ranked ? ' · in priority order' : ' · pick all that apply') : null,
       q.mustAsk ? h('span.must', 'Must ask') : null,
+      d.split[qid] ? h('span.key', { title: `This answer decides: ${d.split[qid]}` }, 'Key question') : null,
       pinned && answered && ui.held !== qid ? h('span.muted', ' · editing') : null));
     out.push(h('h1.qtitle', q.text));
-    if (ui.coaching) out.push(h('p.qwhy', q.why));
-    if (d.split[qid]) out.push(h('p.qsplit', `This answer decides: ${d.split[qid]}`));
+    out.push(...howToAsk(q));
 
     if (q.type === 'single' || q.type === 'multi') {
-      if (q.type === 'multi') out.push(h('p.qhint', q.ranked ? 'Pick in order of priority — the first pick counts most. Then press Enter.' : 'Pick all that apply, then press Enter.'));
       out.push(options(q, a));
     } else if (q.type === 'fields') {
       out.push(h('div.fields', q.fields.map((f) => h('label.lf',
@@ -198,6 +226,7 @@
     out.push(...followUps(q, a || { pains: {} }));
     if (stale) out.push(h('p.notice.warn', 'This answer no longer applies because an earlier answer changed. It’s kept for reference but doesn’t count.'));
     else if (locked) out.push(h('p.notice', `Not in play yet — it appears when ${requirement(q) || 'its topic is opened'}. You can still record it.`));
+    else if (d.aside[q.module] && !answered) out.push(h('p.notice', 'This topic is set aside — the customer isn’t interested in what it covers. You can still record an answer.'));
 
     // Actions: the main move on the left, capture links on the right.
     const main = [];
@@ -207,12 +236,11 @@
     if (a && F.hasValue(q, a) && (pinned || stale)) main.push(h('button.tbtn.danger', { onclick: () => app.clear(q.id) }, 'Clear answer'));
     if (pinned && !answered) main.push(h('button.tbtn', { onclick: () => { ui.pinned = null; ui.active = null; app.render(); } }, 'Back to the flow'));
 
-    const noteOpen = ui.openNote[qid] || (a && a.note) || q.detail;
+    const noteOpen = ui.openNote[qid] || (a && a.note);
     const quoteOpen = ui.openQuote[qid] || (a && a.quote);
     const links = [
-      !noteOpen ? h('button.tbtn', { onclick: () => F.ui.openNote(qid) }, '+ Note') : null,
+      !noteOpen ? h('button.tbtn', { onclick: () => F.ui.openNote(qid) }, q.detail ? `+ ${q.detail}` : '+ Note') : null,
       !quoteOpen ? h('button.tbtn', { onclick: () => F.ui.openQuote(qid) }, '+ Quote') : null,
-      ui.coaching && (q.listen || q.probes) ? h('button.tbtn', { onclick: () => { ui.coachOpen = !ui.coachOpen; app.render(); }, 'aria-expanded': ui.coachOpen ? 'true' : 'false' }, ui.coachOpen ? 'Hide listening tips' : 'Listening tips') : null,
     ];
     out.push(h('div.qactions', h('div.qa-main', main), h('div.qa-links', links)));
 
@@ -232,11 +260,6 @@
           rows: 2, placeholder: 'Type exactly what they said', 'data-key': `quote.${q.id}`,
           oninput: (e) => app.soft((x) => F.state.setQuote(x, q.id, e.target.value)),
         }, (a && a.quote) || '')));
-    }
-    if (ui.coaching && ui.coachOpen) {
-      out.push(h('div.coach',
-        q.listen && q.listen.length ? h('div', h('div.follow-k', 'Listen for'), h('ul', q.listen.map((x) => h('li', x)))) : null,
-        q.probes && q.probes.length ? h('div', h('div.follow-k', 'Dig deeper'), h('ul', q.probes.map((x) => h('li', x)))) : null));
     }
 
     return h('section.question' + (isNew ? '.fade' : ''), { 'aria-label': q.text }, out);
@@ -318,7 +341,9 @@
     return [h('section.question.topic',
       h('div.eyebrow', 'Topic review'),
       h('h1.qtitle', MOD[mid].label),
-      h('p.qwhy', `${p.answered} of ${p.eligible} answered. Click a question to ask it or change the answer.`),
+      h('p.qwhy', d.aside[mid]
+        ? 'Set aside — the customer isn’t interested in what this topic covers. Its questions are out of the flow; undo that in the pitch panel.'
+        : `${p.answered} of ${p.eligible} answered. Click a question to ask it or change the answer.`),
       h('div.rows', qs.map((q) => {
         const a = s.answers[q.id];
         const st = d.stale[q.id] ? 'stale' : F.isAnswered(q, a) ? 'done' : a && a.skipped ? 'skipped' : 'open';
@@ -333,7 +358,7 @@
           h('span.row-a', txt));
       })),
       h('div.qactions', h('div.qa-main',
-        p.answered < p.eligible ? h('button.btn.primary', { onclick: () => app.focusModule(mid) }, 'Ask the rest of this topic now') : null,
+        p.answered < p.eligible && !d.aside[mid] ? h('button.btn.primary', { onclick: () => app.focusModule(mid) }, 'Ask the rest of this topic now') : null,
         h('button.tbtn', { onclick: () => F.ui.openTopic(mid) }, 'Back to the call'))))];
   }
 
@@ -427,8 +452,8 @@
   F.screens.help = function () {
     const rows = [
       ['1 – 9, 0', 'Answer the question'], ['Enter', 'Done (multi-select) or next question'], ['↑  ↓', 'Switch to an “up next” question'],
-      ['S', 'Skip'], ['B', 'Undo the last answer'], ['N', 'Add a note'], ['Q', 'Capture a quote'],
-      ['/', 'Search every question'], ['P', 'Open the pitch card'], ['C', 'Coaching on / off'],
+      ['S', 'Skip'], ['B', 'Undo the last answer'], ['H', 'How to ask it (DISC)'], ['N', 'Add a note'], ['Q', 'Capture a quote'],
+      ['/', 'Search every question'], ['P', 'Open the pitch card'], ['L', 'Switch the side panel to License'], ['C', 'Coaching on / off'],
       ['W', 'Wrap up'], ['Esc', 'Close panels · hide the screen'], ['?', 'This panel'],
     ];
     const close = () => { app.ui.help = false; app.render(); };

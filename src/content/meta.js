@@ -27,20 +27,22 @@
 
     // Topic modules, in default order. `when` gates every question in the module
     // (ANDed with the question's own `when`). Terms are "questionId:optionId".
+    // `serves`: the pitches a topic exists for — if the customer declines all of them,
+    // the topic's remaining questions are set aside.
     modules: [
       { id: 'why', label: 'Why now', desc: 'The trigger and the date driving it' },
       { id: 'env', label: 'Environment', desc: 'Team, hypervisor, storage, backup, cloud' },
-      { id: 'vmware', label: 'VMware', desc: 'Renewal, licensing, NSX, migration worries', when: { any: ['trigger:vmware', 'env.hypervisor:vsphere'] } },
-      { id: 'hardware', label: 'Hardware', desc: 'Servers or storage reaching end of life', when: { any: ['trigger:hardware', 'env.array.age:old'] } },
-      { id: 'ops', label: 'Operations', desc: 'Upgrades, tool sprawl, day-to-day toil', when: { any: ['trigger:ops', 'env.itteam:t1', 'env.itteam:t2'] } },
-      { id: 'resilience', label: 'DR & cyber', desc: 'Backup, disaster recovery, ransomware, audits', when: { any: ['trigger:resilience', 'env.backup:none', 'vmw.addons:srm', 'cloud.direction:dr'] } },
-      { id: 'cloud', label: 'Cloud', desc: 'Datacenter exit, cloud costs, hybrid plans', when: { any: ['trigger:cloud', 'env.cloud:vmc', 'vmw.license:cloud'] } },
-      { id: 'storage', label: 'Storage', desc: 'File servers, NAS, backup targets', when: { any: ['trigger:storage', 'res.files:lots', 'hw.what:backup', 'res.immutability:no'] } },
-      { id: 'edge', label: 'Remote sites', desc: 'Branches and sites without IT staff', when: { any: ['trigger:edge', 'env.sites:s6', 'env.sites:s20'] } },
-      { id: 'euc', label: 'VDI', desc: 'Citrix or Horizon desktops', when: { any: ['trigger:euc', 'vmw.addons:horizon', 'stor.types:profiles'] } },
-      { id: 'db', label: 'Databases', desc: 'Provisioning, cloning, patching, DBA workload', when: { any: ['trigger:db'] } },
-      { id: 'k8s', label: 'Kubernetes', desc: 'Containers and platform engineering', when: { any: ['trigger:k8s', 'vmw.addons:tanzu', 'cloud.refactor:native'] } },
-      { id: 'ai', label: 'AI', desc: 'GenAI pilots, GPUs, data sensitivity, governance', when: { any: ['trigger:ai', 'stor.types:ai', 'edge.apps:ai'] } },
+      { id: 'vmware', label: 'VMware', desc: 'Renewal, licensing, NSX, migration worries', serves: ['vmw'], when: { any: ['trigger:vmware', 'env.hypervisor:vsphere'] } },
+      { id: 'hardware', label: 'Hardware', desc: 'Servers or storage reaching end of life', serves: ['refresh'], when: { any: ['trigger:hardware', 'env.array.age:old'] } },
+      { id: 'ops', label: 'Operations', desc: 'Upgrades, tool sprawl, day-to-day toil', serves: ['ops'], when: { any: ['trigger:ops', 'env.itteam:t1', 'env.itteam:t2'] } },
+      { id: 'resilience', label: 'DR & cyber', desc: 'Backup, disaster recovery, ransomware, audits', serves: ['dr', 'cyber'], when: { any: ['trigger:resilience', 'env.backup:none', 'vmw.addons:srm', 'cloud.direction:dr'] } },
+      { id: 'cloud', label: 'Cloud', desc: 'Datacenter exit, cloud costs, hybrid plans', serves: ['nc2'], when: { any: ['trigger:cloud', 'env.cloud:vmc', 'vmw.license:cloud'] } },
+      { id: 'storage', label: 'Storage', desc: 'File servers, NAS, backup targets', serves: ['nus'], when: { any: ['trigger:storage', 'res.files:lots', 'hw.what:backup', 'res.immutability:no'] } },
+      { id: 'edge', label: 'Remote sites', desc: 'Branches and sites without IT staff', serves: ['edge'], when: { any: ['trigger:edge', 'env.sites:s6', 'env.sites:s20'] } },
+      { id: 'euc', label: 'VDI', desc: 'Citrix or Horizon desktops', serves: ['euc'], when: { any: ['trigger:euc', 'vmw.addons:horizon', 'stor.types:profiles'] } },
+      { id: 'db', label: 'Databases', desc: 'Provisioning, cloning, patching, DBA workload', serves: ['ndb'], when: { any: ['trigger:db'] } },
+      { id: 'k8s', label: 'Kubernetes', desc: 'Containers and platform engineering', serves: ['nkp'], when: { any: ['trigger:k8s', 'vmw.addons:tanzu', 'cloud.refactor:native'] } },
+      { id: 'ai', label: 'AI', desc: 'GenAI pilots, GPUs, data sensitivity, governance', serves: ['ai'], when: { any: ['trigger:ai', 'stor.types:ai', 'edge.apps:ai'] } },
       { id: 'cost', label: 'Cost', desc: 'Savings targets and consolidation', when: { any: ['trigger:cost'] } },
       { id: 'decision', label: 'Decision', desc: 'Buyer, criteria, process, competition, next step' },
     ],

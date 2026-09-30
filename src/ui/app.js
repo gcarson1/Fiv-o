@@ -14,7 +14,9 @@
       topic: null,          // topic review open in the main column
       addTopic: false,      // "customer raised another topic" picker
       coaching: prefs.get('coaching', true),
-      coachOpen: false,     // listening tips expanded
+      askOpen: prefs.get('askOpen', false), // "How to ask it" (DISC + coaching) expanded
+      sideTab: 'pitch',     // side panel: 'pitch' | 'license'
+      techAll: false, techPicker: false, freshTech: {},
       blur: false, help: false,
       search: null, searchIdx: 0,
       drawer: null, drawerTab: null, pitchTab: 'pitch',
@@ -43,7 +45,7 @@
 
   app.open = function (s, screen) {
     app.s = s;
-    Object.assign(app.ui, { nudged: false, held: null, focusModule: null, pinned: null, active: null, topic: null, addTopic: false, drawer: null, search: null, undo: null, rankDelta: {}, unlocked: {}, prevConf: {}, prevActive: null, openQuote: {}, openNote: {} });
+    Object.assign(app.ui, { sideTab: 'pitch', techAll: false, techPicker: false, freshTech: {}, nudged: false, held: null, focusModule: null, pinned: null, active: null, topic: null, addTopic: false, drawer: null, search: null, undo: null, rankDelta: {}, unlocked: {}, prevConf: {}, prevActive: null, openQuote: {}, openNote: {} });
     app.recompute();
     app.go(screen);
   };
@@ -99,6 +101,10 @@
     after.scores.list.filter((r) => r.ready && !before.scores.byId[r.id].ready).forEach((r) => {
       msgs.push(`Pitch ready: ${r.play.short}${r.variant ? ' → ' + r.variant.name : ''}`);
     });
+    const wasSuggested = Object.fromEntries(before.tech.map((t) => [t.id, t.suggested]));
+    const newTech = after.tech.filter((t) => t.suggested && !t.status && !wasSuggested[t.id]);
+    newTech.forEach((t) => { app.ui.freshTech[t.id] = Date.now(); });
+    if (newTech.length) msgs.push(`Suggested: ${newTech.map((t) => t.tech.name).join(', ')}`);
     if (msgs.length) toast(msgs.join(' · '));
   }
 
@@ -191,6 +197,20 @@
 
   app.setPref = function (k, v) { app.ui[k] = v; prefs.set(k, v); app.render(); };
 
+  // The customer's reaction to a technology: 'interested' | 'declined' | null (undo).
+  app.setTech = function (id, status) {
+    const t = F.techById[id];
+    const before = app.d;
+    app.act((s) => F.state.setTech(s, id, status), { answer: true });
+    if (status === 'declined') {
+      const aside = Object.keys(app.d.aside).filter((m) => !before.aside[m])
+        .map((m) => F.meta.modules.find((x) => x.id === m).label);
+      toast(`Not interested in ${t.name} — ${aside.length ? `skipping the ${aside.join(' and ')} questions` : 'it won’t be suggested or licensed'}.`);
+    } else if (status === 'interested') {
+      toast(`Interested in ${t.name} — it’s in the license sketch.`);
+    }
+  };
+
   // ── render loop ──
   app.render = function () {
     const root = document.getElementById('app');
@@ -210,6 +230,7 @@
       if (app.ui.drawer && F.screens.drawer) root.appendChild(F.screens.drawer());
       if (app.ui.search !== null && F.screens.search) root.appendChild(F.screens.search());
       if (app.ui.addTopic && F.screens.addTopic) root.appendChild(F.screens.addTopic());
+      if (app.ui.techPicker && F.screens.techPicker) root.appendChild(F.screens.techPicker());
     }
     if (app.ui.help && F.screens.help) root.appendChild(F.screens.help());
     if (app.ui.blur && F.screens.blur) root.appendChild(F.screens.blur());

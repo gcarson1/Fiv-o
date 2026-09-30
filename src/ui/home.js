@@ -121,6 +121,16 @@
             }, p.label);
           })),
           h('span.field-hint', 'Decides which talk tracks you see first on the pitch card.')),
+        h('div.field',
+          h('span.field-label', 'How does the main contact communicate? (DISC, optional)'),
+          h('div.toggles', F.disc.styles.map((x) => h('button.toggle' + (su.disc === x.k ? '.on' : ''), {
+            'aria-pressed': su.disc === x.k ? 'true' : 'false',
+            title: `${x.cue}. ${x.adapt}`,
+            onclick: () => app.act((s) => { s.setup.disc = s.setup.disc === x.k ? '' : x.k; }),
+          }, `${x.label} · ${x.name}`))),
+          h('span.field-hint', su.disc
+            ? (() => { const x = F.disc.styles.find((y) => y.k === su.disc); return `${x.cue}. ${x.adapt} Each question will show a phrasing for this style.`; })()
+            : 'Not sure yet? Skip it — you can set it from any question once you get a read on them.')),
         h('details.more', { open: ui.setupMore ? true : null, ontoggle: (e) => { ui.setupMore = e.target.open; } },
           h('summary', 'More details (optional)'),
           h('div.form-grid',

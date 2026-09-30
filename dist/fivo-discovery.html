@@ -232,6 +232,58 @@ pre.small { font: 12.5px/1.5 var(--mono); white-space: pre-wrap; margin: 8px 0; 
 @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { .fade, .overlay, .drawer { animation: none !important; } .meter-fill { transition: none !important; } }
 
+/* ── how to ask it (DISC) ── */
+.key { margin-left: 8px; font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--link); cursor: help; }
+.ask { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; margin-top: 4px; }
+.ask-line { display: flex; align-items: baseline; gap: 10px; margin: 2px 0 0; max-width: 64ch; font-size: 15px; color: var(--muted); }
+.ask-k { display: inline-grid; place-items: center; flex: none; width: 20px; height: 20px; border: 1px solid var(--line-strong); border-radius: 3px; font: 600 12px var(--mono); color: var(--text); }
+.ask-toggle { padding-left: 0; font-size: 13px; }
+.caret { margin-left: 5px; font-size: 10px; }
+.askpanel { width: 100%; margin-top: 8px; padding-bottom: 10px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.askpanel-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 12px 0 6px; }
+.askrow { display: flex; align-items: flex-start; gap: 12px; width: 100%; padding: 10px 8px; border: 0; border-top: 1px solid var(--line); background: none; color: var(--text); font: inherit; text-align: left; cursor: pointer; }
+.askrow:hover { background: var(--bg-soft); }
+.askrow.on { background: var(--sel); box-shadow: inset 3px 0 0 var(--text); }
+.askrow-body { display: flex; flex-direction: column; gap: 2px; }
+.askrow-name { font-size: 12.5px; color: var(--muted); }
+.askrow-q { font-size: 14.5px; }
+.askpanel .coach { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); margin-top: 6px; padding-top: 12px; }
+.coach p { color: var(--muted); }
+
+/* ── side: tabs, technology, license ── */
+.side-tabs { margin: -6px 0 18px; border-bottom: 1px solid var(--line); }
+.tab-hint { font-weight: 400; font-size: 12.5px; color: var(--muted); }
+.tech { padding: 10px 0; border-bottom: 1px solid var(--line); }
+.tech-top { display: flex; align-items: baseline; gap: 8px; }
+.tech-name { padding: 0; border: 0; background: none; color: var(--text); font: inherit; font-size: 14.5px; font-weight: 600; text-align: left; cursor: pointer; }
+.tech-name:hover { text-decoration: underline; text-underline-offset: 3px; }
+.tech-why { margin: 2px 0 4px; font-size: 12.5px; color: var(--muted); }
+.tech-act { display: flex; flex-wrap: nowrap; gap: 2px; margin-left: -6px; }
+.rows > .row.wtech { grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 6px 16px; }
+.wtech-main { display: flex; flex-direction: column; }
+.wtech input { grid-column: 1 / -1; }
+.tbtn.chosen { color: var(--good); font-weight: 600; }
+.tbtn.chosen.no { color: var(--bad); }
+.tech-sum { margin: 10px 0 0; font-size: 13px; }
+.prow.declined .prow-name { color: var(--faint); text-decoration: line-through; }
+.lic { padding: 10px 0; border-bottom: 1px solid var(--line); }
+.side-sec .lic:last-child { border-bottom: 0; }
+.lic-top { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+.lic-title { font-size: 14.5px; font-weight: 600; }
+.lic.main .lic-title { font-size: 18px; }
+.lic-qty { flex: none; font: 12.5px var(--mono); color: var(--muted); white-space: nowrap; }
+.lic-detail { margin: 4px 0 0; font-size: 13px; color: var(--muted); }
+.lic-why, .lic-list { margin: 6px 0 0; padding-left: 16px; font-size: 13px; }
+.lic-why li, .lic-list li { margin: 3px 0; }
+.lic-sum { margin: 14px 0 0; font-size: 14px; }
+.modal.wide { width: min(720px, calc(100vw - 32px)); }
+.modal .rows { max-height: 58vh; overflow-y: auto; }
+.rows > .row.tech-pick { grid-template-columns: minmax(0, 1fr) auto; align-items: center; }
+.row-sub { display: block; margin-top: 2px; font-size: 12.5px; font-weight: 400; color: var(--muted); }
+.row-q .key { margin-left: 8px; }
+.step.aside .step-l { color: var(--faint); text-decoration: line-through; }
+.step.aside .step-n { color: var(--faint); }
+
 /* ── side: likely pitch ── */
 .side-sec { margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid var(--line); }
 .side-sec:last-child { border-bottom: 0; }
@@ -386,8 +438,8 @@ pre.notes { max-height: 62vh; overflow: auto; margin: 0; padding: 14px; border: 
 <body>
 <div id="app"><noscript>Fiv-o needs JavaScript. Download this file and open it in Chrome, Edge, Safari or Firefox.</noscript></div>
 <script>
-/* Fiv-o 0.1.0 · built 2026-09-29 */
-globalThis.Fivo = { VERSION: "0.1.0", BUILT: "2026-09-29", CONTENT_DATE: "Sept 2026" };
+/* Fiv-o 0.1.0 · built 2026-09-30 */
+globalThis.Fivo = { VERSION: "0.1.0", BUILT: "2026-09-30", CONTENT_DATE: "Sept 2026" };
 
 /* ── src/content/meta.js ── */
 /* Fiv-o content: personas, industries, modules, MEDDPICC letters.
@@ -419,20 +471,22 @@ globalThis.Fivo = { VERSION: "0.1.0", BUILT: "2026-09-29", CONTENT_DATE: "Sept 2
 
     // Topic modules, in default order. `when` gates every question in the module
     // (ANDed with the question's own `when`). Terms are "questionId:optionId".
+    // `serves`: the pitches a topic exists for — if the customer declines all of them,
+    // the topic's remaining questions are set aside.
     modules: [
       { id: 'why', label: 'Why now', desc: 'The trigger and the date driving it' },
       { id: 'env', label: 'Environment', desc: 'Team, hypervisor, storage, backup, cloud' },
-      { id: 'vmware', label: 'VMware', desc: 'Renewal, licensing, NSX, migration worries', when: { any: ['trigger:vmware', 'env.hypervisor:vsphere'] } },
-      { id: 'hardware', label: 'Hardware', desc: 'Servers or storage reaching end of life', when: { any: ['trigger:hardware', 'env.array.age:old'] } },
-      { id: 'ops', label: 'Operations', desc: 'Upgrades, tool sprawl, day-to-day toil', when: { any: ['trigger:ops', 'env.itteam:t1', 'env.itteam:t2'] } },
-      { id: 'resilience', label: 'DR & cyber', desc: 'Backup, disaster recovery, ransomware, audits', when: { any: ['trigger:resilience', 'env.backup:none', 'vmw.addons:srm', 'cloud.direction:dr'] } },
-      { id: 'cloud', label: 'Cloud', desc: 'Datacenter exit, cloud costs, hybrid plans', when: { any: ['trigger:cloud', 'env.cloud:vmc', 'vmw.license:cloud'] } },
-      { id: 'storage', label: 'Storage', desc: 'File servers, NAS, backup targets', when: { any: ['trigger:storage', 'res.files:lots', 'hw.what:backup', 'res.immutability:no'] } },
-      { id: 'edge', label: 'Remote sites', desc: 'Branches and sites without IT staff', when: { any: ['trigger:edge', 'env.sites:s6', 'env.sites:s20'] } },
-      { id: 'euc', label: 'VDI', desc: 'Citrix or Horizon desktops', when: { any: ['trigger:euc', 'vmw.addons:horizon', 'stor.types:profiles'] } },
-      { id: 'db', label: 'Databases', desc: 'Provisioning, cloning, patching, DBA workload', when: { any: ['trigger:db'] } },
-      { id: 'k8s', label: 'Kubernetes', desc: 'Containers and platform engineering', when: { any: ['trigger:k8s', 'vmw.addons:tanzu', 'cloud.refactor:native'] } },
-      { id: 'ai', label: 'AI', desc: 'GenAI pilots, GPUs, data sensitivity, governance', when: { any: ['trigger:ai', 'stor.types:ai', 'edge.apps:ai'] } },
+      { id: 'vmware', label: 'VMware', desc: 'Renewal, licensing, NSX, migration worries', serves: ['vmw'], when: { any: ['trigger:vmware', 'env.hypervisor:vsphere'] } },
+      { id: 'hardware', label: 'Hardware', desc: 'Servers or storage reaching end of life', serves: ['refresh'], when: { any: ['trigger:hardware', 'env.array.age:old'] } },
+      { id: 'ops', label: 'Operations', desc: 'Upgrades, tool sprawl, day-to-day toil', serves: ['ops'], when: { any: ['trigger:ops', 'env.itteam:t1', 'env.itteam:t2'] } },
+      { id: 'resilience', label: 'DR & cyber', desc: 'Backup, disaster recovery, ransomware, audits', serves: ['dr', 'cyber'], when: { any: ['trigger:resilience', 'env.backup:none', 'vmw.addons:srm', 'cloud.direction:dr'] } },
+      { id: 'cloud', label: 'Cloud', desc: 'Datacenter exit, cloud costs, hybrid plans', serves: ['nc2'], when: { any: ['trigger:cloud', 'env.cloud:vmc', 'vmw.license:cloud'] } },
+      { id: 'storage', label: 'Storage', desc: 'File servers, NAS, backup targets', serves: ['nus'], when: { any: ['trigger:storage', 'res.files:lots', 'hw.what:backup', 'res.immutability:no'] } },
+      { id: 'edge', label: 'Remote sites', desc: 'Branches and sites without IT staff', serves: ['edge'], when: { any: ['trigger:edge', 'env.sites:s6', 'env.sites:s20'] } },
+      { id: 'euc', label: 'VDI', desc: 'Citrix or Horizon desktops', serves: ['euc'], when: { any: ['trigger:euc', 'vmw.addons:horizon', 'stor.types:profiles'] } },
+      { id: 'db', label: 'Databases', desc: 'Provisioning, cloning, patching, DBA workload', serves: ['ndb'], when: { any: ['trigger:db'] } },
+      { id: 'k8s', label: 'Kubernetes', desc: 'Containers and platform engineering', serves: ['nkp'], when: { any: ['trigger:k8s', 'vmw.addons:tanzu', 'cloud.refactor:native'] } },
+      { id: 'ai', label: 'AI', desc: 'GenAI pilots, GPUs, data sensitivity, governance', serves: ['ai'], when: { any: ['trigger:ai', 'stor.types:ai', 'edge.apps:ai'] } },
       { id: 'cost', label: 'Cost', desc: 'Savings targets and consolidation', when: { any: ['trigger:cost'] } },
       { id: 'decision', label: 'Decision', desc: 'Buyer, criteria, process, competition, next step' },
     ],
@@ -514,7 +568,7 @@ globalThis.Fivo = { VERSION: "0.1.0", BUILT: "2026-09-29", CONTENT_DATE: "Sept 2
         exec: 'This is a chance to set your platform strategy on your terms. Nutanix gives you a portable, modular subscription — buy what you use — and a proven migration path. Many teams use the renewal delta to fund the move; let’s model yours.',
         infra: 'AHV comes with NCI: HA, live migration, ADS scheduling, snapshots and replication, all in Prism next to storage and networking. Move handles the migration and LCM does one-click upgrades from firmware to hypervisor.',
         netsec: 'Flow Network Security gives you category-based microsegmentation policies — the NSX DFW use case — from Prism Central, and the Palo Alto Networks integrations extend Zero Trust across the estate.',
-        storage: 'If the array is recent, keep it: NCI Compute runs on Everpure FlashArray and Dell PowerFlex today, with NetApp ONTAP, Dell PowerStore and Lenovo ThinkSystem announced. If not, AOS turns local drives into resilient distributed storage.',
+        storage: 'If the array is recent, keep it: NCI-Compute runs AHV on Everpure FlashArray, Dell PowerFlex and Dell PowerStore today, with NetApp ONTAP and Lenovo ThinkSystem announced. If not, AOS turns local drives into resilient distributed storage.',
         finance: 'Term subscriptions, core-based licensing that is portable across hardware and public cloud (NC2), and no mandated bundle. We’ll build a side-by-side TCO against the renewal quote.',
         euc: 'Omnissa Horizon 8 and Citrix both support AHV — your desktops come with you.',
         platform: 'If Tanzu/VKS was on the roadmap, NKP runs on AHV (and elsewhere) with fleet management and GitOps.',
@@ -531,7 +585,7 @@ globalThis.Fivo = { VERSION: "0.1.0", BUILT: "2026-09-29", CONTENT_DATE: "Sept 2
         { q: 'Our team only knows VMware.', a: 'Prism is a single console for compute, storage, networking and DR, so most admins are productive quickly. Offer a Test Drive and Nutanix University training.' },
         { q: 'Will our apps and backup be supported?', a: 'Check the AHV-validated application list. Veeam, Commvault, Rubrik, Cohesity and HYCU all protect AHV.' },
         { q: 'We’ll just negotiate VMware down.', a: 'Ask what happens at the next renewal and when vSphere 8 general support ends (Oct 2027). A credible alternative is leverage either way, but price-only deals stall — find the ops, hardware or DR pain.' },
-        { q: 'We just bought new storage.', a: 'Keep it: NCI Compute on external storage (Everpure FlashArray and Dell PowerFlex supported; NetApp ONTAP, Dell PowerStore and Lenovo ThinkSystem announced — verify GA).' },
+        { q: 'We just bought new storage.', a: 'Keep it: NCI-Compute on external storage (Everpure FlashArray, Dell PowerFlex and Dell PowerStore supported; NetApp ONTAP and Lenovo ThinkSystem announced — verify GA).' },
       ],
       nextSteps: [
         'Run Nutanix Collector (or export RVTools) → size in Nutanix Sizer',
@@ -540,12 +594,12 @@ globalThis.Fivo = { VERSION: "0.1.0", BUILT: "2026-09-29", CONTENT_DATE: "Sept 2
         'Move migration assessment for a pilot wave',
         'POC on one application tier',
       ],
-      editions: 'NCP bundles: Starter (NCI Pro + NCM Pro), Pro (NCI Ultimate + NCM Pro), Ultimate (NCI Ultimate + NCM Ultimate). Confirm which tier carries Flow and sync/Metro DR for this deal.',
+      editions: 'NCI Pro covers AHV, async DR and encryption; Ultimate adds Metro/sync and microsegmentation (or add them to Pro as add-ons). External storage uses NCI-Compute in the same tiers. With NCM, the NCP bundles apply — see the License tab for this customer.',
       editionsSrc: S.options,
       qualifiers: ['vmw.renewal', 'vmw.intent', 'env.storage'],
       variants: [
         { id: 'hci', name: 'Full-stack HCI', products: ['NCI on NX / Dell / HPE / Lenovo / Cisco / Fujitsu'], pitch: 'Collapse servers and SAN into a scale-out cluster you grow a node at a time; storage, hypervisor and firmware upgraded together with 1-click LCM.' },
-        { id: 'ext', name: 'Keep-your-array (NCI Compute + external storage)', products: ['NCI Compute', 'Everpure FlashArray / Dell PowerFlex (GA)', 'NetApp ONTAP / Dell PowerStore / Lenovo ThinkSystem (announced 2026 — verify)'], pitch: 'Change the hypervisor, keep the storage investment: AHV and Prism on the array you already own, with VM-level operations in Prism.' },
+        { id: 'ext', name: 'Keep-your-array (NCI-Compute + external storage)', products: ['NCI-Compute', 'Everpure FlashArray / Dell PowerFlex / Dell PowerStore (supported)', 'NetApp ONTAP / Lenovo ThinkSystem (announced — verify)'], pitch: 'Change the hypervisor, keep the storage investment: AHV and Prism on the array you already own, with VM-level operations in Prism.' },
         { id: 'nc2', name: 'Cloud landing on NC2', products: ['NC2 on AWS / Azure / GCP / OVHcloud', 'Nutanix Move'], pitch: 'Exit VMC/AVS/GCVE or a datacenter without refactoring: run the same Nutanix stack on bare-metal cloud instances and move VMs as-is.' },
       ],
     },
@@ -1141,7 +1195,7 @@ globalThis.Fivo = { VERSION: "0.1.0", BUILT: "2026-09-29", CONTENT_DATE: "Sept 2
       options: [
         o('everpure', 'Everpure (Pure) FlashArray', { 'vmw.ext': 12 }, { tip: 'Everpure FlashArray + NCI is GA (Dec 2025) with Prism-integrated VM snapshots and SafeMode.' }),
         o('powerflex', 'Dell PowerFlex', { 'vmw.ext': 12 }),
-        o('powerstore', 'Dell PowerStore', { 'vmw.ext': 8 }, { tip: 'PowerStore support announced at .NEXT 2026 — verify GA before committing.' }),
+        o('powerstore', 'Dell PowerStore', { 'vmw.ext': 12 }, { tip: 'PowerStore is supported with NCI 7.6 (July 2026) — confirm the model and version on the compatibility list.' }),
         o('netapp', 'NetApp ONTAP (AFF / FAS)', { 'vmw.ext': 8 }, { tip: 'ONTAP support announced for 2H 2026 — verify GA before committing.' }),
         o('lenovo', 'Lenovo ThinkSystem', { 'vmw.ext': 6 }, { tip: 'Lenovo ThinkSystem storage announced at .NEXT 2026 — verify.' }),
         o('other', 'Other (HPE, Hitachi, IBM, Dell Unity/PowerMax…)', { 'vmw.hci': 8, refresh: 3 }),
@@ -2164,6 +2218,803 @@ globalThis.Fivo = { VERSION: "0.1.0", BUILT: "2026-09-29", CONTENT_DATE: "Sept 2
 })(globalThis.Fivo = globalThis.Fivo || {});
 
 
+/* ── src/content/disc.js ── */
+/* Fiv-o content: DISC — four ways to ask every question.
+   D = Dominance (direct, results-first)      I = Influence (warm, people-first)
+   S = Steadiness (calm, team-first)          C = Conscientiousness (precise, data-first)
+   Keyed by question id. Every question needs all four (the content test enforces it). */
+(function (F) {
+  'use strict';
+
+  F.disc = {
+    styles: [
+      { k: 'D', label: 'D', name: 'Dominance', cue: 'Direct, fast, results-first', adapt: 'Be brief. Lead with outcomes and the bottom line.' },
+      { k: 'I', label: 'i', name: 'Influence', cue: 'Warm, talkative, people-first', adapt: 'Be friendly. Use stories and the big picture.' },
+      { k: 'S', label: 'S', name: 'Steadiness', cue: 'Calm, patient, team-first', adapt: 'Be patient. Stress stability, support and low-risk steps.' },
+      { k: 'C', label: 'C', name: 'Conscientiousness', cue: 'Precise, analytical, detail-first', adapt: 'Be exact. Bring data, specifics and a clear process.' },
+    ],
+
+    ask: {
+      // ── Why now ──
+      'trigger': {
+        D: 'Bottom line — what’s forcing a decision on your infrastructure this year?',
+        I: 'I’d love to hear the backstory — what got this conversation started for you and the team?',
+        S: 'What’s been happening that made now feel like the right time to look at this?',
+        C: 'What specific event or change triggered this evaluation, and when did it start?',
+      },
+      'why.urgency': {
+        D: 'Is there a hard deadline? What happens if you miss it?',
+        I: 'Is there a big date everyone’s working toward — a renewal, a launch, a board meeting?',
+        S: 'Is there a date you’re working toward, so we can plan a comfortable timeline around it?',
+        C: 'What’s the exact date driving this, and what’s contractually or operationally tied to it?',
+      },
+
+      // ── Environment ──
+      'env.itteam': {
+        D: 'How many people run infrastructure — and are they stretched?',
+        I: 'Tell me about the team — who’s on it and what are they like to work with?',
+        S: 'Who’s on the team that keeps everything running, and how are they holding up?',
+        C: 'How many people support infrastructure, and how is responsibility split across compute, storage and network?',
+      },
+      'env.hypervisor': {
+        D: 'What hypervisor are you running — VMware, Hyper-V, something else?',
+        I: 'What’s the virtualization story — how did you end up on the platform you have today?',
+        S: 'What hypervisor has the team been running, and how long have you been on it?',
+        C: 'Which hypervisors and versions are in production today, and on how many clusters?',
+      },
+      'env.counts': {
+        D: 'Roughly how many hosts, cores and VMs are we talking about?',
+        I: 'Give me a feel for the size — how big has the environment grown?',
+        S: 'Roughly how large is the environment today — hosts, VMs, storage?',
+        C: 'Can you share exact counts — hosts, cores, VMs and TB — or an RVTools export?',
+      },
+      'env.sites': {
+        D: 'How many locations run their own infrastructure?',
+        I: 'Where do you have people and systems — one main site, or spread out?',
+        S: 'How many sites does the team support, and are any hard to look after?',
+        C: 'How many locations host infrastructure, and what’s deployed at each?',
+      },
+      'env.storage': {
+        D: 'What storage is under your VMs — vSAN, a SAN, or something else?',
+        I: 'What’s the storage setup behind all this, and how do people feel about it?',
+        S: 'What storage are the VMs running on, and has it been dependable for you?',
+        C: 'What’s the storage architecture under the hypervisor — vendor, protocol and model?',
+      },
+      'env.array.vendor': {
+        D: 'Which array vendor?',
+        I: 'Which array did you go with, and how’s that relationship been?',
+        S: 'Which array do you have, and is the team comfortable with it?',
+        C: 'Which array make and model is it, and what OS or firmware version is it running?',
+      },
+      'env.array.age': {
+        D: 'How old is it, and when does support end?',
+        I: 'How long have you had it — is it still pulling its weight?',
+        S: 'How long have you had the array, and when does its support run out?',
+        C: 'What’s the purchase date and the exact end-of-support date on the array?',
+      },
+      'env.backup': {
+        D: 'What do you back up with?',
+        I: 'What’s your backup setup — and are you happy with it?',
+        S: 'What does the team use for backup today, and how’s it working for them?',
+        C: 'Which backup product and version do you use, and where do the copies live?',
+      },
+      'env.cloud': {
+        D: 'What are you running in public cloud today?',
+        I: 'Where are you with public cloud — anything exciting happening there?',
+        S: 'Do you use any public cloud today, and how has that gone for the team?',
+        C: 'Which cloud providers do you use, for which workloads, and at what monthly spend?',
+      },
+
+      // ── VMware ──
+      'vmw.license': {
+        D: 'What VMware licensing are you on, and what’s Broadcom pushing you to?',
+        I: 'How did the conversation with Broadcom go — what did they put in front of you?',
+        S: 'What VMware licensing do you have now, and what’s changing for you?',
+        C: 'Which VMware editions do you own, and what exactly did the new proposal include?',
+      },
+      'vmw.renewal': {
+        D: 'When does your VMware term end?',
+        I: 'When’s the VMware renewal coming up — is it on everyone’s radar yet?',
+        S: 'When does your current VMware agreement end, so we can plan around it?',
+        C: 'What’s the exact end date of your VMware term or support contract?',
+      },
+      'vmw.price': {
+        D: 'What did the renewal do to your cost?',
+        I: 'How did people react when the renewal number came in?',
+        S: 'How has the renewal price affected your budget and plans?',
+        C: 'What was the quoted increase — percentage and dollar amount — versus last term?',
+      },
+      'vmw.intent': {
+        D: 'Are you leaving VMware, or looking for leverage?',
+        I: 'What’s the dream outcome — off VMware completely, or somewhere in between?',
+        S: 'What would feel like the right move for the team — a full switch, or a gradual step?',
+        C: 'Is the goal a full exit, a partial move or a price comparison — and what will that decision be based on?',
+      },
+      'vmw.nsx': {
+        D: 'How much NSX do you actually use?',
+        I: 'Is NSX a big part of how you run things, or more in the background?',
+        S: 'How much does the team rely on NSX day to day?',
+        C: 'Which NSX features are in production — distributed firewall, overlay networks, edges, load balancing?',
+      },
+      'vmw.addons': {
+        D: 'What other VMware products are in the mix — Horizon, SRM, Aria, Tanzu?',
+        I: 'What else from VMware is part of the picture — desktops, DR, Kubernetes?',
+        S: 'Besides vSphere, which VMware tools does the team depend on?',
+        C: 'Which VMware products beyond vSphere are licensed and actually in production?',
+      },
+      'vmw.worry': {
+        D: 'What’s the biggest risk you see in moving off VMware?',
+        I: 'What would people be most nervous about if you switched?',
+        S: 'What worries you most about making a change like this?',
+        C: 'What concerns need to be resolved before a migration — technical, operational or contractual?',
+      },
+
+      // ── Hardware ──
+      'hw.what': {
+        D: 'What hardware is coming due?',
+        I: 'What’s getting old and tired in the datacenter these days?',
+        S: 'What equipment is nearing the end of its life that you need to plan for?',
+        C: 'Which components — servers, storage, network, backup — are up for refresh, and in what quantities?',
+      },
+      'hw.when': {
+        D: 'When does it go out of support?',
+        I: 'When does the clock run out on that gear?',
+        S: 'When does support end, so we can give you a comfortable runway?',
+        C: 'What are the exact end-of-support dates for each component?',
+      },
+      'hw.arch': {
+        D: 'How is it built — servers plus SAN, or HCI?',
+        I: 'Walk me through how everything fits together today.',
+        S: 'How is the environment set up today, and has that setup served you well?',
+        C: 'Can you describe the current architecture — compute, storage and network layers and their vendors?',
+      },
+      'hw.pain': {
+        D: 'What’s the biggest problem with the current gear?',
+        I: 'What’s the most frustrating thing about the current hardware?',
+        S: 'What’s been hardest for the team with the current equipment?',
+        C: 'Which issues come up most — performance, capacity, upgrades, support — and how often?',
+      },
+      'hw.oem': {
+        D: 'Which server vendor do you buy from?',
+        I: 'Who’s your go-to hardware vendor, and how’s that relationship?',
+        S: 'Which hardware vendor are you most comfortable working with?',
+        C: 'Do you have a preferred OEM or existing contract terms we need to work within?',
+      },
+      'hw.reuse': {
+        D: 'Anything you need to reuse, or clean slate?',
+        I: 'Is there anything you’d love to keep, or would a fresh start be exciting?',
+        S: 'Is there existing hardware you’d like to keep using so the change feels smaller?',
+        C: 'Which assets are still depreciating or under support and need to be reused?',
+      },
+
+      // ── Operations ──
+      'ops.consoles': {
+        D: 'How many tools does it take to run everything?',
+        I: 'How many different consoles does the team juggle in a day?',
+        S: 'How many tools does the team have to keep track of to run things?',
+        C: 'How many management tools are in use across compute, storage, network and backup?',
+      },
+      'ops.upgrades': {
+        D: 'How painful are upgrades?',
+        I: 'What’s the upgrade story — any war stories from the last one?',
+        S: 'How do upgrades and patching go for the team — are they stressful?',
+        C: 'How long does a full-stack upgrade take, how often do you do one, and what’s the change-window process?',
+      },
+      'ops.hours': {
+        D: 'How much of the week goes to keeping the lights on?',
+        I: 'If the team got time back, what would they love to work on instead?',
+        S: 'How much of the team’s week goes to routine upkeep rather than projects?',
+        C: 'Roughly what percentage of team hours goes to maintenance versus project work?',
+      },
+      'ops.capacity': {
+        D: 'How do you know when you’ll run out of capacity?',
+        I: 'Has capacity ever caught you by surprise? What happened?',
+        S: 'How do you plan ahead so you don’t run short on capacity?',
+        C: 'What method or tool do you use to forecast capacity, and how accurate has it been?',
+      },
+      'ops.selfservice': {
+        D: 'How long does it take to get someone a new VM?',
+        I: 'When an app team needs a VM, what does that experience feel like for them?',
+        S: 'When someone needs a new VM, how smooth is that process today?',
+        C: 'What’s the average time from VM request to delivery, and how many approval steps are involved?',
+      },
+      'ops.cost': {
+        D: 'Do you need to show who’s consuming what?',
+        I: 'Does leadership ask which teams use what — and how do you answer today?',
+        S: 'Would it help to show each team what they’re using, on-prem or in cloud?',
+        C: 'Do you need showback or chargeback, and at what level — department, app or project?',
+      },
+
+      // ── DR & cyber ──
+      'res.event': {
+        D: 'What’s driving the focus on resilience — an incident, an audit or insurance?',
+        I: 'What’s the story behind the resilience push — did something happen?',
+        S: 'What’s made recovery and security a bigger concern for you lately?',
+        C: 'Which specific event, audit finding or insurance requirement prompted this?',
+      },
+      'res.dr': {
+        D: 'What’s your DR today?',
+        I: 'If the main site went dark tomorrow, what would happen?',
+        S: 'How would the team recover if the main site had a problem?',
+        C: 'Can you describe your DR setup — secondary site, tooling, runbooks and last test date?',
+      },
+      'res.site2': {
+        D: 'Do you have a second site, or want one?',
+        I: 'Is there somewhere you could recover to — or would cloud be more appealing?',
+        S: 'Do you have a second location you could rely on, or would you rather not manage one?',
+        C: 'Do you own or lease a secondary site, and what are its capacity and network links?',
+      },
+      'res.rpo': {
+        D: 'How much data can you afford to lose, and how fast do you need to be back?',
+        I: 'For your most important apps, what would “back to normal” need to look like?',
+        S: 'For the apps people depend on most, how quickly do they need to be back up?',
+        C: 'What are the defined RPO and RTO targets for your tier-1 applications?',
+      },
+      'res.network': {
+        D: 'Is your network segmented, or mostly flat?',
+        I: 'If someone got into one server, how far could they get?',
+        S: 'How is the network separated today, and does that feel safe enough?',
+        C: 'How is east-west traffic controlled — VLANs, firewall rules or microsegmentation?',
+      },
+      'res.files': {
+        D: 'How much sensitive data is on file shares?',
+        I: 'What kind of data lives on your file shares — anything that would keep you up at night?',
+        S: 'How much important or sensitive data sits on shared drives?',
+        C: 'How many TB of file-share data are there, and how much of it is regulated or sensitive?',
+      },
+      'res.immutability': {
+        D: 'Are your backups immutable?',
+        I: 'If ransomware hit, would your backups be safe?',
+        S: 'Are your backups protected so an attacker can’t change or delete them?',
+        C: 'Are backup copies immutable or air-gapped, and what retention and lock settings are in place?',
+      },
+      'res.recovery': {
+        D: 'If ransomware hit Monday, when are you back?',
+        I: 'Picture ransomware hitting on Monday — how does the week play out?',
+        S: 'If something like ransomware happened, how long would it take the team to recover?',
+        C: 'What’s your measured recovery time from a full ransomware event, and when was it last tested?',
+      },
+
+      // ── Cloud ──
+      'cloud.direction': {
+        D: 'What’s the plan for cloud?',
+        I: 'What’s the big-picture cloud vision for the company?',
+        S: 'Where is the company heading with cloud, and how do you feel about it?',
+        C: 'What’s the documented cloud strategy — which workloads move, when and why?',
+      },
+      'cloud.which': {
+        D: 'Which cloud?',
+        I: 'Which cloud providers are you working with or excited about?',
+        S: 'Which cloud provider is the team most comfortable with?',
+        C: 'Which providers and regions, and do you have committed-spend agreements?',
+      },
+      'cloud.refactor': {
+        D: 'Will you rewrite apps for cloud, or move them as-is?',
+        I: 'How do the app teams feel about rebuilding for cloud?',
+        S: 'Would you rather move apps as they are, or take on rebuilding them?',
+        C: 'What share of apps are candidates for refactoring versus lift-and-shift, and at what cost?',
+      },
+      'cloud.deadline': {
+        D: 'Any hard date — lease or colo contract?',
+        I: 'Is there a date everyone’s watching, like a lease ending?',
+        S: 'Is there a date coming up, like a lease or contract ending, that we should plan around?',
+        C: 'What are the exact end dates and terms of your datacenter lease or colo contract?',
+      },
+      'cloud.costvis': {
+        D: 'Do you know where your cloud money goes?',
+        I: 'Have there been any cloud bill surprises?',
+        S: 'How comfortable are you with understanding your cloud bill each month?',
+        C: 'How is cloud spend tracked and allocated — tagging, reports, tools?',
+      },
+
+      // ── Storage ──
+      'stor.types': {
+        D: 'What unstructured data are we talking about?',
+        I: 'What kinds of files and data are piling up?',
+        S: 'What types of files and data does the team need to look after?',
+        C: 'Which data types — file shares, NAS, backups, archives, datasets — and in what volumes?',
+      },
+      'stor.size': {
+        D: 'How much capacity?',
+        I: 'How big has the data footprint gotten?',
+        S: 'About how much storage do you have to manage today?',
+        C: 'What’s the total usable capacity in TB, and how much of it is consumed?',
+      },
+      'stor.growth': {
+        D: 'How fast is it growing?',
+        I: 'Is data growth speeding up — what’s driving it?',
+        S: 'How quickly is the data growing, and is that getting hard to keep up with?',
+        C: 'What’s the annual growth rate, and what’s the projection for the next three years?',
+      },
+      'stor.pain': {
+        D: 'What’s the biggest storage problem?',
+        I: 'What’s the most frustrating thing about storage right now?',
+        S: 'What’s been the hardest part of managing storage for the team?',
+        C: 'Which storage issues cost you the most — price per TB, silos, performance or risk?',
+      },
+
+      // ── Remote sites ──
+      'edge.staff': {
+        D: 'Any IT staff at the sites?',
+        I: 'Who handles IT at the sites — a real IT person, or whoever’s around?',
+        S: 'Is there anyone at the sites to help when something goes wrong?',
+        C: 'Which sites have IT staff on site, and how many have none?',
+      },
+      'edge.apps': {
+        D: 'What runs at the sites?',
+        I: 'What do the sites depend on to do their jobs?',
+        S: 'What systems do people at the sites rely on every day?',
+        C: 'Which applications run locally at each type of site?',
+      },
+      'edge.today': {
+        D: 'What hardware is at each site?',
+        I: 'What does a typical site setup look like?',
+        S: 'What’s running at a typical site today, and is it reliable?',
+        C: 'What’s the standard per-site infrastructure — server count, storage and hypervisor?',
+      },
+      'edge.conn': {
+        D: 'How reliable is site connectivity?',
+        I: 'What happens at a site when the network goes down?',
+        S: 'How dependable is the connection back to headquarters?',
+        C: 'What’s the WAN bandwidth and uptime at the sites, and are any air-gapped?',
+      },
+      'edge.mgmt': {
+        D: 'How do you patch and monitor the sites?',
+        I: 'How does the team keep all those sites up to date?',
+        S: 'How does the team look after the sites without being there?',
+        C: 'What’s the process and tooling for patching and monitoring remote sites, and how often?',
+      },
+
+      // ── VDI ──
+      'euc.platform': {
+        D: 'Which VDI platform?',
+        I: 'What’s the desktop story — Citrix, Horizon, something else?',
+        S: 'What does the team use to deliver virtual desktops today?',
+        C: 'Which VDI broker and version are you running, and on which hypervisor?',
+      },
+      'euc.users': {
+        D: 'How many users?',
+        I: 'How many people log in to virtual desktops every day?',
+        S: 'How many people rely on virtual desktops?',
+        C: 'How many named and concurrent VDI users do you have, and what’s the peak?',
+      },
+      'euc.type': {
+        D: 'Persistent or non-persistent?',
+        I: 'Do users keep their own desktop, or get a fresh one each time?',
+        S: 'Do people keep their own personal desktop, or get a clean one at each login?',
+        C: 'What’s the split between persistent and non-persistent desktops?',
+      },
+      'euc.gpu': {
+        D: 'Any GPU users?',
+        I: 'Do any teams need graphics horsepower — design, engineering, imaging?',
+        S: 'Are there users who need extra graphics power for their work?',
+        C: 'How many users need GPU acceleration, and for which applications?',
+      },
+      'euc.pain': {
+        D: 'What’s broken about VDI today?',
+        I: 'What do users complain about most with their desktops?',
+        S: 'What’s been frustrating for users or the team with VDI?',
+        C: 'Which VDI issues are most frequent — logins, image updates, cost or performance?',
+      },
+
+      // ── Databases ──
+      'db.engines': {
+        D: 'Which databases do you run?',
+        I: 'What databases power your key apps?',
+        S: 'Which databases does the team look after?',
+        C: 'Which database engines and versions are in production?',
+      },
+      'db.count': {
+        D: 'How many database instances?',
+        I: 'How many databases are out there — has it gotten out of hand?',
+        S: 'About how many databases does the team manage?',
+        C: 'How many database instances are there across prod, dev and test?',
+      },
+      'db.dbas': {
+        D: 'How many DBAs?',
+        I: 'Who takes care of the databases — a DBA team or the sysadmins?',
+        S: 'Who looks after the databases, and do they have enough help?',
+        C: 'How many DBAs do you have, and how is their time split between routine work and projects?',
+      },
+      'db.provision': {
+        D: 'How long to get a new database?',
+        I: 'When a developer needs a database, what does that experience look like?',
+        S: 'When someone needs a new database, how long do they usually wait?',
+        C: 'What’s the average time from database request to a working connection string, and why?',
+      },
+      'db.clones': {
+        D: 'How do dev and test get copies of production?',
+        I: 'How do developers get realistic data to work with?',
+        S: 'How do the dev and test teams get the copies of data they need?',
+        C: 'What’s the process and cycle time for refreshing dev/test copies from production?',
+      },
+      'db.patch': {
+        D: 'Are your databases patched?',
+        I: 'How’s patching going — is it keeping up?',
+        S: 'How comfortable are you with how current database patching is?',
+        C: 'What’s your patch cadence per engine, and how far behind is the oldest version?',
+      },
+      'db.dbaas': {
+        D: 'Using any cloud databases today?',
+        I: 'Have you tried cloud database services — how did people like them?',
+        S: 'Do you use any cloud database services, and has that worked well?',
+        C: 'Which managed database services do you use, and what do they cost per month?',
+      },
+
+      // ── Kubernetes ──
+      'k8s.stage': {
+        D: 'Where are you with Kubernetes?',
+        I: 'What’s the container story — are teams excited about Kubernetes?',
+        S: 'Where is the team with containers and Kubernetes today?',
+        C: 'How many applications run in containers today, and how many clusters are in production?',
+      },
+      'k8s.platform': {
+        D: 'Which Kubernetes platform?',
+        I: 'Which Kubernetes platform did the teams land on, and how’s it going?',
+        S: 'Which Kubernetes platform is the team using and comfortable with?',
+        C: 'Which Kubernetes distributions and versions are in use, and what are the license costs?',
+      },
+      'k8s.team': {
+        D: 'Who runs Kubernetes?',
+        I: 'Who’s championing containers — a platform team or the developers?',
+        S: 'Who looks after the Kubernetes clusters, and are they stretched?',
+        C: 'Which team owns cluster operations, and how is on-call handled?',
+      },
+      'k8s.stateful': {
+        D: 'Any databases or stateful apps on Kubernetes?',
+        I: 'Are teams putting databases or other stateful apps in containers yet?',
+        S: 'Do any containers hold important data that needs protecting?',
+        C: 'What share of containerized workloads are stateful, and how is that data protected?',
+      },
+      'k8s.where': {
+        D: 'Where does Kubernetes need to run?',
+        I: 'Where do you see containers running — datacenter, cloud, the edge?',
+        S: 'Where do you need Kubernetes to run so it works for everyone?',
+        C: 'Which environments need Kubernetes — on-prem, cloud, edge, air-gapped — and how many clusters in each?',
+      },
+      'k8s.pain': {
+        D: 'What’s the biggest Kubernetes headache?',
+        I: 'What’s the most frustrating part of running Kubernetes today?',
+        S: 'What’s been hardest for the team with Kubernetes?',
+        C: 'Which Kubernetes issues cost the most time — upgrades, drift, security or skills?',
+      },
+
+      // ── AI ──
+      'ai.stage': {
+        D: 'Where are you with AI?',
+        I: 'What’s the AI buzz like inside the company — what’s got people excited?',
+        S: 'Where is the organization with AI today, and how are people feeling about it?',
+        C: 'Which AI initiatives are in production, in pilot or planned — and with what budget?',
+      },
+      'ai.usecases': {
+        D: 'Which AI use cases matter most?',
+        I: 'What are the AI ideas people are most excited about?',
+        S: 'Which AI uses would help people most in their day-to-day work?',
+        C: 'Which use cases are prioritized, and how will you measure each one’s success?',
+      },
+      'ai.data': {
+        D: 'Can your data go to public AI services?',
+        I: 'How do legal and security feel about sending data to public AI tools?',
+        S: 'Are you comfortable with company data going to public AI services?',
+        C: 'What data-classification rules govern what can be sent to external LLM APIs?',
+      },
+      'ai.gpu': {
+        D: 'Do you have GPUs?',
+        I: 'What’s the GPU situation — any on the way?',
+        S: 'Do you have GPUs available, or is that still being worked out?',
+        C: 'How many GPUs, and which models, are available or on order?',
+      },
+      'ai.gov': {
+        D: 'What’s the biggest AI risk you’re worried about?',
+        I: 'What keeps leadership up at night about AI?',
+        S: 'What concerns you most about how AI is being adopted?',
+        C: 'Which AI risks are formally tracked — data leakage, cost, access control, lock-in?',
+      },
+      'ai.owner': {
+        D: 'Who owns the AI budget?',
+        I: 'Who’s leading the charge on AI — and who’s funding it?',
+        S: 'Who looks after the AI budget and decisions?',
+        C: 'Which cost center funds AI, and who approves AI spending?',
+      },
+
+      // ── Cost ──
+      'cost.target': {
+        D: 'What’s the savings target?',
+        I: 'What would a big cost win look like for leadership?',
+        S: 'Is there a savings goal the team has been asked to reach?',
+        C: 'What’s the specific savings target — percentage or dollars — and by when?',
+      },
+      'cost.levers': {
+        D: 'Where do the savings have to come from?',
+        I: 'Where does leadership think the savings are hiding?',
+        S: 'Which areas are you expected to save in?',
+        C: 'Which budget lines are targeted — licensing, hardware, cloud or headcount?',
+      },
+      'cost.model': {
+        D: 'Capex, subscription or as-a-service?',
+        I: 'How does the company like to buy — any preference from finance?',
+        S: 'What buying approach is most comfortable for your finance team?',
+        C: 'What are your procurement constraints — capex versus opex, term lengths and cloud commits?',
+      },
+
+      // ── Decision ──
+      'dec.success': {
+        D: 'What result makes this a win?',
+        I: 'A year from now, what would make this a success story you’d tell others?',
+        S: 'A year from now, what would tell you this was the right decision?',
+        C: 'Which metrics will you use to measure success, and what are the targets?',
+      },
+      'dec.eb': {
+        D: 'Who signs off?',
+        I: 'Who else needs to be excited about this for it to happen?',
+        S: 'Who else will need to be comfortable with this decision?',
+        C: 'Who has final budget approval, and what’s their approval threshold?',
+      },
+      'dec.criteria': {
+        D: 'What matters most in the decision?',
+        I: 'What will make one option stand out from the others for your team?',
+        S: 'What’s most important to you and the team as you compare options?',
+        C: 'What are the formal evaluation criteria, and how will they be weighted?',
+      },
+      'dec.process': {
+        D: 'What are the steps to a decision?',
+        I: 'Walk me through how a decision like this usually comes together.',
+        S: 'What steps does a decision like this usually go through here?',
+        C: 'What’s the evaluation process — stages, approvals and required documentation?',
+      },
+      'dec.timeline': {
+        D: 'When will you decide?',
+        I: 'When are you hoping to have this decided and underway?',
+        S: 'What timeline feels realistic for making a decision?',
+        C: 'What’s the target decision date, and what milestones lead up to it?',
+      },
+      'dec.paper': {
+        D: 'How do you buy — partner, direct or a contract vehicle?',
+        I: 'Which partners do you like working with on purchases like this?',
+        S: 'How do purchases usually happen here — is there a partner you like to work with?',
+        C: 'What’s the procurement path — partner, contract vehicle, legal and security review — and how long does each step take?',
+      },
+      'dec.champion': {
+        D: 'Who’s driving this internally?',
+        I: 'Who’s the biggest fan of making a change?',
+        S: 'Who on your side is most invested in seeing this succeed?',
+        C: 'Who’s sponsoring this internally, and what’s their role in the decision?',
+      },
+      'dec.competition': {
+        D: 'Who else are you looking at?',
+        I: 'Who else is in the conversation, and what do you like about them?',
+        S: 'Are there other options you’re considering, so we can make sure we’re a good fit?',
+        C: 'Which alternatives are you evaluating, and against which criteria?',
+      },
+      'dec.nextstep': {
+        D: 'What’s the next step, and when?',
+        I: 'What would be a great next step — should we get the right people together?',
+        S: 'What next step would feel comfortable for you and the team?',
+        C: 'What’s the next concrete step, who owns it, and what date should we set?',
+      },
+    },
+  };
+})(globalThis.Fivo = globalThis.Fivo || {});
+
+
+/* ── src/content/tech.js ── */
+/* Fiv-o content: technologies Fiv-o can suggest during the call.
+
+   evidence  [term, weight] pairs; a technology is suggested once matched weights reach 1.
+             Terms: "questionId:optionId" (an answer), "play:id" (that pitch is at ≥50%
+             confidence), "variant:play.variant" (that version leads a pitch at ≥35%).
+   core      pitches / versions that exist because of this technology. If the customer says
+             they don't want it — and every other technology behind that pitch — the pitch is
+             set aside, and so are the questions only it needed.
+   play      pitch card to open for the full story. */
+(function (F) {
+  'use strict';
+
+  F.tech = [
+    {
+      id: 'ahv', name: 'AHV + Prism', play: 'vmw', core: ['vmw'],
+      what: 'Nutanix’s hypervisor and single management console — the replacement for vSphere and vCenter.',
+      evidence: [['play:vmw', 1], ['vmw.intent:exit', 0.6], ['vmw.intent:hedge', 0.4], ['trigger:vmware', 0.3], ['env.hypervisor:vsphere', 0.2]],
+    },
+    {
+      id: 'move', name: 'Nutanix Move', play: 'vmw', core: [],
+      what: 'Free migration tool — incremental VM replication with a scheduled cutover.',
+      evidence: [['vmw.intent:exit', 0.7], ['vmw.intent:hedge', 0.5], ['vmw.worry:downtime', 0.5], ['play:vmw', 0.5], ['cloud.refactor:none', 0.3]],
+    },
+    {
+      id: 'hci', name: 'HCI storage (AOS)', play: 'refresh', core: ['vmw.hci', 'refresh'],
+      what: 'Distributed storage on the servers themselves — no SAN to buy, zone or upgrade.',
+      evidence: [['variant:vmw.hci', 1], ['play:refresh', 0.8], ['env.storage:vsan', 0.5], ['env.array.age:old', 0.4], ['hw.arch:3tier', 0.4], ['hw.reuse:clean', 0.4]],
+    },
+    {
+      id: 'extstorage', name: 'AHV on their existing array (NCI-Compute)', play: 'vmw', core: ['vmw.ext'],
+      what: 'Keep the array, change the hypervisor: AHV and Prism on qualified external storage.',
+      evidence: [['variant:vmw.ext', 1], ['hw.reuse:array', 0.6], ['env.array.age:new', 0.5], ['vmw.worry:hardware', 0.4], ['env.array.vendor:everpure', 0.4], ['env.array.vendor:powerflex', 0.4], ['env.array.vendor:powerstore', 0.4]],
+    },
+    {
+      id: 'ncm_ops', name: 'NCM Intelligent Operations', play: 'ops', core: ['ops'],
+      what: 'Capacity forecasting, right-sizing, anomaly detection and low-code automation.',
+      evidence: [['ops.capacity:surprise', 1], ['ops.capacity:manual', 0.5], ['vmw.addons:aria', 0.6], ['ops.hours:gt50', 0.5], ['ops.hours:30to50', 0.4], ['play:ops', 0.5], ['ops.upgrades:behind', 0.3], ['cost.levers:people', 0.3]],
+    },
+    {
+      id: 'ncm_ss', name: 'NCM Self-Service', play: 'ops', core: ['ops'],
+      what: 'A governed catalog and blueprints so teams get VMs in minutes instead of tickets.',
+      evidence: [['ops.selfservice:weeks', 1], ['ops.selfservice:days', 0.7], ['play:ops', 0.3]],
+    },
+    {
+      id: 'ncm_cost', name: 'NCM Cost Governance', play: 'ops', core: ['ops'],
+      what: 'Metering, budgets and showback/chargeback across on-prem and public cloud.',
+      evidence: [['ops.cost:both', 1], ['ops.cost:onprem', 0.8], ['ops.cost:cloud', 0.8], ['cloud.costvis:none', 0.7], ['cloud.costvis:poor', 0.6], ['cost.levers:cloud', 0.3]],
+    },
+    {
+      id: 'ncm_sec', name: 'NCM Security Compliance', play: 'cyber', core: [],
+      what: 'Security posture monitoring, remediation and regulatory compliance reporting.',
+      evidence: [['res.event:audit', 0.6], ['res.event:insurance', 0.4], ['why.urgency:mandate', 0.4], ['dec.criteria:security', 0.3], ['res.network:flat', 0.2]],
+    },
+    {
+      id: 'dr', name: 'Nutanix Disaster Recovery', play: 'dr', core: ['dr', 'dr.site'],
+      what: 'Built-in replication with orchestrated recovery plans and non-disruptive test failovers.',
+      evidence: [['play:dr', 0.8], ['res.dr:manual', 0.6], ['res.dr:srm', 0.6], ['res.dr:none', 0.5], ['res.dr:offsite', 0.5], ['res.event:faileddr', 0.6], ['vmw.addons:srm', 0.6], ['res.event:nosite', 0.4]],
+    },
+    {
+      id: 'metro', name: 'Metro Availability / sync replication', play: 'dr', core: [],
+      what: 'Zero-data-loss replication between nearby sites for the apps that can’t lose a transaction.',
+      evidence: [['res.rpo:zero', 1]],
+    },
+    {
+      id: 'nc2', name: 'NC2 (Nutanix Cloud Clusters)', play: 'nc2', core: ['nc2', 'vmw.nc2', 'dr.cloud'],
+      what: 'The same Nutanix stack on bare-metal AWS, Azure, Google Cloud or OVHcloud — no refactoring.',
+      evidence: [['variant:vmw.nc2', 1], ['variant:dr.cloud', 1], ['play:nc2', 0.8], ['cloud.direction:burst', 0.6], ['cloud.direction:dr', 0.6], ['res.site2:cloud', 0.6], ['env.cloud:vmc', 0.6], ['cloud.direction:exit', 0.5], ['cloud.direction:expand', 0.4]],
+    },
+    {
+      id: 'flow', name: 'Flow Network Security', play: 'cyber', core: ['cyber'],
+      what: 'Microsegmentation that stops ransomware moving between VMs — the NSX firewall use case.',
+      evidence: [['res.network:flat', 1], ['vmw.nsx:dfw', 0.8], ['res.network:vlan', 0.5], ['res.event:ransomware', 0.4], ['play:cyber', 0.4], ['res.event:insurance', 0.3]],
+    },
+    {
+      id: 'fvn', name: 'Flow Virtual Networking', play: 'vmw', core: [],
+      what: 'Overlay networks and VPCs — the answer for NSX overlay users (validate parity first).',
+      evidence: [['vmw.nsx:overlay', 1]],
+    },
+    {
+      id: 'encryption', name: 'Data-at-rest encryption', play: 'cyber', core: ['cyber'],
+      what: 'One-click software or self-encrypting-drive encryption with key management.',
+      evidence: [['res.event:insurance', 0.6], ['res.event:audit', 0.6], ['why.urgency:mandate', 0.4], ['dec.criteria:security', 0.4]],
+    },
+    {
+      id: 'datalens', name: 'Data Lens', play: 'cyber', core: ['cyber'],
+      what: 'Ransomware detection, access auditing and guided recovery for file and object data.',
+      evidence: [['res.files:lots', 0.7], ['stor.pain:ransomware', 0.6], ['res.event:ransomware', 0.5], ['res.files:some', 0.3], ['variant:nus.files', 0.3]],
+    },
+    {
+      id: 'files', name: 'Nutanix Files', play: 'nus', core: ['nus', 'nus.files'],
+      what: 'Scale-out SMB/NFS file services to replace Windows file servers and NAS filers.',
+      evidence: [['variant:nus.files', 1], ['stor.types:fileservers', 0.8], ['stor.types:nas', 0.8], ['stor.types:profiles', 0.5], ['stor.pain:naseol', 0.5]],
+    },
+    {
+      id: 'objects', name: 'Nutanix Objects', play: 'nus', core: ['nus', 'nus.objects'],
+      what: 'S3-compatible storage with WORM object lock — an immutable backup target.',
+      evidence: [['variant:nus.objects', 1], ['res.immutability:no', 0.7], ['stor.types:backup', 0.7], ['stor.pain:s3', 0.7], ['res.immutability:partial', 0.4], ['hw.what:backup', 0.4]],
+    },
+    {
+      id: 'ndb', name: 'Nutanix Database Service (NDB)', play: 'ndb', core: ['ndb'],
+      what: 'Database-as-a-service: provisioning, cloning, patching and recovery across engines.',
+      evidence: [['play:ndb', 1], ['db.provision:weeks', 0.6], ['db.provision:days', 0.5], ['db.clones:manual', 0.5]],
+    },
+    {
+      id: 'nkp', name: 'Nutanix Kubernetes Platform (NKP)', play: 'nkp', core: ['nkp'],
+      what: 'Enterprise Kubernetes on AHV, bare metal or public cloud, with fleet management and GitOps.',
+      evidence: [['play:nkp', 1], ['k8s.platform:tanzu', 0.6], ['vmw.addons:tanzu', 0.6], ['k8s.stage:broad', 0.5], ['k8s.stage:some', 0.4]],
+    },
+    {
+      id: 'nai', name: 'Nutanix Enterprise AI (NAI)', play: 'ai', core: ['ai', 'ai.private'],
+      what: 'Private model inferencing with approved models, OpenAI-compatible endpoints and GPU governance.',
+      evidence: [['variant:ai.private', 1], ['ai.data:no', 0.7], ['ai.stage:prod', 0.4], ['ai.gpu:have', 0.4], ['ai.stage:pilots', 0.3]],
+    },
+    {
+      id: 'agentgw', name: 'Nutanix Agent Gateway', play: 'ai', core: ['ai', 'ai.gov'],
+      what: 'One governed front door for agents and models — auth, observability and token limits.',
+      evidence: [['variant:ai.gov', 1], ['ai.gov:tokens', 0.6], ['ai.gov:shadow', 0.5], ['ai.gov:security', 0.5], ['ai.stage:agents', 0.5]],
+    },
+    {
+      id: 'edge', name: 'NCI-Edge for remote sites', play: 'edge', core: ['edge'],
+      what: 'Small-footprint clusters per site, managed and upgraded centrally.',
+      evidence: [['play:edge', 1], ['edge.staff:none', 0.5], ['env.sites:s20', 0.5], ['env.sites:s6', 0.3]],
+    },
+    {
+      id: 'vdi', name: 'Citrix / Horizon on AHV (NCI-VDI)', play: 'euc', core: ['euc', 'euc.citrix', 'euc.horizon'],
+      what: 'Keep the VDI broker, run it on AHV with per-user licensing.',
+      evidence: [['play:euc', 1], ['euc.platform:citrix', 0.6], ['euc.platform:horizon', 0.6], ['vmw.addons:horizon', 0.5], ['euc.pain:bundle', 0.4]],
+    },
+  ];
+
+  F.techById = Object.fromEntries(F.tech.map((t) => [t.id, t]));
+})(globalThis.Fivo = globalThis.Fivo || {});
+
+
+/* ── src/content/licensing.js ── */
+/* Fiv-o content: Nutanix packaging facts the license sketch is built from.
+   Public sources as of Sept 2026 — packaging changes, so validate against the current
+   licensing guide / Sizer before quoting. The engine (src/engine/licensing.js) decides
+   which of these apply to a customer. */
+(function (F) {
+  'use strict';
+
+  F.licensing = {
+    asOf: 'Sept 2026',
+    src: {
+      options: 'https://www.nutanix.com/products/cloud-platform/software-options',
+      nci: 'https://www.nutanix.com/library/datasheets/nci',
+      ncic: 'https://www.nutanix.com/library/datasheets/nci-c',
+      ncm: 'https://www.nutanix.com/library/datasheets/ncm',
+      nkp: 'https://www.nutanix.com/products/kubernetes-management-platform',
+      nc2: 'https://www.nutanix.com/products/nutanix-cloud-clusters/pricing',
+      powerstore: 'https://virtualizationreview.com/articles/2026/07/28/nutanix-nci-7-6-adds-dell-powerstore-support.aspx',
+    },
+
+    // Nutanix Cloud Infrastructure — per physical core, 1–5 year terms.
+    nci: {
+      starter: 'AHV, AOS storage and Prism; clusters up to 12 nodes; no replication or DR; not eligible for NC2',
+      pro: 'Async replication and DR, data-at-rest encryption (NCI 7.3+), dedupe and compression, Prism Central, overlay networking; NKP Starter included',
+      ultimate: 'Everything in Pro plus Metro, sync and NearSync replication, microsegmentation, erasure coding, vGPU and cross-cluster live migration',
+    },
+    nciAddons: {
+      advrep: { name: 'Advanced Replication add-on', detail: 'Metro, sync and NearSync on NCI Pro' },
+      security: { name: 'Security add-on', detail: 'Microsegmentation (Flow Network Security) on NCI Pro' },
+    },
+    // AHV on qualified external storage uses NCI-Compute in the same three tiers.
+    ncic: 'Same Starter / Pro / Ultimate tiers for AHV on qualified external storage — Everpure FlashArray, Dell PowerFlex, Dell PowerStore (NCI 7.6+); NetApp ONTAP and Lenovo ThinkSystem announced',
+
+    // Nutanix Cloud Manager — per physical core.
+    ncm: {
+      starter: 'Intelligent Operations: capacity forecasting, right-sizing, reporting, low-code automation',
+      pro: 'Adds Self-Service (catalog, VM blueprints, runbooks) and Cost Governance (metering, budgets, chargeback)',
+      ultimate: 'Adds app blueprints, approvals and scheduling, and Security Compliance',
+    },
+
+    // Nutanix Cloud Platform "better together" bundles (NCI + NCM).
+    ncp: {
+      starter: { nci: 'pro', ncm: 'pro' },
+      pro: { nci: 'ultimate', ncm: 'pro' },
+      ultimate: { nci: 'ultimate', ncm: 'ultimate' },
+    },
+
+    nus: {
+      starter: 'Capacity-optimized Objects (and large archive Files) for backup, archive and video targets',
+      pro: 'Files, Objects and Volumes for general-purpose and performance use; WORM / object lock, tiering, Metro file sync add-on',
+      metric: 'per usable TiB; 1 TiB of Files/Objects is included with every NCI edition',
+    },
+    dataLens: {
+      starter: 'Reporting, anomaly and basic ransomware detection',
+      pro: 'Behavior-based ransomware detection, automated recovery for Files, permissions risk reporting',
+      metric: 'per usable TiB; SaaS or self-managed',
+    },
+    ndb: {
+      cluster: 'Per cluster: license every physical core of a dedicated database cluster — includes NCI Ultimate functionality',
+      vm: 'Per VM: license the vCPUs of the database VMs, on top of NCI',
+    },
+    nkp: {
+      starter: 'Kubernetes on AHV — included with NCI Pro and Ultimate, not sold separately',
+      pro: 'Adds any-infrastructure deployment, observability, service mesh, multitenancy and cost management',
+      ultimate: 'Adds fleet management across on-prem, cloud and edge',
+      metric: 'per physical core (bare metal) or vCPU (VMs); control-plane nodes unlicensed',
+      fullStack: 'NKP Full Stack bundles NKP + NCI + NDK; Pro and Ultimate add 5 TiB of NUS and 10 NDB vCPUs per cluster',
+    },
+    nai: {
+      pro: 'Per vCPU or per GB of GPU memory',
+      fullStack: 'NAI Full Stack bundles NAI + NCI + NKP + NDK, with 5 TiB of NUS and 10 NDB vCPUs per cluster',
+    },
+    nc2: 'Bring the same term licenses (portable) or pay as you go; the bare-metal instances are billed by the cloud provider; NCI Starter isn’t eligible',
+    edge: 'Per VM on a dedicated edge cluster — up to 25 powered-on VMs, 5 nodes and 96 GB per VM; includes NKP Starter and 1 TiB of Files/Objects',
+    vdi: 'Per peak concurrent user on a dedicated VDI cluster; includes storage for profiles (50 GB per user on Pro, 100 GB on Ultimate)',
+    general: [
+      'Licenses must cover every physical core in each licensed cluster.',
+      'Terms run 1–5 years with support included; licenses are portable across hardware and NC2.',
+    ],
+  };
+})(globalThis.Fivo = globalThis.Fivo || {});
+
+
 /* ── src/engine/state.js ── */
 /* Fiv-o engine: session model, persistence, and answer mutations.
    No DOM access here — this file also runs under Node for tests. */
@@ -2190,6 +3041,7 @@ globalThis.Fivo = { VERSION: "0.1.0", BUILT: "2026-09-29", CONTENT_DATE: "Sept 2
     s.setup = Object.assign({
       account: '', opp: '', se: '', partner: '', industry: '',
       segment: 'Commercial / Mid-market', attendees: [], contacts: '',
+      disc: '', // buyer's DISC style: 'D' | 'I' | 'S' | 'C' | ''
     }, s.setup || {});
     if (!Array.isArray(s.setup.attendees)) s.setup.attendees = [];
     if (!Array.isArray(s.calls) || !s.calls.length) s.calls = [{ n: 1, date: today(), startedAt: null }];
@@ -2197,6 +3049,7 @@ globalThis.Fivo = { VERSION: "0.1.0", BUILT: "2026-09-29", CONTENT_DATE: "Sept 2
     s.lastAnswered = s.lastAnswered || null;
     s.primaryPlay = s.primaryPlay || null;
     s.confirms = s.confirms || {};
+    s.tech = s.tech || {}; // technology id → { status: 'interested' | 'declined', note }
     s.recap = s.recap || {};
     s.wrap = Object.assign({ mp: {}, nextSteps: '', notes: '', gapsExcluded: {} }, s.wrap || {});
     return s;
@@ -2292,6 +3145,13 @@ globalThis.Fivo = { VERSION: "0.1.0", BUILT: "2026-09-29", CONTENT_DATE: "Sept 2
   }
 
   function skip(s, qid) { const a = ans(s, qid); a.skipped = true; }
+
+  // The customer's reaction to a technology you pitched. null clears it.
+  function setTech(s, id, status) {
+    if (!status) { delete s.tech[id]; return; }
+    s.tech[id] = Object.assign({ note: '' }, s.tech[id] || {}, { status, call: callNo(s), ts: Date.now() });
+  }
+  function setTechNote(s, id, note) { if (s.tech[id]) s.tech[id].note = note; }
   function clear(s, qid) { delete s.answers[qid]; }
   function setNote(s, qid, v) { ans(s, qid).note = v; }
   function setQuote(s, qid, v) { ans(s, qid).quote = v; }
@@ -2331,7 +3191,7 @@ globalThis.Fivo = { VERSION: "0.1.0", BUILT: "2026-09-29", CONTENT_DATE: "Sept 2
   F.state = {
     KEY, newSession, migrate, callNo, startNextCall, today,
     save, list, get, remove, exportJSON, importJSON,
-    selectOption, setField, setText, markDone, skip, clear, setNote, setQuote, setPain,
+    selectOption, setField, setText, markDone, skip, clear, setNote, setQuote, setPain, setTech, setTechNote,
   };
 })(globalThis.Fivo = globalThis.Fivo || {});
 
@@ -2368,28 +3228,47 @@ globalThis.Fivo = { VERSION: "0.1.0", BUILT: "2026-09-29", CONTENT_DATE: "Sept 2
       });
     }
 
+    // Pitches (or versions) the customer explicitly turned down drop out of the ranking.
+    const off = suppressed(session);
     const list = F.plays.map((p) => {
-      const score = Math.max(0, raw[p.id] || 0);
+      const declined = !!off[p.id];
+      const score = declined ? 0 : Math.max(0, raw[p.id] || 0);
       const conf = score / (score + K);
-      const variants = (p.variants || []).map((v) => ({ id: v.id, name: v.name, score: Math.max(0, raw[`${p.id}.${v.id}`] || 0) }));
+      const variants = (p.variants || []).map((v) => {
+        const vOff = !!off[`${p.id}.${v.id}`];
+        return { id: v.id, name: v.name, declined: vOff, score: vOff ? 0 : Math.max(0, raw[`${p.id}.${v.id}`] || 0) };
+      });
       const vTotal = variants.reduce((t, v) => t + v.score, 0);
-      variants.forEach((v) => { v.share = vTotal ? v.score / vTotal : 1 / variants.length; });
-      const vSorted = variants.slice().sort((x, y) => y.score - x.score);
+      const vLive = variants.filter((v) => !v.declined);
+      variants.forEach((v) => { v.share = v.declined ? 0 : vTotal ? v.score / vTotal : 1 / (vLive.length || 1); });
+      const vSorted = variants.slice().sort((x, y) => y.score - x.score || (x.declined ? 1 : 0) - (y.declined ? 1 : 0));
       const variant = vSorted.length && vSorted[0].score > 0 ? vSorted[0] : null;
-      const missingQualifiers = (p.qualifiers || []).filter((qid) => {
+      const missingQualifiers = declined ? [] : (p.qualifiers || []).filter((qid) => {
         const q = F.questionById[qid];
         return q && !F.isAnswered(q, session.answers[qid]);
       });
       const t = (trace[p.id] || []).slice().sort((x, y) => Math.abs(y.delta) - Math.abs(x.delta));
       return {
-        id: p.id, play: p, score, conf, variants: vSorted, variant,
-        missingQualifiers, ready: conf >= READY && missingQualifiers.length === 0, trace: t,
+        id: p.id, play: p, score, conf, variants: vSorted, variant, declined,
+        missingQualifiers, ready: !declined && conf >= READY && missingQualifiers.length === 0, trace: t,
       };
     });
 
     list.sort((a, b) => b.score - a.score || F.plays.indexOf(a.play) - F.plays.indexOf(b.play));
     const byId = Object.fromEntries(list.map((r) => [r.id, r]));
     return { list, byId, raw };
+  }
+
+  // A pitch or version is set aside when every technology it depends on (tech.core) was declined.
+  function suppressed(session) {
+    const st = session.tech || {};
+    const byTarget = {};
+    (F.tech || []).forEach((t) => t.core.forEach((c) => { (byTarget[c] = byTarget[c] || []).push(t.id); }));
+    const out = {};
+    for (const [target, ids] of Object.entries(byTarget)) {
+      if (ids.every((id) => st[id] && st[id].status === 'declined')) out[target] = true;
+    }
+    return out;
   }
 
   // How strongly a question's options pull two targets apart (for "next-best-question").
@@ -2408,7 +3287,7 @@ globalThis.Fivo = { VERSION: "0.1.0", BUILT: "2026-09-29", CONTENT_DATE: "Sept 2
     return (q.options || []).some((o) => Object.keys(o.signals || {}).some((k) => k === pid || k.startsWith(pid + '.')));
   }
 
-  F.scoring = { K, READY, compute, discrimination, touchesPlay };
+  F.scoring = { K, READY, compute, discrimination, touchesPlay, suppressed };
 })(globalThis.Fivo = globalThis.Fivo || {});
 
 
@@ -2461,6 +3340,268 @@ globalThis.Fivo = { VERSION: "0.1.0", BUILT: "2026-09-29", CONTENT_DATE: "Sept 2
 })(globalThis.Fivo = globalThis.Fivo || {});
 
 
+/* ── src/engine/tech.js ── */
+/* Fiv-o engine: which technologies the customer could use, from their answers and the pitch
+   ranking. A technology is "suggested" once its evidence adds up to 1. The SE records the
+   customer's reaction (interested / not interested) in session.tech. */
+(function (F) {
+  'use strict';
+
+  const THRESHOLD = 1;
+  const PLAY_CONF = 0.5;     // "play:x" evidence counts once that pitch is at ≥50%
+  const VARIANT_CONF = 0.35; // "variant:x.y" counts once y leads pitch x at ≥35%
+
+  function termMatch(term, session, valid, scores) {
+    const i = term.indexOf(':');
+    const kind = term.slice(0, i);
+    const rest = term.slice(i + 1);
+    if (kind === 'play') {
+      const r = scores.byId[rest];
+      return r && !r.declined && r.conf >= PLAY_CONF ? `${r.play.short} pitch at ${Math.round(r.conf * 100)}%` : null;
+    }
+    if (kind === 'variant') {
+      const [pid, vid] = rest.split('.');
+      const r = scores.byId[pid];
+      return r && !r.declined && r.conf >= VARIANT_CONF && r.variant && r.variant.id === vid ? r.variant.name : null;
+    }
+    // "questionId:optionId"
+    if (!valid[kind]) return null;
+    const q = F.questionById[kind];
+    if (!F.selected(q, session.answers[kind]).includes(rest)) return null;
+    const o = q.options.find((x) => x.id === rest);
+    return `${q.short}: ${o ? o.label : rest}`;
+  }
+
+  function evaluate(session, valid, scores) {
+    const st = session.tech || {};
+    return F.tech.map((t) => {
+      let score = 0;
+      const why = [];
+      t.evidence.forEach(([term, w]) => {
+        const label = termMatch(term, session, valid, scores);
+        if (label) { score += w; why.push(label); }
+      });
+      const rec = st[t.id] || {};
+      const status = rec.status || null;
+      const suggested = score >= THRESHOLD - 1e-9;
+      return {
+        id: t.id, tech: t, score: Math.round(score * 100) / 100, why, status, note: rec.note || '',
+        suggested,
+        inScope: status === 'interested' || (suggested && status !== 'declined'),
+      };
+    }).sort((a, b) => b.score - a.score || F.tech.indexOf(a.tech) - F.tech.indexOf(b.tech));
+  }
+
+  F.techEngine = { evaluate, THRESHOLD };
+})(globalThis.Fivo = globalThis.Fivo || {});
+
+
+/* ── src/engine/licensing.js ── */
+/* Fiv-o engine: license sketch — the lowest Nutanix packaging that covers what the customer
+   needs. Needs come from technologies in scope (suggested and not declined, or marked
+   interested) plus a few answers (GPUs, users, capacity). Facts live in content/licensing.js. */
+(function (F) {
+  'use strict';
+
+  const RANK = { starter: 1, pro: 2, ultimate: 3 };
+  const Cap = (x) => x.charAt(0).toUpperCase() + x.slice(1);
+  const maxTier = (tiers) => tiers.reduce((m, t) => (RANK[t] > RANK[m] ? t : m), tiers[0]);
+
+  const SIZE = {
+    'stor.size': { lt50: 'up to 50 TiB', '50to250': '50–250 TiB', '250to1p': '250 TiB–1 PiB', gt1p: '1 PiB+' },
+    'euc.users': { lt250: 'up to 250 users', '250to1k': '250–1,000 users', '1kto5k': '1,000–5,000 users', gt5k: '5,000+ users' },
+    'db.count': { lt25: 'under 25 databases', '25to100': '25–100 databases', '100to500': '100–500 databases', gt500: '500+ databases' },
+    'env.sites': { s1: '1 site', s2: '2–5 sites', s6: '6–20 sites', s20: '20+ sites' },
+  };
+  const num = (v) => parseInt(String(v || '').replace(/[^0-9]/g, ''), 10) || 0;
+
+  function recommend(s, d) {
+    const L = F.licensing;
+    const T = Object.fromEntries(d.tech.map((t) => [t.id, t]));
+    const on = (id) => !!(T[id] && T[id].inScope);
+    const sel = (qid) => (d.valid[qid] ? F.selected(F.questionById[qid], s.answers[qid]) : []);
+    const has = (qid, opt) => sel(qid).includes(opt);
+    const size = (qid) => SIZE[qid][sel(qid)[0]] || null;
+    const why = (id, n) => (T[id] ? T[id].why.slice(0, n || 2) : []);
+    const primary = d.primary && d.primary.score > 0 ? d.primary : null;
+
+    if (!primary && !d.tech.some((t) => t.inScope)) {
+      return { ready: false, note: 'The license sketch appears once a pitch starts to form.' };
+    }
+
+    // ── Quantity ──
+    const counts = d.valid['env.counts'] ? (s.answers['env.counts'].value || {}) : {};
+    const cores = num(counts.cores);
+    const hosts = num(counts.hosts);
+    const qty = cores ? `${cores} cores` : hosts ? `${hosts} hosts — confirm cores` : 'core count needed';
+
+    // ── NCI (or NCI-C) tier ──
+    const ext = on('extstorage');
+    const base = ext ? 'NCI-C' : 'NCI';
+    const needs = [];
+    if (on('dr')) needs.push({ tier: 'pro', why: 'Async replication and DR' });
+    if (on('encryption')) needs.push({ tier: 'pro', why: 'Data-at-rest encryption' });
+    if (on('nc2')) needs.push({ tier: 'pro', why: 'Running on NC2 (Starter isn’t eligible)' });
+    if (on('fvn')) needs.push({ tier: 'pro', why: 'Overlay networking / VPCs' });
+    if (hosts > 12) needs.push({ tier: 'pro', why: 'Clusters over 12 nodes' });
+    if (on('metro')) needs.push({ tier: 'ultimate', addon: 'advrep', why: 'Metro / sync replication for near-zero RPO' });
+    if (on('flow')) needs.push({ tier: 'ultimate', addon: 'security', why: 'Microsegmentation (Flow Network Security)' });
+    if (on('nai') && (has('ai.gpu', 'have') || has('ai.gpu', 'planning'))) needs.push({ tier: 'ultimate', why: 'GPU passthrough / vGPU for AI' });
+
+    const ult = needs.filter((n) => n.tier === 'ultimate');
+    let tier = 'pro';
+    let addon = null; // one Ultimate-level need that Pro can cover with an add-on
+    if (ult.length === 1 && ult[0].addon) addon = ult[0].addon;
+    else if (ult.length) tier = 'ultimate';
+
+    const nciReasons = needs.map((n) => (n.addon && n.addon === addon
+      ? `${n.why} → ${L.nciAddons[addon].name}`
+      : `${n.why} → ${base} ${Cap(n.tier)}`));
+    if (!needs.length) nciReasons.push(`Production baseline — replication, Prism Central, dedupe and compression → ${base} Pro`);
+
+    // ── NCM tier ──
+    const ncmNeeds = [];
+    if (on('ncm_ops')) ncmNeeds.push({ tier: 'starter', why: 'Capacity forecasting and right-sizing' });
+    if (on('ncm_ss')) ncmNeeds.push({ tier: 'pro', why: 'Self-service catalog and blueprints' });
+    if (on('ncm_cost')) ncmNeeds.push({ tier: 'pro', why: 'Cost Governance — showback and chargeback' });
+    if (on('ncm_sec')) ncmNeeds.push({ tier: 'ultimate', why: 'Security Compliance reporting' });
+    const ncmTier = ncmNeeds.length ? maxTier(ncmNeeds.map((n) => n.tier)) : null;
+    const ncmReasons = ncmNeeds.map((n) => `${n.why} → NCM ${Cap(n.tier)}`);
+
+    const core = [];
+    const addons = [];
+    const alternatives = [];
+    const notes = [];
+    let effTier = tier;
+
+    if (!ncmTier) {
+      core.push({ title: `${base} ${Cap(tier)}`, detail: L.nci[tier], qty, why: nciReasons });
+    } else if (ncmTier === 'starter') {
+      core.push({ title: `${base} ${Cap(tier)} + NCM Starter`, detail: `${L.nci[tier]}. NCM Starter: ${L.ncm.starter}.`, qty, why: [...nciReasons, ...ncmReasons] });
+      const b = tier === 'ultimate' ? 'pro' : 'starter';
+      if (!ext) alternatives.push({ title: `NCP ${Cap(b)}`, detail: `NCI ${Cap(L.ncp[b].nci)} + NCM Pro in one bundle — adds Self-Service and Cost Governance; compare the bundle price.` });
+    } else {
+      const bundle = ncmTier === 'ultimate' ? 'ultimate' : tier === 'ultimate' ? 'pro' : 'starter';
+      const b = L.ncp[bundle];
+      effTier = b.nci;
+      if (ext) {
+        core.push({ title: `NCI-C ${Cap(b.nci)} + NCM ${Cap(b.ncm)}`, detail: 'The NCP pairing on external storage — confirm bundle pricing for NCI-C with your licensing team.', qty, why: [...nciReasons, ...ncmReasons] });
+      } else {
+        core.push({ title: `NCP ${Cap(bundle)}`, detail: `NCI ${Cap(b.nci)} + NCM ${Cap(b.ncm)} in one bundle`, qty, why: [...nciReasons, ...ncmReasons] });
+      }
+      if (b.nci === 'ultimate' && tier !== 'ultimate') notes.push(`NCP ${Cap(bundle)} brings NCI Ultimate along with NCM ${Cap(b.ncm)}.`);
+    }
+
+    if (addon && effTier !== 'ultimate') {
+      const a = L.nciAddons[addon];
+      addons.push({ title: a.name, detail: a.detail, qty: `with ${base} Pro`, why: [ult[0].why] });
+      const altTitle = !ncmTier ? `${base} Ultimate` : ncmTier === 'starter' ? `${base} Ultimate + NCM Starter` : ext ? 'NCI-C Ultimate + NCM Pro' : 'NCP Pro';
+      alternatives.push({ title: altTitle, detail: `Includes ${ult[0].why.toLowerCase()} natively — simpler if they’ll want more Ultimate features later.` });
+    }
+
+    // Budget option: one small cluster with no replication needs.
+    const small = (hosts && hosts <= 4) || (!hosts && has('env.itteam', 't1'));
+    const oneSite = !sel('env.sites')[0] || has('env.sites', 's1');
+    if (!needs.length && !ncmTier && !on('nkp') && small && oneSite) {
+      alternatives.push({ title: `${base} Starter`, detail: 'Budget option for a single small cluster (up to 12 nodes) with no replication or DR.' });
+    }
+
+    // ── Add-ons and separate licenses ──
+    if (on('edge')) {
+      addons.push({ title: `NCI-Edge Pro${ncmTier ? ' + NCM-Edge' : ''}`, detail: L.edge, qty: size('env.sites') || 'per site', why: why('edge') });
+    }
+    if (on('vdi')) {
+      const gpu = has('euc.gpu', 'yes') || has('euc.gpu', 'some');
+      addons.push({ title: `NCI-VDI ${gpu ? 'Ultimate' : 'Pro'}`, detail: L.vdi, qty: size('euc.users') || 'per concurrent user', why: gpu ? ['GPU users need vGPU → Ultimate'] : why('vdi') });
+    }
+    if (on('files') || on('objects')) {
+      const types = sel('stor.types');
+      const capacityOnly = !on('files') && types.length > 0 && types.every((t) => ['backup', 'imaging'].includes(t));
+      const ed = capacityOnly ? 'starter' : 'pro';
+      const uses = [on('files') && 'Files', on('objects') && 'Objects'].filter(Boolean).join(' + ');
+      addons.push({ title: `NUS ${Cap(ed)} — ${uses}`, detail: `${L.nus[ed]}; ${L.nus.metric}`, qty: size('stor.size') || 'per usable TiB', why: [...(on('files') ? why('files', 1) : []), ...(on('objects') ? why('objects', 1) : [])] });
+      if (on('files') && (on('flow') || on('encryption'))) notes.push('Encrypting or segmenting file data needs the NUS Security add-on (per TiB).');
+      if (on('files') && on('metro')) notes.push('Zero-RPO file shares need the NUS Advanced Replication add-on (Metro file sync).');
+    }
+    if (on('datalens')) {
+      const pro = has('res.event', 'ransomware') || has('res.event', 'insurance') || has('stor.pain', 'ransomware');
+      addons.push({ title: `Data Lens ${pro ? 'Pro' : 'Starter'}`, detail: `${L.dataLens[pro ? 'pro' : 'starter']}; ${L.dataLens.metric}`, qty: 'per TiB of file/object data', why: why('datalens') });
+    }
+    if (on('ndb')) {
+      const big = ['100to500', 'gt500'].includes(sel('db.count')[0]);
+      addons.push({ title: `NDB — ${big ? 'per cluster' : 'per VM'}`, detail: big ? L.ndb.cluster : L.ndb.vm, qty: size('db.count') || 'size with the NDB Fitment Tool', why: why('ndb') });
+      alternatives.push({ title: `NDB — ${big ? 'per VM' : 'per cluster'}`, detail: big ? L.ndb.vm : L.ndb.cluster });
+    }
+    let nkpAddon = false;
+    if (on('nkp')) {
+      const where = sel('k8s.where');
+      const pains = sel('k8s.pain');
+      const fleet = where.length >= 2 || pains.includes('multicloud') || pains.includes('sprawl');
+      const prod = ['some', 'broad'].includes(sel('k8s.stage')[0]) || where.some((w) => ['cloud', 'edge', 'airgap'].includes(w)) || sel('k8s.platform').some((x) => x !== 'none');
+      if (fleet || prod) {
+        nkpAddon = true;
+        const ed = fleet ? 'ultimate' : 'pro';
+        addons.push({ title: `NKP ${Cap(ed)}`, detail: `${L.nkp[ed]}; ${L.nkp.metric}`, qty: 'per core or vCPU', why: fleet ? ['Clusters in more than one environment → fleet management'] : ['Production Kubernetes beyond basic AHV clusters'] });
+        if (primary && primary.id === 'nkp') alternatives.push({ title: 'NKP Full Stack', detail: L.nkp.fullStack });
+      }
+    }
+    if (on('nai')) {
+      addons.push({ title: 'NAI Pro', detail: L.nai.pro, qty: 'per vCPU or GB of GPU memory', why: why('nai') });
+      alternatives.push({ title: 'NAI Full Stack', detail: L.nai.fullStack });
+    }
+    if (on('agentgw')) {
+      addons.push({ title: 'Nutanix Agent Gateway', detail: 'Launched in 2026 — confirm packaging with your AI specialist.', qty: '—', why: why('agentgw') });
+    }
+    if (on('nc2')) {
+      const q = F.questionById['cloud.which'];
+      const clouds = sel('cloud.which').filter((c) => c !== 'undecided').map((c) => q.options.find((o) => o.id === c).label);
+      addons.push({ title: `NC2${clouds.length ? ` on ${clouds.join(' / ')}` : ''}`, detail: L.nc2, qty: 'cloud nodes sized separately', why: why('nc2') });
+    }
+
+    // ── What comes with it ──
+    const included = [ext ? 'AHV, Prism and LCM (storage stays on their array)' : 'AHV, AOS storage, Prism and LCM'];
+    if (on('move') || on('ahv') || (primary && primary.id === 'vmw')) included.push('Nutanix Move — free migration tool');
+    if (!nkpAddon) included.push('NKP Starter — Kubernetes on AHV (comes with NCI Pro and Ultimate)');
+    included.push('1 TiB of Files/Objects capacity');
+    included.push('Data-at-rest encryption (NCI 7.3 and later)');
+    if (effTier === 'ultimate') included.push('Metro/sync replication and microsegmentation (NCI Ultimate)');
+    if (ncmTier) included.push('Nutanix Central — one view across clusters and clouds');
+
+    const excluded = d.tech.filter((t) => t.status === 'declined')
+      .map((t) => ({ title: t.tech.name, detail: 'customer not interested', reason: (t.note || '').trim() }));
+
+    const assumptions = [
+      cores ? `Sized on ${cores} cores from discovery.` : hosts ? `${hosts} hosts from discovery — confirm the core count with Nutanix Collector.` : 'No core count yet — run Nutanix Collector or get an RVTools export.',
+      ...L.general,
+      `Built from public packaging (${L.asOf}) — validate in Sizer and the partner quote.`,
+    ];
+
+    return { ready: true, headline: core[0].title, core, addons, included, alternatives, excluded, notes, assumptions };
+  }
+
+  // Plain-text version for the CRM notes and the copy button.
+  function toText(rec) {
+    if (!rec || !rec.ready) return rec ? `- ${rec.note}` : '';
+    const out = [];
+    const line = (prefix, l) => {
+      out.push(`- ${prefix}${l.title}${l.qty ? ` — ${l.qty}` : ''}`);
+      if (l.detail) out.push(`    ${l.detail}`);
+      if (l.why && l.why.length) out.push(`    Why: ${l.why.join('; ')}`);
+    };
+    rec.core.forEach((l) => line('', l));
+    rec.addons.forEach((l) => line('Add-on: ', l));
+    if (rec.included.length) out.push(`- Included: ${rec.included.join('; ')}`);
+    rec.alternatives.forEach((a) => out.push(`- Alternative: ${a.title} — ${a.detail}`));
+    rec.excluded.forEach((x) => out.push(`- Left out: ${x.title} — ${x.detail}${x.reason ? ` (“${x.reason}”)` : ''}`));
+    rec.notes.forEach((n) => out.push(`- Note: ${n}`));
+    out.push(`- Assumptions: ${rec.assumptions.join(' ')}`);
+    return out.join('\n');
+  }
+
+  F.licensingEngine = { recommend, toText };
+})(globalThis.Fivo = globalThis.Fivo || {});
+
+
 /* ── src/engine/router.js ── */
 /* Fiv-o engine: eligibility, stale answers, question ordering (next-best-question),
    gaps, and the single `evaluate()` the UI and report read from. */
@@ -2507,9 +3648,17 @@ globalThis.Fivo = { VERSION: "0.1.0", BUILT: "2026-09-29", CONTENT_DATE: "Sept 2
     const stale = {};
     for (const qid in has) if (!valid[qid]) stale[qid] = true;
 
-    // 2. Scores.
+    // 2. Scores, then the technologies they point to.
     const scores = F.scoring.compute(s, valid);
     const L = scores.list;
+    const tech = F.techEngine.evaluate(s, valid, scores);
+
+    // Topics whose pitches were all turned down are set aside: their open questions leave
+    // the flow (they stay reachable through search and topic review).
+    const aside = {};
+    F.meta.modules.forEach((m) => {
+      if (m.serves && m.serves.length && m.serves.every((pid) => scores.byId[pid] && scores.byId[pid].declined)) aside[m.id] = true;
+    });
 
     // 3. Pains, flags, coaching tips, quotes.
     const pains = [], flags = [], tips = [], quotes = [];
@@ -2550,7 +3699,7 @@ globalThis.Fivo = { VERSION: "0.1.0", BUILT: "2026-09-29", CONTENT_DATE: "Sept 2
         if (!decided) for (let j = 1; j < v.length; j++) pairs.push([`${L[0].id}.${v[0].id}`, `${L[0].id}.${v[j].id}`, `${v[0].name} vs ${v[j].name}`]);
       }
     }
-    const isOpen = (q) => eligible[q.id] && !F.isAnswered(q, s.answers[q.id]);
+    const isOpen = (q) => eligible[q.id] && !aside[q.module] && !F.isAnswered(q, s.answers[q.id]);
     const split = {};
     F.questions.forEach((q) => {
       if (!isOpen(q)) return;
@@ -2603,9 +3752,11 @@ globalThis.Fivo = { VERSION: "0.1.0", BUILT: "2026-09-29", CONTENT_DATE: "Sept 2
       .map((g) => g.q.id);
 
     const mp = F.meddpicc.compute(s, valid, pains);
-    const primary = (s.primaryPlay && scores.byId[s.primaryPlay]) || L[0];
+    const pinnedPlay = s.primaryPlay && scores.byId[s.primaryPlay];
+    const primary = (pinnedPlay && !pinnedPlay.declined && pinnedPlay) || L[0];
+    const license = F.licensingEngine.recommend(s, { valid, scores, primary, tech });
 
-    return { valid, eligible, stale, scores, primary, pains, flags, tips, quotes, order, modules, triggered, queue, split, progress, mustLeft, gaps, mp };
+    return { valid, eligible, stale, scores, primary, tech, aside, license, pains, flags, tips, quotes, order, modules, triggered, queue, split, progress, mustLeft, gaps, mp };
   }
 
   F.router = { evaluate, isEligible, cond };
@@ -2658,6 +3809,19 @@ globalThis.Fivo = { VERSION: "0.1.0", BUILT: "2026-09-29", CONTENT_DATE: "Sept 2
     ].filter(Boolean).join('\n');
   }
 
+  // Interested / explicitly not interested / suggested but not pitched yet.
+  function technology(d) {
+    const names = (list) => list.map((t) => t.tech.name).join('; ');
+    const yes = d.tech.filter((t) => t.status === 'interested');
+    const no = d.tech.filter((t) => t.status === 'declined');
+    const open = d.tech.filter((t) => t.suggested && !t.status);
+    return [
+      yes.length ? `- Interested: ${names(yes)}` : null,
+      ...no.map((t) => `- Not interested (explicit): ${t.tech.name}${t.note ? ` — ${t.note}` : ''}`),
+      open.length ? `- Suggested, not pitched yet: ${names(open)}` : null,
+    ];
+  }
+
   function crm(s, d) {
     const su = s.setup;
     const n = s.calls.length;
@@ -2675,6 +3839,8 @@ globalThis.Fivo = { VERSION: "0.1.0", BUILT: "2026-09-29", CONTENT_DATE: "Sept 2
     if (firm.length) push(firm.join(' | '));
     if (su.attendees.length) push(`Attendees: ${su.attendees.map(personaLabel).join(', ')}`);
     if (su.contacts && su.contacts.trim()) push(`Contacts: ${su.contacts.trim()}`);
+    const style = su.disc && F.disc.styles.find((x) => x.k === su.disc);
+    if (style) push(`Buyer style (DISC): ${style.label} — ${style.name}. ${style.adapt}`);
 
     const Q = F.questionById;
     section('WHY NOW', [
@@ -2704,6 +3870,10 @@ globalThis.Fivo = { VERSION: "0.1.0", BUILT: "2026-09-29", CONTENT_DATE: "Sept 2
       plays.unshift(d.primary);
     }
     section('RECOMMENDED PLAY', plays.map(playBlock));
+
+    section('TECHNOLOGY', technology(d));
+
+    section(`LICENSE SKETCH (validate in Sizer / the quote)`, [d.license && d.license.ready ? F.licensingEngine.toText(d.license) : null]);
 
     section('RISKS / LANDMINES', d.flags.map((f) => `- ${f.text}`));
 
@@ -2841,7 +4011,9 @@ globalThis.Fivo = { VERSION: "0.1.0", BUILT: "2026-09-29", CONTENT_DATE: "Sept 2
       topic: null,          // topic review open in the main column
       addTopic: false,      // "customer raised another topic" picker
       coaching: prefs.get('coaching', true),
-      coachOpen: false,     // listening tips expanded
+      askOpen: prefs.get('askOpen', false), // "How to ask it" (DISC + coaching) expanded
+      sideTab: 'pitch',     // side panel: 'pitch' | 'license'
+      techAll: false, techPicker: false, freshTech: {},
       blur: false, help: false,
       search: null, searchIdx: 0,
       drawer: null, drawerTab: null, pitchTab: 'pitch',
@@ -2870,7 +4042,7 @@ globalThis.Fivo = { VERSION: "0.1.0", BUILT: "2026-09-29", CONTENT_DATE: "Sept 2
 
   app.open = function (s, screen) {
     app.s = s;
-    Object.assign(app.ui, { nudged: false, held: null, focusModule: null, pinned: null, active: null, topic: null, addTopic: false, drawer: null, search: null, undo: null, rankDelta: {}, unlocked: {}, prevConf: {}, prevActive: null, openQuote: {}, openNote: {} });
+    Object.assign(app.ui, { sideTab: 'pitch', techAll: false, techPicker: false, freshTech: {}, nudged: false, held: null, focusModule: null, pinned: null, active: null, topic: null, addTopic: false, drawer: null, search: null, undo: null, rankDelta: {}, unlocked: {}, prevConf: {}, prevActive: null, openQuote: {}, openNote: {} });
     app.recompute();
     app.go(screen);
   };
@@ -2926,6 +4098,10 @@ globalThis.Fivo = { VERSION: "0.1.0", BUILT: "2026-09-29", CONTENT_DATE: "Sept 2
     after.scores.list.filter((r) => r.ready && !before.scores.byId[r.id].ready).forEach((r) => {
       msgs.push(`Pitch ready: ${r.play.short}${r.variant ? ' → ' + r.variant.name : ''}`);
     });
+    const wasSuggested = Object.fromEntries(before.tech.map((t) => [t.id, t.suggested]));
+    const newTech = after.tech.filter((t) => t.suggested && !t.status && !wasSuggested[t.id]);
+    newTech.forEach((t) => { app.ui.freshTech[t.id] = Date.now(); });
+    if (newTech.length) msgs.push(`Suggested: ${newTech.map((t) => t.tech.name).join(', ')}`);
     if (msgs.length) toast(msgs.join(' · '));
   }
 
@@ -3018,6 +4194,20 @@ globalThis.Fivo = { VERSION: "0.1.0", BUILT: "2026-09-29", CONTENT_DATE: "Sept 2
 
   app.setPref = function (k, v) { app.ui[k] = v; prefs.set(k, v); app.render(); };
 
+  // The customer's reaction to a technology: 'interested' | 'declined' | null (undo).
+  app.setTech = function (id, status) {
+    const t = F.techById[id];
+    const before = app.d;
+    app.act((s) => F.state.setTech(s, id, status), { answer: true });
+    if (status === 'declined') {
+      const aside = Object.keys(app.d.aside).filter((m) => !before.aside[m])
+        .map((m) => F.meta.modules.find((x) => x.id === m).label);
+      toast(`Not interested in ${t.name} — ${aside.length ? `skipping the ${aside.join(' and ')} questions` : 'it won’t be suggested or licensed'}.`);
+    } else if (status === 'interested') {
+      toast(`Interested in ${t.name} — it’s in the license sketch.`);
+    }
+  };
+
   // ── render loop ──
   app.render = function () {
     const root = document.getElementById('app');
@@ -3037,6 +4227,7 @@ globalThis.Fivo = { VERSION: "0.1.0", BUILT: "2026-09-29", CONTENT_DATE: "Sept 2
       if (app.ui.drawer && F.screens.drawer) root.appendChild(F.screens.drawer());
       if (app.ui.search !== null && F.screens.search) root.appendChild(F.screens.search());
       if (app.ui.addTopic && F.screens.addTopic) root.appendChild(F.screens.addTopic());
+      if (app.ui.techPicker && F.screens.techPicker) root.appendChild(F.screens.techPicker());
     }
     if (app.ui.help && F.screens.help) root.appendChild(F.screens.help());
     if (app.ui.blur && F.screens.blur) root.appendChild(F.screens.blur());
@@ -3190,6 +4381,16 @@ globalThis.Fivo = { VERSION: "0.1.0", BUILT: "2026-09-29", CONTENT_DATE: "Sept 2
             }, p.label);
           })),
           h('span.field-hint', 'Decides which talk tracks you see first on the pitch card.')),
+        h('div.field',
+          h('span.field-label', 'How does the main contact communicate? (DISC, optional)'),
+          h('div.toggles', F.disc.styles.map((x) => h('button.toggle' + (su.disc === x.k ? '.on' : ''), {
+            'aria-pressed': su.disc === x.k ? 'true' : 'false',
+            title: `${x.cue}. ${x.adapt}`,
+            onclick: () => app.act((s) => { s.setup.disc = s.setup.disc === x.k ? '' : x.k; }),
+          }, `${x.label} · ${x.name}`))),
+          h('span.field-hint', su.disc
+            ? (() => { const x = F.disc.styles.find((y) => y.k === su.disc); return `${x.cue}. ${x.adapt} Each question will show a phrasing for this style.`; })()
+            : 'Not sure yet? Skip it — you can set it from any question once you get a read on them.')),
         h('details.more', { open: ui.setupMore ? true : null, ontoggle: (e) => { ui.setupMore = e.target.open; } },
           h('summary', 'More details (optional)'),
           h('div.form-grid',
@@ -3338,11 +4539,12 @@ globalThis.Fivo = { VERSION: "0.1.0", BUILT: "2026-09-29", CONTENT_DATE: "Sept 2
       const p = d.progress[mid];
       const done = p.eligible > 0 && p.answered === p.eligible;
       const fresh = ui.unlocked[mid] && Date.now() - ui.unlocked[mid] < 90000;
-      return h('button.step' + (mid === cur ? '.cur' : '') + (done ? '.done' : ''), {
+      const off = d.aside[mid];
+      return h('button.step' + (mid === cur ? '.cur' : '') + (done ? '.done' : '') + (off ? '.aside' : ''), {
         onclick: () => F.ui.openTopic(mid),
-        title: `${p.answered} of ${p.eligible} answered — click to review`,
+        title: off ? 'Set aside — the customer isn’t interested in what this topic covers' : `${p.answered} of ${p.eligible} answered — click to review`,
       },
-      h('span.step-n', done ? '✓' : String(i + 1)),
+      h('span.step-n', off ? '–' : done ? '✓' : String(i + 1)),
       h('span.step-l', MOD[mid].label),
       fresh ? h('span.step-new', 'new') : null);
     });
@@ -3386,13 +4588,40 @@ globalThis.Fivo = { VERSION: "0.1.0", BUILT: "2026-09-29", CONTENT_DATE: "Sept 2
     opts.filter((o) => o.pain).forEach((o) => {
       const p = (a.pains && a.pains[o.id]) || {};
       out.push(h('div.follow.pain',
-        h('div.follow-k', 'Quantify this pain'),
-        h('p', o.painLabel || `${q.short}: ${o.label}`),
+        h('div.follow-k', `Quantify: ${o.painLabel || `${q.short} — ${o.label}`}`),
         h('div.pair',
-          h('label.lf', h('span', 'Impact'), h('input', { placeholder: 'Time, money, or risk', value: p.impact || '', 'data-key': `pi.${q.id}.${o.id}`, oninput: (e) => app.soft((x) => F.state.setPain(x, q.id, o.id, 'impact', e.target.value)) })),
-          h('label.lf', h('span', 'Metric'), h('input', { placeholder: 'e.g., +$180k/yr, 12 hrs/month', value: p.metric || '', 'data-key': `pm.${q.id}.${o.id}`, oninput: (e) => app.soft((x) => F.state.setPain(x, q.id, o.id, 'metric', e.target.value)) }))),
-        ui.coaching ? h('p.hint', 'Ask “What does that cost you?”, then “How would you measure it getting better?”') : null));
+          h('input', { placeholder: 'Impact — time, money, or risk', 'aria-label': 'Impact', value: p.impact || '', 'data-key': `pi.${q.id}.${o.id}`, oninput: (e) => app.soft((x) => F.state.setPain(x, q.id, o.id, 'impact', e.target.value)) }),
+          h('input', { placeholder: 'Metric — e.g., +$180k/yr', 'aria-label': 'Metric', value: p.metric || '', 'data-key': `pm.${q.id}.${o.id}`, oninput: (e) => app.soft((x) => F.state.setPain(x, q.id, o.id, 'metric', e.target.value)) }))));
     });
+    return out;
+  }
+
+  // DISC: with the buyer's style set, its phrasing sits under the question; the dropdown
+  // shows all four ways to ask it plus the coaching (why ask, listen for, dig deeper).
+  F.ui.toggleAsk = () => app.setPref('askOpen', !app.ui.askOpen);
+  function howToAsk(q) {
+    const { s, ui } = app;
+    const ask = F.disc.ask[q.id] || {};
+    const style = s.setup.disc;
+    const cur = style && F.disc.styles.find((x) => x.k === style);
+    const open = ui.askOpen;
+    const out = [h('div.ask',
+      cur && ask[style] ? h('p.ask-line', h('span.ask-k', { title: `${cur.name}: ${cur.cue}` }, cur.label), h('span', `“${ask[style]}”`)) : null,
+      h('button.tbtn.ask-toggle', { onclick: F.ui.toggleAsk, 'aria-expanded': open ? 'true' : 'false', title: 'Four ways to ask it, one per DISC style  (H)' },
+        open ? 'Hide' : cur ? 'Other ways to ask' : 'How to ask it', h('span.caret', open ? '▴' : '▾')))];
+    if (!open) return out;
+    out.push(h('div.askpanel',
+      h('div.askpanel-head', h('span.follow-k', 'Ask it their way'), h('span.muted.small', 'Click a style to set it for this buyer')),
+      F.disc.styles.map((x) => h('button.askrow' + (style === x.k ? '.on' : ''), {
+        onclick: () => app.act((ss) => { ss.setup.disc = ss.setup.disc === x.k ? '' : x.k; }),
+        title: style === x.k ? 'Clear the buyer’s style' : `Set ${x.name} as the buyer’s style`,
+      },
+      h('span.ask-k', x.label),
+      h('span.askrow-body', h('span.askrow-name', `${x.name} — ${x.cue.toLowerCase()}`), h('span.askrow-q', `“${ask[x.k]}”`)))),
+      ui.coaching ? h('div.coach',
+        h('div', h('div.follow-k', 'Why ask'), h('p', q.why)),
+        q.listen && q.listen.length ? h('div', h('div.follow-k', 'Listen for'), h('ul', q.listen.map((x) => h('li', x)))) : null,
+        q.probes && q.probes.length ? h('div', h('div.follow-k', 'Dig deeper'), h('ul', q.probes.map((x) => h('li', x)))) : null) : null));
     return out;
   }
 
@@ -3411,14 +4640,14 @@ globalThis.Fivo = { VERSION: "0.1.0", BUILT: "2026-09-29", CONTENT_DATE: "Sept 2
     out.push(h('div.eyebrow',
       h('span', MOD[q.module].label),
       pos ? h('span.muted', ` · ${pos} of ${p.eligible}`) : null,
+      q.type === 'multi' ? h('span.muted', q.ranked ? ' · in priority order' : ' · pick all that apply') : null,
       q.mustAsk ? h('span.must', 'Must ask') : null,
+      d.split[qid] ? h('span.key', { title: `This answer decides: ${d.split[qid]}` }, 'Key question') : null,
       pinned && answered && ui.held !== qid ? h('span.muted', ' · editing') : null));
     out.push(h('h1.qtitle', q.text));
-    if (ui.coaching) out.push(h('p.qwhy', q.why));
-    if (d.split[qid]) out.push(h('p.qsplit', `This answer decides: ${d.split[qid]}`));
+    out.push(...howToAsk(q));
 
     if (q.type === 'single' || q.type === 'multi') {
-      if (q.type === 'multi') out.push(h('p.qhint', q.ranked ? 'Pick in order of priority — the first pick counts most. Then press Enter.' : 'Pick all that apply, then press Enter.'));
       out.push(options(q, a));
     } else if (q.type === 'fields') {
       out.push(h('div.fields', q.fields.map((f) => h('label.lf',
@@ -3439,6 +4668,7 @@ globalThis.Fivo = { VERSION: "0.1.0", BUILT: "2026-09-29", CONTENT_DATE: "Sept 2
     out.push(...followUps(q, a || { pains: {} }));
     if (stale) out.push(h('p.notice.warn', 'This answer no longer applies because an earlier answer changed. It’s kept for reference but doesn’t count.'));
     else if (locked) out.push(h('p.notice', `Not in play yet — it appears when ${requirement(q) || 'its topic is opened'}. You can still record it.`));
+    else if (d.aside[q.module] && !answered) out.push(h('p.notice', 'This topic is set aside — the customer isn’t interested in what it covers. You can still record an answer.'));
 
     // Actions: the main move on the left, capture links on the right.
     const main = [];
@@ -3448,12 +4678,11 @@ globalThis.Fivo = { VERSION: "0.1.0", BUILT: "2026-09-29", CONTENT_DATE: "Sept 2
     if (a && F.hasValue(q, a) && (pinned || stale)) main.push(h('button.tbtn.danger', { onclick: () => app.clear(q.id) }, 'Clear answer'));
     if (pinned && !answered) main.push(h('button.tbtn', { onclick: () => { ui.pinned = null; ui.active = null; app.render(); } }, 'Back to the flow'));
 
-    const noteOpen = ui.openNote[qid] || (a && a.note) || q.detail;
+    const noteOpen = ui.openNote[qid] || (a && a.note);
     const quoteOpen = ui.openQuote[qid] || (a && a.quote);
     const links = [
-      !noteOpen ? h('button.tbtn', { onclick: () => F.ui.openNote(qid) }, '+ Note') : null,
+      !noteOpen ? h('button.tbtn', { onclick: () => F.ui.openNote(qid) }, q.detail ? `+ ${q.detail}` : '+ Note') : null,
       !quoteOpen ? h('button.tbtn', { onclick: () => F.ui.openQuote(qid) }, '+ Quote') : null,
-      ui.coaching && (q.listen || q.probes) ? h('button.tbtn', { onclick: () => { ui.coachOpen = !ui.coachOpen; app.render(); }, 'aria-expanded': ui.coachOpen ? 'true' : 'false' }, ui.coachOpen ? 'Hide listening tips' : 'Listening tips') : null,
     ];
     out.push(h('div.qactions', h('div.qa-main', main), h('div.qa-links', links)));
 
@@ -3473,11 +4702,6 @@ globalThis.Fivo = { VERSION: "0.1.0", BUILT: "2026-09-29", CONTENT_DATE: "Sept 2
           rows: 2, placeholder: 'Type exactly what they said', 'data-key': `quote.${q.id}`,
           oninput: (e) => app.soft((x) => F.state.setQuote(x, q.id, e.target.value)),
         }, (a && a.quote) || '')));
-    }
-    if (ui.coaching && ui.coachOpen) {
-      out.push(h('div.coach',
-        q.listen && q.listen.length ? h('div', h('div.follow-k', 'Listen for'), h('ul', q.listen.map((x) => h('li', x)))) : null,
-        q.probes && q.probes.length ? h('div', h('div.follow-k', 'Dig deeper'), h('ul', q.probes.map((x) => h('li', x)))) : null));
     }
 
     return h('section.question' + (isNew ? '.fade' : ''), { 'aria-label': q.text }, out);
@@ -3559,7 +4783,9 @@ globalThis.Fivo = { VERSION: "0.1.0", BUILT: "2026-09-29", CONTENT_DATE: "Sept 2
     return [h('section.question.topic',
       h('div.eyebrow', 'Topic review'),
       h('h1.qtitle', MOD[mid].label),
-      h('p.qwhy', `${p.answered} of ${p.eligible} answered. Click a question to ask it or change the answer.`),
+      h('p.qwhy', d.aside[mid]
+        ? 'Set aside — the customer isn’t interested in what this topic covers. Its questions are out of the flow; undo that in the pitch panel.'
+        : `${p.answered} of ${p.eligible} answered. Click a question to ask it or change the answer.`),
       h('div.rows', qs.map((q) => {
         const a = s.answers[q.id];
         const st = d.stale[q.id] ? 'stale' : F.isAnswered(q, a) ? 'done' : a && a.skipped ? 'skipped' : 'open';
@@ -3574,7 +4800,7 @@ globalThis.Fivo = { VERSION: "0.1.0", BUILT: "2026-09-29", CONTENT_DATE: "Sept 2
           h('span.row-a', txt));
       })),
       h('div.qactions', h('div.qa-main',
-        p.answered < p.eligible ? h('button.btn.primary', { onclick: () => app.focusModule(mid) }, 'Ask the rest of this topic now') : null,
+        p.answered < p.eligible && !d.aside[mid] ? h('button.btn.primary', { onclick: () => app.focusModule(mid) }, 'Ask the rest of this topic now') : null,
         h('button.tbtn', { onclick: () => F.ui.openTopic(mid) }, 'Back to the call'))))];
   }
 
@@ -3668,8 +4894,8 @@ globalThis.Fivo = { VERSION: "0.1.0", BUILT: "2026-09-29", CONTENT_DATE: "Sept 2
   F.screens.help = function () {
     const rows = [
       ['1 – 9, 0', 'Answer the question'], ['Enter', 'Done (multi-select) or next question'], ['↑  ↓', 'Switch to an “up next” question'],
-      ['S', 'Skip'], ['B', 'Undo the last answer'], ['N', 'Add a note'], ['Q', 'Capture a quote'],
-      ['/', 'Search every question'], ['P', 'Open the pitch card'], ['C', 'Coaching on / off'],
+      ['S', 'Skip'], ['B', 'Undo the last answer'], ['H', 'How to ask it (DISC)'], ['N', 'Add a note'], ['Q', 'Capture a quote'],
+      ['/', 'Search every question'], ['P', 'Open the pitch card'], ['L', 'Switch the side panel to License'], ['C', 'Coaching on / off'],
       ['W', 'Wrap up'], ['Esc', 'Close panels · hide the screen'], ['?', 'This panel'],
     ];
     const close = () => { app.ui.help = false; app.render(); };
@@ -3694,16 +4920,17 @@ globalThis.Fivo = { VERSION: "0.1.0", BUILT: "2026-09-29", CONTENT_DATE: "Sept 2
 
 
 /* ── src/ui/radar.js ── */
-/* Fiv-o UI: the likely-pitch side panel and the pitch card. */
+/* Fiv-o UI: the side panel (Pitch / License), technology suggestions, and the pitch card. */
 (function (F) {
   'use strict';
 
-  const { h, pct } = F.dom;
+  const { h, pct, copy } = F.dom;
   const app = F.app;
   const personaLabel = (id) => (F.meta.personas.find((p) => p.id === id) || { label: id }).label;
 
   F.ui.openDrawer = function (pid) { app.ui.drawer = pid; app.ui.drawerTab = null; app.ui.pitchTab = 'pitch'; app.render(); };
   const closeDrawer = () => { app.ui.drawer = null; app.render(); };
+  const openLicense = () => { app.ui.drawer = null; app.ui.sideTab = 'license'; app.ui.mtab = 'pitch'; app.render(); };
 
   function whyTitle(r) {
     const t = [...new Set(r.trace.filter((x) => x.delta > 0).map((x) => x.label))].slice(0, 4).join('\n');
@@ -3726,50 +4953,135 @@ globalThis.Fivo = { VERSION: "0.1.0", BUILT: "2026-09-29", CONTENT_DATE: "Sept 2
       h('button.btn.full', { onclick: () => F.ui.openDrawer(r.id), title: 'Pitch card  (P)' }, 'Open pitch card'));
   }
 
-  F.ui.radar = function () {
+  // ── Suggested technology ──
+  function techActions(t) {
+    return h('div.tech-act',
+      h('button.tbtn.small' + (t.status === 'interested' ? '.chosen' : ''), { onclick: () => app.setTech(t.id, t.status === 'interested' ? null : 'interested') }, t.status === 'interested' ? '✓ Interested' : 'Interested'),
+      h('button.tbtn.small' + (t.status === 'declined' ? '.chosen.no' : ''), { onclick: () => app.setTech(t.id, t.status === 'declined' ? null : 'declined') }, t.status === 'declined' ? '✕ Not interested' : 'Not interested'));
+  }
+
+  function techRow(t) {
+    const fresh = app.ui.freshTech[t.id] && Date.now() - app.ui.freshTech[t.id] < 90000;
+    return h('div.tech',
+      h('div.tech-top',
+        h('button.tech-name', { onclick: () => F.ui.openDrawer(t.tech.play), title: `${t.tech.what}\n\nClick for the pitch card.` }, t.tech.name),
+        fresh ? h('span.step-new', 'new') : null),
+      t.why.length ? h('p.tech-why', t.why.slice(0, 2).join(' · ')) : null,
+      techActions(t));
+  }
+
+  function techSection() {
+    const d = app.d;
+    const ui = app.ui;
+    const open = d.tech.filter((t) => t.suggested && !t.status);
+    const yes = d.tech.filter((t) => t.status === 'interested');
+    const no = d.tech.filter((t) => t.status === 'declined');
+    const shown = ui.techAll ? open : open.slice(0, 3);
+    const names = (list) => list.map((t, i) => [i ? ', ' : '', h('button.link', { onclick: () => app.setTech(t.id, null), title: 'Click to undo' }, t.tech.name)]);
+    return h('section.side-sec',
+      h('div.eyebrow', 'Suggested technology'),
+      open.length ? shown.map(techRow)
+        : h('p.muted.small', yes.length || no.length ? 'Nothing new to suggest right now.' : 'Specific technologies appear here once their answers point clearly to them.'),
+      open.length > 3 ? h('button.tbtn.small', { onclick: () => { ui.techAll = !ui.techAll; app.render(); } }, ui.techAll ? 'Show fewer' : `${open.length - 3} more suggested`) : null,
+      yes.length ? h('p.tech-sum', h('span.muted', 'Interested: '), names(yes)) : null,
+      no.length ? h('p.tech-sum', h('span.muted', 'Not interested: '), names(no)) : null,
+      h('button.tbtn.small', { onclick: () => { ui.techPicker = true; app.render(); }, title: 'Mark any technology you pitched' }, 'All technologies'));
+  }
+
+  function pitchTab() {
     const d = app.d;
     const ui = app.ui;
     const all = d.scores.list;
     const top = d.primary && d.primary.score > 0 ? d.primary : null;
     const rest = all.filter((r) => r !== top && (ui.showAll || r.score > 0));
-    const shown = ui.showAll ? rest : rest.slice(0, 3);
-
-    return h('div.side-in',
+    const shown = ui.showAll ? rest : rest.slice(0, 2);
+    return [
       h('section.side-sec',
         h('div.eyebrow', 'Likely pitch'),
         top ? lead(top) : h('p.muted.small', 'Nothing yet. As they answer, the best-fit Nutanix pitch shows up here.')),
+      techSection(),
       shown.length ? h('section.side-sec',
         h('div.eyebrow', 'Also in play'),
-        shown.map((r) => h('button.prow', { onclick: () => F.ui.openDrawer(r.id), title: whyTitle(r) },
+        shown.map((r) => h('button.prow' + (r.declined ? '.declined' : ''), { onclick: () => F.ui.openDrawer(r.id), title: r.declined ? 'Customer not interested' : whyTitle(r) },
           h('span.prow-name', r.play.short),
           meter(r, 'thin'),
-          h('span.prow-v.mono', r.score ? pct(r.conf) : '—')))) : null,
-      top || rest.length ? h('button.tbtn.small', { onclick: () => { ui.showAll = !ui.showAll; app.render(); } },
-        ui.showAll ? 'Show fewer' : `See all ${all.length} pitches`) : null,
-      d.flags.length ? h('section.side-sec',
-        h('div.eyebrow', 'Risks'),
-        d.flags.map((f) => h('p.risk', f.text))) : null,
+          h('span.prow-v.mono', r.declined ? 'no' : r.score ? pct(r.conf) : '—'))),
+        h('button.tbtn.small', { onclick: () => { ui.showAll = !ui.showAll; app.render(); } }, ui.showAll ? 'Show fewer' : `See all ${all.length} pitches`)) : null,
+      d.flags.length ? h('section.side-sec', h('div.eyebrow', 'Risks'), d.flags.map((f) => h('p.risk', f.text))) : null,
       h('section.side-sec',
         h('div.eyebrow', 'MEDDPICC'),
         h('div.mp', d.mp.letters.map((l) => h(`span.mp-l.l${l.level}`, { title: `${l.label} — ${['gap', 'partial', 'solid'][l.level]}${l.items.length ? ': ' + l.items.join('; ') : ''}` }, l.k))),
-        h('p.muted.small', `${d.pains.length} pain${d.pains.length === 1 ? '' : 's'} · ${d.quotes.length} quote${d.quotes.length === 1 ? '' : 's'} captured`)));
+        h('p.muted.small', `${d.pains.length} pain${d.pains.length === 1 ? '' : 's'} · ${d.quotes.length} quote${d.quotes.length === 1 ? '' : 's'} captured`)),
+    ];
+  }
+
+  // ── License sketch ──
+  function licLine(l, main) {
+    return h('div.lic' + (main ? '.main' : ''),
+      h('div.lic-top', h('span.lic-title', l.title), l.qty ? h('span.lic-qty', l.qty) : null),
+      l.detail ? h('p.lic-detail', l.detail) : null,
+      l.why && l.why.length ? h('ul.lic-why', l.why.map((w) => h('li', w))) : null);
+  }
+
+  function licenseTab() {
+    const r = app.d.license;
+    if (!r || !r.ready) return [h('p.muted.small', r ? r.note : '')];
+    return [
+      h('section.side-sec', h('div.eyebrow', 'Recommended license'), r.core.map((l) => licLine(l, true))),
+      r.addons.length ? h('section.side-sec', h('div.eyebrow', 'Add-ons and separate licenses'), r.addons.map((l) => licLine(l))) : null,
+      h('section.side-sec', h('div.eyebrow', 'Included at no extra cost'), h('ul.lic-list', r.included.map((x) => h('li', x)))),
+      r.alternatives.length ? h('section.side-sec', h('div.eyebrow', 'Other options'), r.alternatives.map((a) => h('div.lic', h('div.lic-top', h('span.lic-title', a.title)), h('p.lic-detail', a.detail)))) : null,
+      r.excluded.length ? h('section.side-sec', h('div.eyebrow', 'Left out'), h('ul.lic-list', r.excluded.map((x) => h('li', `${x.title} — ${x.detail}${x.reason ? ` (“${x.reason}”)` : ''}`)))) : null,
+      r.notes.length ? h('section.side-sec', h('div.eyebrow', 'Notes'), h('ul.lic-list', r.notes.map((x) => h('li', x)))) : null,
+      h('section.side-sec',
+        h('p.muted.small', r.assumptions.join(' ')),
+        h('button.btn.full', { onclick: () => copy(F.licensingEngine.toText(r), 'License sketch') }, 'Copy license sketch'),
+        h('p.small', h('a', { href: F.licensing.src.options, target: '_blank', rel: 'noopener noreferrer' }, 'Nutanix software options'))),
+    ];
+  }
+
+  F.ui.radar = function () {
+    const ui = app.ui;
+    const r = app.d.license;
+    const tab = (id, label, extra) => h('button.utab' + (ui.sideTab === id ? '.on' : ''), { onclick: () => { ui.sideTab = id; app.render(); } }, label, extra);
+    return h('div.side-in',
+      h('div.utabs.side-tabs',
+        tab('pitch', 'Pitch'),
+        tab('license', 'License', r && r.ready ? h('span.tab-hint', ` · ${r.headline}`) : null)),
+      ui.sideTab === 'license' ? licenseTab() : pitchTab());
+  };
+
+  // ── All technologies (mark anything you pitched) ──
+  F.screens.techPicker = function () {
+    const close = () => { app.ui.techPicker = false; app.render(); };
+    return h('div.overlay', { onclick: close },
+      h('div.modal.wide', { onclick: (e) => e.stopPropagation(), role: 'dialog', 'aria-label': 'All technologies' },
+        h('h2', 'Technologies'),
+        h('p.muted', 'Mark how the customer reacted to anything you pitched. “Not interested” takes it out of the suggestions and the license, and skips questions that only it needed.'),
+        h('div.rows', app.d.tech.map((t) => h('div.row.static.tech-pick',
+          h('span.row-q', t.tech.name,
+            t.suggested && !t.status ? h('span.key', 'Suggested') : null,
+            h('span.row-sub', t.tech.what)),
+          techActions(t)))),
+        h('div.modal-foot', h('button.btn.primary', { onclick: close }, 'Done'))));
   };
 
   // ── Pitch card ──
   const sec = (title, ...body) => h('section.dsec', h('h3', title), body);
 
-  function pitchTab(r, p, variant) {
+  function pitchCardTab(r, p, variant) {
     const s = app.s;
     const trackIds = Object.keys(p.personas);
     const ordered = [...s.setup.attendees.filter((id) => trackIds.includes(id)), ...trackIds.filter((id) => !s.setup.attendees.includes(id))];
     const tab = app.ui.drawerTab && ordered.includes(app.ui.drawerTab) ? app.ui.drawerTab : ordered[0];
+    const techs = app.d.tech.filter((t) => t.tech.play === p.id);
     return [
       p.variants ? sec('Which version',
         h('div.rows', r.variants.map((v) => {
           const def = p.variants.find((x) => x.id === v.id);
           const on = variant && variant.id === v.id;
           return h('div.row.static' + (on ? '.on' : ''),
-            h('span.row-q', def.name, on ? h('span.must', 'Best fit') : null),
+            h('span.row-q', def.name, on ? h('span.must', 'Best fit') : v.declined ? h('span.muted', ' · not interested') : null),
             h('span.row-a', def.pitch));
         }))) : null,
       h('p.oneliner', p.oneLiner),
@@ -3782,6 +5094,10 @@ globalThis.Fivo = { VERSION: "0.1.0", BUILT: "2026-09-29", CONTENT_DATE: "Sept 2
           title: s.setup.attendees.includes(id) ? 'On this call' : '',
         }, personaLabel(id), s.setup.attendees.includes(id) ? ' •' : ''))),
         h('p.track', p.personas[tab])),
+      techs.length ? sec('Technologies in this pitch — did they want it?',
+        h('div.rows', techs.map((t) => h('div.row.static.tech-pick',
+          h('span.row-q', t.tech.name, t.suggested && !t.status ? h('span.key', 'Suggested') : null, h('span.row-sub', t.tech.what)),
+          techActions(t))))) : null,
     ];
   }
 
@@ -3827,10 +5143,13 @@ globalThis.Fivo = { VERSION: "0.1.0", BUILT: "2026-09-29", CONTENT_DATE: "Sept 2
   }
 
   function nextTab(p, variant) {
+    const lic = app.d.license;
     return [
       sec('Recommended next steps', h('ol', p.nextSteps.map((x) => h('li', x)))),
       sec('Products', h('p', (variant ? variant.products : p.products).join(' · '))),
-      sec('Licensing', h('p', p.editions, ' ', h('a', { href: p.editionsSrc, target: '_blank', rel: 'noopener noreferrer' }, 'source'))),
+      sec('Licensing',
+        lic && lic.ready ? h('p', h('strong', 'For this customer: '), lic.headline, ' — ', h('button.link', { onclick: openLicense }, 'open the license sketch')) : null,
+        h('p', p.editions, ' ', h('a', { href: p.editionsSrc, target: '_blank', rel: 'noopener noreferrer' }, 'source'))),
     ];
   }
 
@@ -3843,7 +5162,9 @@ globalThis.Fivo = { VERSION: "0.1.0", BUILT: "2026-09-29", CONTENT_DATE: "Sept 2
     const variant = r.variant && p.variants.find((v) => v.id === r.variant.id);
     const tabs = [['pitch', 'Pitch'], ['proof', 'Proof'], ['objections', 'Objections'], ['next', 'Next steps']];
     const tab = app.ui.pitchTab || 'pitch';
-    const status = r.ready ? 'ready to pitch' : r.missingQualifiers.length ? `to confirm: ${r.missingQualifiers.map((q) => F.questionById[q].short).join(', ')}` : 'still building';
+    const status = r.declined ? 'customer not interested'
+      : r.ready ? 'ready to pitch'
+        : r.missingQualifiers.length ? `to confirm: ${r.missingQualifiers.map((q) => F.questionById[q].short).join(', ')}` : 'still building';
 
     return h('div.overlay.drawer-wrap', { onclick: closeDrawer },
       h('aside.drawer', { onclick: (e) => e.stopPropagation(), 'data-scroll': 'drawer', role: 'dialog', 'aria-label': `Pitch card: ${p.name}` },
@@ -3855,12 +5176,12 @@ globalThis.Fivo = { VERSION: "0.1.0", BUILT: "2026-09-29", CONTENT_DATE: "Sept 2
           h('button.tbtn', { onclick: closeDrawer }, 'Close')),
         h('div.dbar',
           h('div.utabs', tabs.map(([id, label]) => h('button.utab' + (id === tab ? '.on' : ''), { onclick: () => { app.ui.pitchTab = id; app.render(); } }, label))),
-          h('button.tbtn.small', {
+          r.declined ? null : h('button.tbtn.small', {
             onclick: () => app.act((x) => { x.primaryPlay = isPrimary ? null : p.id; }),
             title: 'Use this pitch as the primary play in your notes',
           }, isPrimary ? '✓ Primary pitch' : 'Make primary')),
         h('div.dbody',
-          tab === 'pitch' ? pitchTab(r, p, variant)
+          tab === 'pitch' ? pitchCardTab(r, p, variant)
             : tab === 'proof' ? proofTab(r, p)
               : tab === 'objections' ? objectionsTab(p)
                 : nextTab(p, variant)),
@@ -3923,19 +5244,44 @@ globalThis.Fivo = { VERSION: "0.1.0", BUILT: "2026-09-29", CONTENT_DATE: "Sept 2
 
     const agreed = d.valid['dec.nextstep'] ? F.answerText(Q['dec.nextstep'], s.answers['dec.nextstep']) : null;
 
+    // Technology interest (with a reason for every "not interested") + the license headline.
+    const yes = d.tech.filter((t) => t.status === 'interested');
+    const no = d.tech.filter((t) => t.status === 'declined');
+    const open = d.tech.filter((t) => t.suggested && !t.status);
+    const statusBtns = (t) => h('div.tech-act',
+      h('button.tbtn.small' + (t.status === 'interested' ? '.chosen' : ''), { onclick: () => app.setTech(t.id, t.status === 'interested' ? null : 'interested') }, 'Interested'),
+      h('button.tbtn.small' + (t.status === 'declined' ? '.chosen.no' : ''), { onclick: () => app.setTech(t.id, t.status === 'declined' ? null : 'declined') }, 'Not interested'));
+    const lic = d.license;
+    const tech = [
+      yes.length || no.length || open.length ? h('div.rows',
+        [...yes, ...no, ...open].map((t) => h('div.row.static.wtech',
+          h('div.wtech-main', h('strong', t.tech.name), h('span.muted.small', t.status === 'interested' ? 'Interested' : t.status === 'declined' ? 'Not interested' : 'Suggested — not pitched yet')),
+          statusBtns(t),
+          t.status === 'declined' ? h('input', {
+            placeholder: 'Why not? (goes in the notes)', value: t.note, 'data-key': `tn.${t.id}`,
+            oninput: (e) => app.soft((x) => F.state.setTechNote(x, t.id, e.target.value)),
+          }) : null)))
+        : h('p.muted', 'No technologies suggested or marked yet.'),
+      lic && lic.ready ? h('p.lic-sum', h('span.muted', 'License sketch: '), h('strong', lic.headline),
+        lic.core[0].qty ? h('span.muted', ` · ${lic.core[0].qty}`) : null,
+        lic.addons.length ? h('span.muted', ` · plus ${lic.addons.map((a) => a.title).join(', ')}`) : null,
+        ' ', h('button.link.small', { onclick: () => copy(F.licensingEngine.toText(lic), 'License sketch') }, 'copy')) : null,
+    ];
+
     return h('div.page.wrap',
       h('div.topbar',
         h('button.tbtn', { onclick: () => app.go('interview') }, '← Back to the call'),
         h('button.tbtn', { onclick: () => app.go('home'), style: { marginLeft: 'auto' } }, 'Home')),
       h('h1', `Wrap up — ${s.setup.account}`),
-      h('p.muted', 'Five quick checks, then copy the notes into Salesforce. Everything you change here updates the notes on the right.'),
+      h('p.muted', 'Six quick checks, then copy the notes into Salesforce. Everything you change here updates the notes on the right.'),
       h('div.wrap-grid',
         h('div.wrap-left',
           step(1, 'Primary pitch', 'Ranked from their answers. Pick the one to lead with.', pitch),
-          step(2, 'Quantify the pains', 'An impact and a metric turn a complaint into a business case.', pains),
-          step(3, 'MEDDPICC', 'Filled from their answers (shown in grey). Type to replace what goes into the notes.', mp),
-          step(4, 'Open questions for next time', 'Checked items go into the notes as the next call’s agenda.', gaps),
-          step(5, 'Next steps and notes', null,
+          step(2, 'Technology and licensing', 'What they want, what they turned down (and why), and the license it adds up to.', tech),
+          step(3, 'Quantify the pains', 'An impact and a metric turn a complaint into a business case.', pains),
+          step(4, 'MEDDPICC', 'Filled from their answers (shown in grey). Type to replace what goes into the notes.', mp),
+          step(5, 'Open questions for next time', 'Checked items go into the notes as the next call’s agenda.', gaps),
+          step(6, 'Next steps and notes', null,
             agreed ? h('p', h('span.muted', 'Agreed on the call: '), agreed) : h('p.muted', 'No next step was recorded — add one with an owner and a date.'),
             h('label.lf', h('span', 'Next steps'), h('textarea', { rows: 3, 'data-key': 'wrap.next', placeholder: 'Owner — action — date (one per line)', oninput: (e) => app.soft((x) => { x.wrap.nextSteps = e.target.value; }) }, s.wrap.nextSteps || '')),
             h('label.lf', h('span', 'Other notes'), h('textarea', { rows: 3, 'data-key': 'wrap.notes', placeholder: 'Anything else for the opportunity record', oninput: (e) => app.soft((x) => { x.wrap.notes = e.target.value; }) }, s.wrap.notes || '')))),
@@ -3978,6 +5324,7 @@ globalThis.Fivo = { VERSION: "0.1.0", BUILT: "2026-09-29", CONTENT_DATE: "Sept 2
       if (ui.search !== null) { ui.search = null; app.render(); return; }
       if (ui.help) { ui.help = false; app.render(); return; }
       if (ui.addTopic) { ui.addTopic = false; app.render(); return; }
+      if (ui.techPicker) { ui.techPicker = false; app.render(); return; }
       if (ui.drawer) { ui.drawer = null; app.render(); return; }
       if (ui.screen === 'interview' && ui.topic) { ui.topic = null; app.render(); return; }
       if (ui.screen === 'interview') { ui.blur = true; app.render(); }
@@ -3985,7 +5332,7 @@ globalThis.Fivo = { VERSION: "0.1.0", BUILT: "2026-09-29", CONTENT_DATE: "Sept 2
     }
     if (ui.blur || inField) return;
     if (e.key === '?') { ui.help = !ui.help; app.render(); e.preventDefault(); return; }
-    if (ui.screen !== 'interview' || ui.search !== null || ui.help || ui.addTopic) return;
+    if (ui.screen !== 'interview' || ui.search !== null || ui.help || ui.addTopic || ui.techPicker) return;
 
     const k = e.key.toLowerCase();
     if (ui.drawer) {
@@ -4022,6 +5369,8 @@ globalThis.Fivo = { VERSION: "0.1.0", BUILT: "2026-09-29", CONTENT_DATE: "Sept 2
       case 'b': hit(); app.undo(); break;
       case 'n': if (q) { hit(); F.ui.openNote(q.id); } break;
       case 'q': if (q) { hit(); F.ui.openQuote(q.id); } break;
+      case 'h': if (q) { hit(); F.ui.toggleAsk(); } break;
+      case 'l': hit(); ui.sideTab = ui.sideTab === 'license' ? 'pitch' : 'license'; app.render(); break;
       case 'c': hit(); app.setPref('coaching', !ui.coaching); break;
       case 'p': if (app.d.primary && app.d.primary.score > 0) { hit(); F.ui.openDrawer(app.d.primary.id); } break;
       case 'w': hit(); app.go('wrap'); break;

@@ -142,7 +142,7 @@
       options: [
         o('everpure', 'Everpure (Pure) FlashArray', { 'vmw.ext': 12 }, { tip: 'Everpure FlashArray + NCI is GA (Dec 2025) with Prism-integrated VM snapshots and SafeMode.' }),
         o('powerflex', 'Dell PowerFlex', { 'vmw.ext': 12 }),
-        o('powerstore', 'Dell PowerStore', { 'vmw.ext': 8 }, { tip: 'PowerStore support announced at .NEXT 2026 — verify GA before committing.' }),
+        o('powerstore', 'Dell PowerStore', { 'vmw.ext': 12 }, { tip: 'PowerStore is supported with NCI 7.6 (July 2026) — confirm the model and version on the compatibility list.' }),
         o('netapp', 'NetApp ONTAP (AFF / FAS)', { 'vmw.ext': 8 }, { tip: 'ONTAP support announced for 2H 2026 — verify GA before committing.' }),
         o('lenovo', 'Lenovo ThinkSystem', { 'vmw.ext': 6 }, { tip: 'Lenovo ThinkSystem storage announced at .NEXT 2026 — verify.' }),
         o('other', 'Other (HPE, Hitachi, IBM, Dell Unity/PowerMax…)', { 'vmw.hci': 8, refresh: 3 }),

@@ -43,9 +43,17 @@
     const stale = {};
     for (const qid in has) if (!valid[qid]) stale[qid] = true;
 
-    // 2. Scores.
+    // 2. Scores, then the technologies they point to.
     const scores = F.scoring.compute(s, valid);
     const L = scores.list;
+    const tech = F.techEngine.evaluate(s, valid, scores);
+
+    // Topics whose pitches were all turned down are set aside: their open questions leave
+    // the flow (they stay reachable through search and topic review).
+    const aside = {};
+    F.meta.modules.forEach((m) => {
+      if (m.serves && m.serves.length && m.serves.every((pid) => scores.byId[pid] && scores.byId[pid].declined)) aside[m.id] = true;
+    });
 
     // 3. Pains, flags, coaching tips, quotes.
     const pains = [], flags = [], tips = [], quotes = [];
@@ -86,7 +94,7 @@
         if (!decided) for (let j = 1; j < v.length; j++) pairs.push([`${L[0].id}.${v[0].id}`, `${L[0].id}.${v[j].id}`, `${v[0].name} vs ${v[j].name}`]);
       }
     }
-    const isOpen = (q) => eligible[q.id] && !F.isAnswered(q, s.answers[q.id]);
+    const isOpen = (q) => eligible[q.id] && !aside[q.module] && !F.isAnswered(q, s.answers[q.id]);
     const split = {};
     F.questions.forEach((q) => {
       if (!isOpen(q)) return;
@@ -139,9 +147,11 @@
       .map((g) => g.q.id);
 
     const mp = F.meddpicc.compute(s, valid, pains);
-    const primary = (s.primaryPlay && scores.byId[s.primaryPlay]) || L[0];
+    const pinnedPlay = s.primaryPlay && scores.byId[s.primaryPlay];
+    const primary = (pinnedPlay && !pinnedPlay.declined && pinnedPlay) || L[0];
+    const license = F.licensingEngine.recommend(s, { valid, scores, primary, tech });
 
-    return { valid, eligible, stale, scores, primary, pains, flags, tips, quotes, order, modules, triggered, queue, split, progress, mustLeft, gaps, mp };
+    return { valid, eligible, stale, scores, primary, tech, aside, license, pains, flags, tips, quotes, order, modules, triggered, queue, split, progress, mustLeft, gaps, mp };
   }
 
   F.router = { evaluate, isEligible, cond };

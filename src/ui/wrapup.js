@@ -51,19 +51,44 @@
 
     const agreed = d.valid['dec.nextstep'] ? F.answerText(Q['dec.nextstep'], s.answers['dec.nextstep']) : null;
 
+    // Technology interest (with a reason for every "not interested") + the license headline.
+    const yes = d.tech.filter((t) => t.status === 'interested');
+    const no = d.tech.filter((t) => t.status === 'declined');
+    const open = d.tech.filter((t) => t.suggested && !t.status);
+    const statusBtns = (t) => h('div.tech-act',
+      h('button.tbtn.small' + (t.status === 'interested' ? '.chosen' : ''), { onclick: () => app.setTech(t.id, t.status === 'interested' ? null : 'interested') }, 'Interested'),
+      h('button.tbtn.small' + (t.status === 'declined' ? '.chosen.no' : ''), { onclick: () => app.setTech(t.id, t.status === 'declined' ? null : 'declined') }, 'Not interested'));
+    const lic = d.license;
+    const tech = [
+      yes.length || no.length || open.length ? h('div.rows',
+        [...yes, ...no, ...open].map((t) => h('div.row.static.wtech',
+          h('div.wtech-main', h('strong', t.tech.name), h('span.muted.small', t.status === 'interested' ? 'Interested' : t.status === 'declined' ? 'Not interested' : 'Suggested — not pitched yet')),
+          statusBtns(t),
+          t.status === 'declined' ? h('input', {
+            placeholder: 'Why not? (goes in the notes)', value: t.note, 'data-key': `tn.${t.id}`,
+            oninput: (e) => app.soft((x) => F.state.setTechNote(x, t.id, e.target.value)),
+          }) : null)))
+        : h('p.muted', 'No technologies suggested or marked yet.'),
+      lic && lic.ready ? h('p.lic-sum', h('span.muted', 'License sketch: '), h('strong', lic.headline),
+        lic.core[0].qty ? h('span.muted', ` · ${lic.core[0].qty}`) : null,
+        lic.addons.length ? h('span.muted', ` · plus ${lic.addons.map((a) => a.title).join(', ')}`) : null,
+        ' ', h('button.link.small', { onclick: () => copy(F.licensingEngine.toText(lic), 'License sketch') }, 'copy')) : null,
+    ];
+
     return h('div.page.wrap',
       h('div.topbar',
         h('button.tbtn', { onclick: () => app.go('interview') }, '← Back to the call'),
         h('button.tbtn', { onclick: () => app.go('home'), style: { marginLeft: 'auto' } }, 'Home')),
       h('h1', `Wrap up — ${s.setup.account}`),
-      h('p.muted', 'Five quick checks, then copy the notes into Salesforce. Everything you change here updates the notes on the right.'),
+      h('p.muted', 'Six quick checks, then copy the notes into Salesforce. Everything you change here updates the notes on the right.'),
       h('div.wrap-grid',
         h('div.wrap-left',
           step(1, 'Primary pitch', 'Ranked from their answers. Pick the one to lead with.', pitch),
-          step(2, 'Quantify the pains', 'An impact and a metric turn a complaint into a business case.', pains),
-          step(3, 'MEDDPICC', 'Filled from their answers (shown in grey). Type to replace what goes into the notes.', mp),
-          step(4, 'Open questions for next time', 'Checked items go into the notes as the next call’s agenda.', gaps),
-          step(5, 'Next steps and notes', null,
+          step(2, 'Technology and licensing', 'What they want, what they turned down (and why), and the license it adds up to.', tech),
+          step(3, 'Quantify the pains', 'An impact and a metric turn a complaint into a business case.', pains),
+          step(4, 'MEDDPICC', 'Filled from their answers (shown in grey). Type to replace what goes into the notes.', mp),
+          step(5, 'Open questions for next time', 'Checked items go into the notes as the next call’s agenda.', gaps),
+          step(6, 'Next steps and notes', null,
             agreed ? h('p', h('span.muted', 'Agreed on the call: '), agreed) : h('p.muted', 'No next step was recorded — add one with an owner and a date.'),
             h('label.lf', h('span', 'Next steps'), h('textarea', { rows: 3, 'data-key': 'wrap.next', placeholder: 'Owner — action — date (one per line)', oninput: (e) => app.soft((x) => { x.wrap.nextSteps = e.target.value; }) }, s.wrap.nextSteps || '')),
             h('label.lf', h('span', 'Other notes'), h('textarea', { rows: 3, 'data-key': 'wrap.notes', placeholder: 'Anything else for the opportunity record', oninput: (e) => app.soft((x) => { x.wrap.notes = e.target.value; }) }, s.wrap.notes || '')))),

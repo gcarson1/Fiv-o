@@ -29,28 +29,47 @@
       });
     }
 
+    // Pitches (or versions) the customer explicitly turned down drop out of the ranking.
+    const off = suppressed(session);
     const list = F.plays.map((p) => {
-      const score = Math.max(0, raw[p.id] || 0);
+      const declined = !!off[p.id];
+      const score = declined ? 0 : Math.max(0, raw[p.id] || 0);
       const conf = score / (score + K);
-      const variants = (p.variants || []).map((v) => ({ id: v.id, name: v.name, score: Math.max(0, raw[`${p.id}.${v.id}`] || 0) }));
+      const variants = (p.variants || []).map((v) => {
+        const vOff = !!off[`${p.id}.${v.id}`];
+        return { id: v.id, name: v.name, declined: vOff, score: vOff ? 0 : Math.max(0, raw[`${p.id}.${v.id}`] || 0) };
+      });
       const vTotal = variants.reduce((t, v) => t + v.score, 0);
-      variants.forEach((v) => { v.share = vTotal ? v.score / vTotal : 1 / variants.length; });
-      const vSorted = variants.slice().sort((x, y) => y.score - x.score);
+      const vLive = variants.filter((v) => !v.declined);
+      variants.forEach((v) => { v.share = v.declined ? 0 : vTotal ? v.score / vTotal : 1 / (vLive.length || 1); });
+      const vSorted = variants.slice().sort((x, y) => y.score - x.score || (x.declined ? 1 : 0) - (y.declined ? 1 : 0));
       const variant = vSorted.length && vSorted[0].score > 0 ? vSorted[0] : null;
-      const missingQualifiers = (p.qualifiers || []).filter((qid) => {
+      const missingQualifiers = declined ? [] : (p.qualifiers || []).filter((qid) => {
         const q = F.questionById[qid];
         return q && !F.isAnswered(q, session.answers[qid]);
       });
       const t = (trace[p.id] || []).slice().sort((x, y) => Math.abs(y.delta) - Math.abs(x.delta));
       return {
-        id: p.id, play: p, score, conf, variants: vSorted, variant,
-        missingQualifiers, ready: conf >= READY && missingQualifiers.length === 0, trace: t,
+        id: p.id, play: p, score, conf, variants: vSorted, variant, declined,
+        missingQualifiers, ready: !declined && conf >= READY && missingQualifiers.length === 0, trace: t,
       };
     });
 
     list.sort((a, b) => b.score - a.score || F.plays.indexOf(a.play) - F.plays.indexOf(b.play));
     const byId = Object.fromEntries(list.map((r) => [r.id, r]));
     return { list, byId, raw };
+  }
+
+  // A pitch or version is set aside when every technology it depends on (tech.core) was declined.
+  function suppressed(session) {
+    const st = session.tech || {};
+    const byTarget = {};
+    (F.tech || []).forEach((t) => t.core.forEach((c) => { (byTarget[c] = byTarget[c] || []).push(t.id); }));
+    const out = {};
+    for (const [target, ids] of Object.entries(byTarget)) {
+      if (ids.every((id) => st[id] && st[id].status === 'declined')) out[target] = true;
+    }
+    return out;
   }
 
   // How strongly a question's options pull two targets apart (for "next-best-question").
@@ -69,5 +88,5 @@
     return (q.options || []).some((o) => Object.keys(o.signals || {}).some((k) => k === pid || k.startsWith(pid + '.')));
   }
 
-  F.scoring = { K, READY, compute, discrimination, touchesPlay };
+  F.scoring = { K, READY, compute, discrimination, touchesPlay, suppressed };
 })(globalThis.Fivo = globalThis.Fivo || {});

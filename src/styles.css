@@ -223,6 +223,58 @@ pre.small { font: 12.5px/1.5 var(--mono); white-space: pre-wrap; margin: 8px 0; 
 @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { .fade, .overlay, .drawer { animation: none !important; } .meter-fill { transition: none !important; } }
 
+/* ── how to ask it (DISC) ── */
+.key { margin-left: 8px; font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--link); cursor: help; }
+.ask { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; margin-top: 4px; }
+.ask-line { display: flex; align-items: baseline; gap: 10px; margin: 2px 0 0; max-width: 64ch; font-size: 15px; color: var(--muted); }
+.ask-k { display: inline-grid; place-items: center; flex: none; width: 20px; height: 20px; border: 1px solid var(--line-strong); border-radius: 3px; font: 600 12px var(--mono); color: var(--text); }
+.ask-toggle { padding-left: 0; font-size: 13px; }
+.caret { margin-left: 5px; font-size: 10px; }
+.askpanel { width: 100%; margin-top: 8px; padding-bottom: 10px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.askpanel-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 12px 0 6px; }
+.askrow { display: flex; align-items: flex-start; gap: 12px; width: 100%; padding: 10px 8px; border: 0; border-top: 1px solid var(--line); background: none; color: var(--text); font: inherit; text-align: left; cursor: pointer; }
+.askrow:hover { background: var(--bg-soft); }
+.askrow.on { background: var(--sel); box-shadow: inset 3px 0 0 var(--text); }
+.askrow-body { display: flex; flex-direction: column; gap: 2px; }
+.askrow-name { font-size: 12.5px; color: var(--muted); }
+.askrow-q { font-size: 14.5px; }
+.askpanel .coach { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); margin-top: 6px; padding-top: 12px; }
+.coach p { color: var(--muted); }
+
+/* ── side: tabs, technology, license ── */
+.side-tabs { margin: -6px 0 18px; border-bottom: 1px solid var(--line); }
+.tab-hint { font-weight: 400; font-size: 12.5px; color: var(--muted); }
+.tech { padding: 10px 0; border-bottom: 1px solid var(--line); }
+.tech-top { display: flex; align-items: baseline; gap: 8px; }
+.tech-name { padding: 0; border: 0; background: none; color: var(--text); font: inherit; font-size: 14.5px; font-weight: 600; text-align: left; cursor: pointer; }
+.tech-name:hover { text-decoration: underline; text-underline-offset: 3px; }
+.tech-why { margin: 2px 0 4px; font-size: 12.5px; color: var(--muted); }
+.tech-act { display: flex; flex-wrap: nowrap; gap: 2px; margin-left: -6px; }
+.rows > .row.wtech { grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 6px 16px; }
+.wtech-main { display: flex; flex-direction: column; }
+.wtech input { grid-column: 1 / -1; }
+.tbtn.chosen { color: var(--good); font-weight: 600; }
+.tbtn.chosen.no { color: var(--bad); }
+.tech-sum { margin: 10px 0 0; font-size: 13px; }
+.prow.declined .prow-name { color: var(--faint); text-decoration: line-through; }
+.lic { padding: 10px 0; border-bottom: 1px solid var(--line); }
+.side-sec .lic:last-child { border-bottom: 0; }
+.lic-top { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+.lic-title { font-size: 14.5px; font-weight: 600; }
+.lic.main .lic-title { font-size: 18px; }
+.lic-qty { flex: none; font: 12.5px var(--mono); color: var(--muted); white-space: nowrap; }
+.lic-detail { margin: 4px 0 0; font-size: 13px; color: var(--muted); }
+.lic-why, .lic-list { margin: 6px 0 0; padding-left: 16px; font-size: 13px; }
+.lic-why li, .lic-list li { margin: 3px 0; }
+.lic-sum { margin: 14px 0 0; font-size: 14px; }
+.modal.wide { width: min(720px, calc(100vw - 32px)); }
+.modal .rows { max-height: 58vh; overflow-y: auto; }
+.rows > .row.tech-pick { grid-template-columns: minmax(0, 1fr) auto; align-items: center; }
+.row-sub { display: block; margin-top: 2px; font-size: 12.5px; font-weight: 400; color: var(--muted); }
+.row-q .key { margin-left: 8px; }
+.step.aside .step-l { color: var(--faint); text-decoration: line-through; }
+.step.aside .step-n { color: var(--faint); }
+
 /* ── side: likely pitch ── */
 .side-sec { margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid var(--line); }
 .side-sec:last-child { border-bottom: 0; }

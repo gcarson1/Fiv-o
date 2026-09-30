@@ -21,6 +21,7 @@
       if (ui.search !== null) { ui.search = null; app.render(); return; }
       if (ui.help) { ui.help = false; app.render(); return; }
       if (ui.addTopic) { ui.addTopic = false; app.render(); return; }
+      if (ui.techPicker) { ui.techPicker = false; app.render(); return; }
       if (ui.drawer) { ui.drawer = null; app.render(); return; }
       if (ui.screen === 'interview' && ui.topic) { ui.topic = null; app.render(); return; }
       if (ui.screen === 'interview') { ui.blur = true; app.render(); }
@@ -28,7 +29,7 @@
     }
     if (ui.blur || inField) return;
     if (e.key === '?') { ui.help = !ui.help; app.render(); e.preventDefault(); return; }
-    if (ui.screen !== 'interview' || ui.search !== null || ui.help || ui.addTopic) return;
+    if (ui.screen !== 'interview' || ui.search !== null || ui.help || ui.addTopic || ui.techPicker) return;
 
     const k = e.key.toLowerCase();
     if (ui.drawer) {
@@ -65,6 +66,8 @@
       case 'b': hit(); app.undo(); break;
       case 'n': if (q) { hit(); F.ui.openNote(q.id); } break;
       case 'q': if (q) { hit(); F.ui.openQuote(q.id); } break;
+      case 'h': if (q) { hit(); F.ui.toggleAsk(); } break;
+      case 'l': hit(); ui.sideTab = ui.sideTab === 'license' ? 'pitch' : 'license'; app.render(); break;
       case 'c': hit(); app.setPref('coaching', !ui.coaching); break;
       case 'p': if (app.d.primary && app.d.primary.score > 0) { hit(); F.ui.openDrawer(app.d.primary.id); } break;
       case 'w': hit(); app.go('wrap'); break;

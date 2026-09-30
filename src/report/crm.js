@@ -43,6 +43,19 @@
     ].filter(Boolean).join('\n');
   }
 
+  // Interested / explicitly not interested / suggested but not pitched yet.
+  function technology(d) {
+    const names = (list) => list.map((t) => t.tech.name).join('; ');
+    const yes = d.tech.filter((t) => t.status === 'interested');
+    const no = d.tech.filter((t) => t.status === 'declined');
+    const open = d.tech.filter((t) => t.suggested && !t.status);
+    return [
+      yes.length ? `- Interested: ${names(yes)}` : null,
+      ...no.map((t) => `- Not interested (explicit): ${t.tech.name}${t.note ? ` — ${t.note}` : ''}`),
+      open.length ? `- Suggested, not pitched yet: ${names(open)}` : null,
+    ];
+  }
+
   function crm(s, d) {
     const su = s.setup;
     const n = s.calls.length;
@@ -60,6 +73,8 @@
     if (firm.length) push(firm.join(' | '));
     if (su.attendees.length) push(`Attendees: ${su.attendees.map(personaLabel).join(', ')}`);
     if (su.contacts && su.contacts.trim()) push(`Contacts: ${su.contacts.trim()}`);
+    const style = su.disc && F.disc.styles.find((x) => x.k === su.disc);
+    if (style) push(`Buyer style (DISC): ${style.label} — ${style.name}. ${style.adapt}`);
 
     const Q = F.questionById;
     section('WHY NOW', [
@@ -89,6 +104,10 @@
       plays.unshift(d.primary);
     }
     section('RECOMMENDED PLAY', plays.map(playBlock));
+
+    section('TECHNOLOGY', technology(d));
+
+    section(`LICENSE SKETCH (validate in Sizer / the quote)`, [d.license && d.license.ready ? F.licensingEngine.toText(d.license) : null]);
 
     section('RISKS / LANDMINES', d.flags.map((f) => `- ${f.text}`));
 

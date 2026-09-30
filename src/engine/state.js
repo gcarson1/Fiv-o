@@ -23,6 +23,7 @@
     s.setup = Object.assign({
       account: '', opp: '', se: '', partner: '', industry: '',
       segment: 'Commercial / Mid-market', attendees: [], contacts: '',
+      disc: '', // buyer's DISC style: 'D' | 'I' | 'S' | 'C' | ''
     }, s.setup || {});
     if (!Array.isArray(s.setup.attendees)) s.setup.attendees = [];
     if (!Array.isArray(s.calls) || !s.calls.length) s.calls = [{ n: 1, date: today(), startedAt: null }];
@@ -30,6 +31,7 @@
     s.lastAnswered = s.lastAnswered || null;
     s.primaryPlay = s.primaryPlay || null;
     s.confirms = s.confirms || {};
+    s.tech = s.tech || {}; // technology id → { status: 'interested' | 'declined', note }
     s.recap = s.recap || {};
     s.wrap = Object.assign({ mp: {}, nextSteps: '', notes: '', gapsExcluded: {} }, s.wrap || {});
     return s;
@@ -125,6 +127,13 @@
   }
 
   function skip(s, qid) { const a = ans(s, qid); a.skipped = true; }
+
+  // The customer's reaction to a technology you pitched. null clears it.
+  function setTech(s, id, status) {
+    if (!status) { delete s.tech[id]; return; }
+    s.tech[id] = Object.assign({ note: '' }, s.tech[id] || {}, { status, call: callNo(s), ts: Date.now() });
+  }
+  function setTechNote(s, id, note) { if (s.tech[id]) s.tech[id].note = note; }
   function clear(s, qid) { delete s.answers[qid]; }
   function setNote(s, qid, v) { ans(s, qid).note = v; }
   function setQuote(s, qid, v) { ans(s, qid).quote = v; }
@@ -164,6 +173,6 @@
   F.state = {
     KEY, newSession, migrate, callNo, startNextCall, today,
     save, list, get, remove, exportJSON, importJSON,
-    selectOption, setField, setText, markDone, skip, clear, setNote, setQuote, setPain,
+    selectOption, setField, setText, markDone, skip, clear, setNote, setQuote, setPain, setTech, setTechNote,
   };
 })(globalThis.Fivo = globalThis.Fivo || {});
